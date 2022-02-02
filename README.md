@@ -1,4 +1,4 @@
-# Getting Started with Create React App
+# Getting Started with HiChess
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -29,18 +29,6 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `yarn eject`
+## Icons
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+https://icon.kitchen/i/H4sIAAAAAAAAAzWRwU7DMAyGX2UyF5DK1G5rJXpDE3DhgAQ3hJCbOGlE2kxpOpimPQgn3o0nmZOuVVvZf5zPf5wj7NGONEB9BKXfDjuCGgL9BMhiHoMa%2Fn%2F%2FUvqCUppex9rgdlDfFnkG3uiWi1LcuBBcx0mZgSU1ySfWZ7L2KA31kd7opzlhnnDW%2BYIrrhRhVa65IEmrJKk8VwVL2GvLmE05Mdnd6DlnO3MInRvQiHk7C143eJ1ni8u7LG54cSCSUOfLclOuq2rN311VrlYJ%2B9pi8iqMF9wtHvzRTS4VdsYeeO2%2BafGAi2fTcNN4bsu44EdigtLbS2s2Hp%2BEeFCKROA5A1naY5jAW2t26BN7oDhqSQpHG%2BdjhOtZaFB8fbbYSzgxu3NytPG23nkW0jsjY6Ub%2BP9NDXycznyxpRPQAQAA
