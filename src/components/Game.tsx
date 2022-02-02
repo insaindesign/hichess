@@ -13,9 +13,12 @@ import css from "./Game.module.css";
 type Props = {};
 type StockfishWorker = any;
 type UserColor = Color | "both";
+type Turn = "b" | "w";
 
-const isStockfishTurn = (turn: "b" | "w", userColor: UserColor | undefined) =>
+const isStockfishTurn = (turn: Turn, userColor: UserColor | undefined) =>
   !userColor || (turn !== userColor[0] && userColor !== "both");
+
+const turn = (turn: Turn) => (turn === "w" ? "White" : "Black");
 
 function Game(props: Props) {
   // @ts-ignore
@@ -48,13 +51,10 @@ function Game(props: Props) {
     [onMove]
   );
 
-  const newGame = useCallback(
-    () =>{
-      chess.reset();
-      setMoves([]);
-    },
-    [chess]
-  );
+  const newGame = useCallback(() => {
+    chess.reset();
+    setMoves([]);
+  }, [chess]);
 
   useEffect(() => {
     if (
@@ -78,8 +78,8 @@ function Game(props: Props) {
         if (line.includes("bestmove") && chess.turn() === "b") {
           const move = line.split(" ")[1];
           onMove(move[0] + move[1], move[2] + move[3], move[4]);
-        } else if (!line.includes("info")) {
-          console.log(line);
+          // } else if (!line.includes("info")) {
+          //   console.log(line);
         }
       });
     }
@@ -112,9 +112,20 @@ function Game(props: Props) {
         />
       </div>
       <div className={css.panel}>
-        Turn: {chess.game_over() ? 'Game over' : chess.turn()}
-        <button onClick={newGame} disabled={!moves.length}>New  Game</button>
-        {stockfish === null ? <p>Loading</p> : null}
+        <ul>
+          <li>
+            Turn:{" "}
+            <strong>
+              {chess.game_over() ? "Game over" : turn(chess.turn())}
+            </strong>
+          </li>
+          {moves.length ? (
+            <li>
+              <button onClick={newGame}>New Game</button>
+            </li>
+          ) : null}
+          {stockfish === null ? <li>Loading bot</li> : null}
+        </ul>
       </div>
     </div>
   );
