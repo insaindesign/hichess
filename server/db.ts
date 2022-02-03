@@ -4,7 +4,7 @@ import firebase from "./firebase";
 
 const db = getFirestore(firebase);
 
-const pause = () => new Promise((resolve) => setTimeout(resolve, 10000));
+const pause = () => new Promise((resolve) => setTimeout(resolve, 500));
 
 const BATCH_LIMIT = 499;
 export const writeBatchQueue = (() => {

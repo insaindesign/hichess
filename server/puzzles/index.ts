@@ -13,23 +13,26 @@ type Row = {
 };
 
 // max 20000/day
-const start = 20000;
+const start = 40000;
 const MAX = 20000;
 
 const parser = parse({ columns: true }, function (err, data: Row[]) {
-  data
+  const filtered = data
     .filter((row) => parseInt(row.Rating, 10) < 1200)
-    .slice(start, start + MAX)
-    .forEach((row) => {
-      writeBatchQueue().set(db.collection("puzzle").doc(row.PuzzleId), {
-        id: row.PuzzleId,
-        fen: row.FEN,
-        solution: row.Moves,
-        rating: parseInt(row.Rating, 10),
-        ratingChange: row.RatingDeviation,
-        themes: row.Themes.split(" "),
-      });
+    .slice(start, start + MAX);
+
+  console.log("loaded rows", data.length, filtered.length);
+  filtered.forEach((row) => {
+    writeBatchQueue().set(db.collection("puzzle").doc(row.PuzzleId), {
+      id: row.PuzzleId,
+      fen: row.FEN,
+      solution: row.Moves,
+      rating: parseInt(row.Rating, 10),
+      ratingChange: row.RatingDeviation,
+      themes: row.Themes.split(" "),
     });
+  });
+  console.log("writing from", start, "to", start + MAX);
   writeBatchQueue(true);
 });
 
