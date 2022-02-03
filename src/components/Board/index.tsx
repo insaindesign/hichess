@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Chessground } from "chessground";
 
-import "chessground/assets/chessground.base.css";
-import "chessground/assets/chessground.brown.css";
+import "./base.css";
+import "./brown.css";
 import "./california.css";
 
 import type { Api } from "chessground/api";
