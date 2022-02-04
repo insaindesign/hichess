@@ -21,8 +21,8 @@ const isStockfishTurn = (turn: Turn, userColor: UserColor | undefined) =>
 const turn = (turn: Turn) => (turn === "w" ? "White" : "Black");
 
 function Game(props: Props) {
-  // @ts-ignore
   const [chess] = useState<ChessInstance>(Chess());
+  const [showThreats, setShowThreats] = useState(false);
   const [config] = useState<Config>({ movable: { color: "white" } });
   const [moves, setMoves] = useState<Move[]>([]);
   const [stockfish, setStockfish] = useState<
@@ -35,7 +35,6 @@ function Game(props: Props) {
     (from: Square, to: Square, promotion: ShortMove["promotion"]) => {
       if (chess) {
         chess.move({ from, to, promotion });
-        setMoves(chess.history({ verbose: true }));
       }
     },
     [chess]
@@ -53,8 +52,20 @@ function Game(props: Props) {
 
   const newGame = useCallback(() => {
     chess.reset();
-    setMoves([]);
   }, [chess]);
+
+  const toggleShowThreats = useCallback(
+    () => setShowThreats(!showThreats),
+    [showThreats]
+  );
+
+  useEffect(
+    () =>
+      chess.on("history", () => {
+        setMoves(chess.history({ verbose: true }));
+      }),
+    [chess]
+  );
 
   useEffect(() => {
     if (
@@ -107,8 +118,8 @@ function Game(props: Props) {
         <Board
           config={config}
           chess={chess}
-          moves={moves}
           onMove={onBoardMove}
+          showThreats={showThreats}
         />
       </div>
       <div className={css.panel}>
@@ -118,6 +129,11 @@ function Game(props: Props) {
             <strong>
               {chess.game_over() ? "Game over" : turn(chess.turn())}
             </strong>
+          </li>
+          <li>
+            <button onClick={toggleShowThreats}>
+              {showThreats ? "Hide Threats" : "Show threats"}
+            </button>
           </li>
           {moves.length ? (
             <li>

@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import Chess, { Move, ShortMove, Square } from "chess.js";
+import Chess from "chess.js";
 
 import Board from "./Board";
 
-import type { ChessInstance } from "chess.js";
+import type { Move, ShortMove, Square, ChessInstance } from "chess.js";
 import type { Config } from "chessground/config";
 import type { Color, Key, Piece } from "chessground/types";
 
@@ -25,11 +25,16 @@ const moveToPgn = (move: Move) => move.from + move.to + (move.promotion || "");
 
 function Puzzle({ fen, solution, nextPuzzle }: Props) {
   const [userColor, setUserColor] = useState<Color | null>(null);
-  // @ts-ignore
-  const [chess] = useState<ChessInstance>(Chess(fen));
+  const [chess] = useState<ChessInstance>(Chess());
   const [config, setConfig] = useState<Config>({});
   const [moves, setMoves] = useState<Move[]>([]);
   const [state, setState] = useState<PuzzleState>("incomplete");
+  const [showThreats, setShowThreats] = useState(false);
+
+  const toggleShowThreats = useCallback(
+    () => setShowThreats(!showThreats),
+    [showThreats]
+  );
 
   const onMove = useCallback(
     (from: Square, to: Square, promotion: ShortMove["promotion"]) => {
@@ -51,7 +56,37 @@ function Puzzle({ fen, solution, nextPuzzle }: Props) {
     [onMove]
   );
 
+  const resetPuzzle = useCallback(() => {
+    chess.load(fen);
+    setState("incomplete");
+    setMoves([]);
+    const userColor = turnToColor(turnFlip(chess.turn()));
+    setConfig({
+      orientation: userColor,
+      movable: { color: userColor },
+    });
+    setUserColor(userColor);
+  }, [chess, fen]);
+
+  const hint = useCallback(() => {
+    const solutionMoves = solution.split(" ");
+    const nextMove = solutionMoves[moves.length];
+    let timeout: any;
+    if (nextMove) {
+      chess.move({
+        from: (nextMove[0] + nextMove[1]) as Square,
+        to: (nextMove[2] + nextMove[3]) as Square,
+        promotion: nextMove[4] as ShortMove["promotion"],
+      });
+      setTimeout(() => {
+        chess.undo();
+      }, 1000);
+    }
+    return () => clearTimeout(timeout);
+  }, [chess, solution, moves]);
+
   useEffect(() => {
+    let timeout: any;
     if (userColor && turnToColor(chess.turn()) !== userColor) {
       const solutionMoves = solution.split(" ");
       if (moves.length) {
@@ -65,25 +100,16 @@ function Puzzle({ fen, solution, nextPuzzle }: Props) {
       if (!nextMove) {
         return setState("correct");
       }
-      onMove(
-        (nextMove[0] + nextMove[1]) as Square,
-        (nextMove[2] + nextMove[3]) as Square,
-        nextMove[4] as ShortMove["promotion"]
-      );
+      timeout = setTimeout(() => {
+        onMove(
+          (nextMove[0] + nextMove[1]) as Square,
+          (nextMove[2] + nextMove[3]) as Square,
+          nextMove[4] as ShortMove["promotion"]
+        );
+      }, 1000);
     }
+    return () => clearTimeout(timeout);
   }, [chess, moves, solution, onMove, userColor]);
-
-  const resetPuzzle = useCallback(() => {
-    chess.load(fen);
-    setState("incomplete");
-    setMoves([]);
-    const userColor = turnToColor(turnFlip(chess.turn()));
-    setConfig({
-      orientation: userColor,
-      movable: { color: userColor },
-    });
-    setUserColor(userColor);
-  }, [chess, fen]);
 
   useEffect(() => {
     resetPuzzle();
@@ -95,8 +121,8 @@ function Puzzle({ fen, solution, nextPuzzle }: Props) {
         <Board
           config={config}
           chess={chess}
-          moves={moves}
           onMove={onBoardMove}
+          showThreats={showThreats}
         />
       </div>
       <div className={css.panel}>
@@ -105,6 +131,19 @@ function Puzzle({ fen, solution, nextPuzzle }: Props) {
             <strong>
               {state !== "incomplete" ? state : turn(chess.turn()) + " to move"}
             </strong>
+          </li>
+          <li>
+            <button
+              disabled={turnToColor(chess.turn()) !== userColor}
+              onClick={hint}
+            >
+              Hint
+            </button>
+          </li>
+          <li>
+            <button onClick={toggleShowThreats}>
+              {showThreats ? "Hide Threats" : "Show threats"}
+            </button>
           </li>
           {moves.length && state === "incorrect" ? (
             <li>
