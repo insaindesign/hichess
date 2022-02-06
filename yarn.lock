@@ -3082,7 +3082,7 @@ check-types@^11.1.1:
 
 chess.js@insaindesign/chess.js:
   version "0.12.0"
-  resolved "https://codeload.github.com/insaindesign/chess.js/tar.gz/6f3791ed066dec7e0e5ccb7d24d80ff318ede59d"
+  resolved "https://codeload.github.com/insaindesign/chess.js/tar.gz/2c708f0912c050b0c52d201d94433c4e78523765"
 
 chessground@^8.2.0:
   version "8.2.0"

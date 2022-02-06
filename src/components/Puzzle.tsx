@@ -30,10 +30,15 @@ function Puzzle({ fen, solution, nextPuzzle }: Props) {
   const [moves, setMoves] = useState<Move[]>([]);
   const [state, setState] = useState<PuzzleState>("incomplete");
   const [showThreats, setShowThreats] = useState(false);
+  const [showDefenders, setShowDefenders] = useState(false);
 
   const toggleShowThreats = useCallback(
     () => setShowThreats(!showThreats),
     [showThreats]
+  );
+  const toggleShowDefenders = useCallback(
+    () => setShowDefenders(!showDefenders),
+    [showDefenders]
   );
 
   const onMove = useCallback(
@@ -120,8 +125,10 @@ function Puzzle({ fen, solution, nextPuzzle }: Props) {
       <div className={css.board}>
         <Board
           config={config}
+          complete={state !== "incomplete"}
           chess={chess}
           onMove={onBoardMove}
+          showDefenders={showDefenders}
           showThreats={showThreats}
         />
       </div>
@@ -142,7 +149,12 @@ function Puzzle({ fen, solution, nextPuzzle }: Props) {
           </li>
           <li>
             <button onClick={toggleShowThreats}>
-              {showThreats ? "Hide Threats" : "Show threats"}
+              {showThreats ? "Hide threats" : "Show threats"}
+            </button>
+          </li>
+          <li>
+            <button onClick={toggleShowDefenders}>
+              {showDefenders ? "Hide defenders" : "Show defenders"}
             </button>
           </li>
           {moves.length && state === "incorrect" ? (

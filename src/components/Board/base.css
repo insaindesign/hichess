@@ -72,17 +72,26 @@ piece.fading {
 }
 
 .cg-wrap .threat-circle-w {
-  fill: orange;
+  fill: red;
   opacity: 0.7;
 }
 .cg-wrap .threat-circle-b {
-  fill: purple;
+  fill: darkred;
   opacity: 0.7;
 }
+.cg-wrap .defender-text,
 .cg-wrap .threat-text {
   fill: #fff;
   font-size: 0.8em;
   font-weight: bold;
+}
+.cg-wrap .defender-circle-w {
+  fill: green;
+  opacity: 0.7;
+}
+.cg-wrap .defender-circle-b {
+  fill: darkgreen;
+  opacity: 0.7;
 }
 
 .cg-wrap piece.ghost {

@@ -22,6 +22,7 @@ const turn = (turn: Turn) => (turn === "w" ? "White" : "Black");
 
 function Game(props: Props) {
   const [chess] = useState<ChessInstance>(Chess());
+  const [showDefenders, setShowDefenders] = useState(false);
   const [showThreats, setShowThreats] = useState(false);
   const [config] = useState<Config>({ movable: { color: "white" } });
   const [moves, setMoves] = useState<Move[]>([]);
@@ -57,6 +58,10 @@ function Game(props: Props) {
   const toggleShowThreats = useCallback(
     () => setShowThreats(!showThreats),
     [showThreats]
+  );
+  const toggleShowDefenders = useCallback(
+    () => setShowDefenders(!showDefenders),
+    [showDefenders]
   );
 
   useEffect(
@@ -118,7 +123,9 @@ function Game(props: Props) {
         <Board
           config={config}
           chess={chess}
+          complete={chess.game_over()}
           onMove={onBoardMove}
+          showDefenders={showDefenders}
           showThreats={showThreats}
         />
       </div>
@@ -133,6 +140,11 @@ function Game(props: Props) {
           <li>
             <button onClick={toggleShowThreats}>
               {showThreats ? "Hide Threats" : "Show threats"}
+            </button>
+          </li>
+          <li>
+            <button onClick={toggleShowDefenders}>
+              {showDefenders ? "Hide Defenders" : "Show defenders"}
             </button>
           </li>
           {moves.length ? (
