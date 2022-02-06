@@ -13,7 +13,7 @@ type Row = {
 };
 
 // max 20000/day
-const start = 40000;
+const start = 60000;
 const MAX = 20000;
 
 const parser = parse({ columns: true }, function (err, data: Row[]) {
