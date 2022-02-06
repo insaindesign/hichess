@@ -12,7 +12,12 @@
 
 .panel {
   flex: 1 0 0;
-  min-width: 200px;
+  padding: 20px;
+  min-width: 160px;
+}
+
+.panelButtons {
+  margin: 16px 0 0
 }
 
 @media (orientation: landscape) {

@@ -13,12 +13,14 @@ import type { ChessInstance, Move } from "chess.js";
 
 import styles from "./Board.module.css";
 
+export type ShapeOptionType = 'none' | 'counts' | 'both';
+
 interface Props {
   chess: ChessInstance;
   complete: boolean;
   config: Partial<Config>;
-  showDefenders?: boolean;
-  showThreats?: boolean;
+  showDefenders?: ShapeOptionType;
+  showThreats?: ShapeOptionType;
   onMove: (from: Key, to: Key, promotion: Piece | undefined) => void;
 }
 
@@ -50,7 +52,7 @@ const defenderWBrush: DrawBrush = {
 const circleSvg = (
   color: "b" | "w",
   key: BrushTypes,
-  text: string | number
+  text: string | number,
 ) => {
   const offset = key === "defender" ? 85 : 15;
   return `<circle class="${key}-circle-${color}" cx="${offset}" cy="${offset}" r="10"/><text class="${key}-text" x="${offset}" y="${offset}" dy=".33em" text-anchor="middle">${text}</text>`;
@@ -59,20 +61,23 @@ const circleSvg = (
 function add_shapes(
   list: DrawShape[],
   square_moves: { [square: string]: Move[] },
-  key: BrushTypes
+  key: BrushTypes,
+  options: ShapeOptionType
 ) {
   Object.values(square_moves).forEach((t) => {
     list.push({
       orig: t[0].to,
       customSvg: circleSvg(t[0].color, key, t.length),
     });
-    t.forEach((move) => {
-      list.push({
-        orig: move.from,
-        dest: move.to,
-        brush: key + move.color,
+    if (options === 'both') {
+      t.forEach((move) => {
+        list.push({
+          orig: move.from,
+          dest: move.to,
+          brush: key + move.color,
+        });
       });
-    });
+    }
   });
 }
 
@@ -174,11 +179,11 @@ function Board({
       return;
     }
     const shapes: DrawShape[] = [];
-    if (showThreats) {
-      add_shapes(shapes, chess.threats(), "threat");
+    if (showThreats && showThreats !== 'none') {
+      add_shapes(shapes, chess.threats(), "threat", showThreats);
     }
-    if (showDefenders) {
-      add_shapes(shapes, chess.defenders(), "defender");
+    if (showDefenders && showDefenders !== 'none') {
+      add_shapes(shapes, chess.defenders(), "defender", showDefenders);
     }
     api.setShapes(shapes);
   }, [api, chess, complete, showThreats, showDefenders, history]);

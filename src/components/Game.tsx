@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import Chess, { Move, ShortMove, Square } from "chess.js";
+import Button from "@mui/material/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
 import { loadScript } from "../lib/scripts";
 import Board from "./Board";
@@ -7,6 +11,7 @@ import Board from "./Board";
 import type { ChessInstance } from "chess.js";
 import type { Config } from "chessground/config";
 import type { Color, Key, Piece } from "chessground/types";
+import type { ShapeOptionType } from "./Board";
 
 import css from "./Game.module.css";
 
@@ -19,11 +24,12 @@ const isStockfishTurn = (turn: Turn, userColor: UserColor | undefined) =>
   !userColor || (turn !== userColor[0] && userColor !== "both");
 
 const turn = (turn: Turn) => (turn === "w" ? "White" : "Black");
+const turnToColor = (turn: Turn) => (turn === "w" ? "white" : "black");
 
 function Game(props: Props) {
   const [chess] = useState<ChessInstance>(Chess());
-  const [showDefenders, setShowDefenders] = useState(false);
-  const [showThreats, setShowThreats] = useState(false);
+  const [showDefenders, setShowDefenders] = useState<ShapeOptionType>("none");
+  const [showThreats, setShowThreats] = useState<ShapeOptionType>("none");
   const [config] = useState<Config>({ movable: { color: "white" } });
   const [moves, setMoves] = useState<Move[]>([]);
   const [stockfish, setStockfish] = useState<
@@ -56,12 +62,12 @@ function Game(props: Props) {
   }, [chess]);
 
   const toggleShowThreats = useCallback(
-    () => setShowThreats(!showThreats),
-    [showThreats]
+    (e, value) => (value ? setShowThreats(value) : setShowThreats("none")),
+    []
   );
   const toggleShowDefenders = useCallback(
-    () => setShowDefenders(!showDefenders),
-    [showDefenders]
+    (e, value) => (value ? setShowDefenders(value) : setShowDefenders("none")),
+    []
   );
 
   useEffect(
@@ -71,6 +77,13 @@ function Game(props: Props) {
       }),
     [chess]
   );
+
+  const undo = useCallback(() => {
+    if (moves.length && turnToColor(chess.turn()) === userColor) {
+      chess.undo();
+      chess.undo();
+    }
+  }, [chess, moves, userColor]);
 
   useEffect(() => {
     if (
@@ -130,30 +143,44 @@ function Game(props: Props) {
         />
       </div>
       <div className={css.panel}>
-        <ul>
-          <li>
-            Turn:{" "}
-            <strong>
-              {chess.game_over() ? "Game over" : turn(chess.turn())}
-            </strong>
-          </li>
-          <li>
-            <button onClick={toggleShowThreats}>
-              {showThreats ? "Hide Threats" : "Show threats"}
-            </button>
-          </li>
-          <li>
-            <button onClick={toggleShowDefenders}>
-              {showDefenders ? "Hide Defenders" : "Show defenders"}
-            </button>
-          </li>
-          {moves.length ? (
-            <li>
-              <button onClick={newGame}>New Game</button>
-            </li>
-          ) : null}
-          {stockfish === null ? <li>Loading bot</li> : null}
-        </ul>
+        <strong>
+          {chess.game_over() ? "Game over" : turn(chess.turn()) + " to move"}
+        </strong>
+        <ButtonGroup variant="outlined" fullWidth className={css.panelButtons}>
+          <Button
+            onClick={undo}
+            disabled={!moves.length || turnToColor(chess.turn()) !== userColor}
+          >
+            Undo
+          </Button>
+          <Button onClick={newGame} disabled={!moves.length}>
+            New Game
+          </Button>
+        </ButtonGroup>
+        <ToggleButtonGroup
+          className={css.panelButtons}
+          color="primary"
+          exclusive
+          fullWidth
+          onChange={toggleShowThreats}
+          value={showThreats}
+        >
+          <ToggleButton value="none">Hide threats</ToggleButton>
+          <ToggleButton value="counts">counts only</ToggleButton>
+          <ToggleButton value="both">show</ToggleButton>
+        </ToggleButtonGroup>
+        <ToggleButtonGroup
+          className={css.panelButtons}
+          color="primary"
+          exclusive
+          fullWidth
+          onChange={toggleShowDefenders}
+          value={showDefenders}
+        >
+          <ToggleButton value="none">hide defenders</ToggleButton>
+          <ToggleButton value="counts">counts only</ToggleButton>
+          <ToggleButton value="both">show</ToggleButton>
+        </ToggleButtonGroup>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import {
   Routes,
   Link
 } from "react-router-dom";
+import CssBaseline from '@mui/material/CssBaseline';
 
 import Home from './Home';
 import Game from './Game';
@@ -13,6 +14,7 @@ function App() {
   return (
     <Router>
       <div>
+        <CssBaseline />
         <Routes>
           <Route index element={<Home />} />
           <Route path="/puzzles" element={<Puzzles />} />
