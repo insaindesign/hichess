@@ -28,7 +28,10 @@ interface Props {
 
 type BrushTypes = "threat" | "defender";
 
+export const turnFlip = (turn: Move["color"]) => (turn === "w" ? "b" : "w");
+export const moveToSan = (move: Move) => move.from + move.to + (move.promotion || "");
 export const turnToColor = (turn: Move["color"]) => (turn === "w" ? "white" : "black");
+export const turnToWords = (turn: Move["color"]) => (turn === "w" ? "White" : "Black");
 
 export const enforceOrientation = (
   color: Color | "both" | undefined,

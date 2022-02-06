@@ -1,12 +1,7 @@
-import Game from "./Game";
-
+import MainMenu from "./MainMenu";
 
 function Home() {
-  return (
-    <div>
-      <Game />
-    </div>
-  );
+  return <MainMenu />;
 }
 
 export default Home;

@@ -5,19 +5,20 @@
 }
 
 .board {
+  margin: 0 auto;
   flex: 0 0 auto;
-  height: 100vw;
-  width: 100vw;
+  height: calc(100vw - 40px);
+  width: calc(100vw - 40px);
 }
 
 .panel {
   flex: 1 0 0;
-  padding: 20px;
+  padding: 12px 20px;
   min-width: 160px;
 }
 
 .panelButtons {
-  margin: 16px 0 0
+  margin: 8px 0;
 }
 
 @media (orientation: landscape) {
@@ -26,7 +27,7 @@
   }
 
   .board {
-    width: 100vh;
-    height: 100vh;
+    width: calc(100vh - 80px);
+    height: calc(100vh - 80px);
   }
 }

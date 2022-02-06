@@ -1,17 +1,25 @@
 import { useCallback, useEffect, useState } from "react";
 import Chess from "chess.js";
+import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
-import Board, { ShapeOptionType, turnToColor } from "./Board";
+import Board, {
+  ShapeOptionType,
+  turnToColor,
+  turnToWords,
+  turnFlip,
+  moveToSan,
+} from "./Board";
 
 import type { Move, ShortMove, Square, ChessInstance } from "chess.js";
 import type { Config } from "chessground/config";
 import type { Color, Key, Piece } from "chessground/types";
 
 import css from "./Game.module.css";
+import Toolbar from "./Toolbar";
 
 type Props = {
   fen: string;
@@ -20,10 +28,6 @@ type Props = {
 };
 
 type PuzzleState = "incomplete" | "incorrect" | "correct";
-
-const turn = (turn: Move["color"]) => (turn === "w" ? "White" : "Black");
-const turnFlip = (turn: Move["color"]) => (turn === "w" ? "b" : "w");
-const moveToSan = (move: Move) => move.from + move.to + (move.promotion || "");
 
 function Puzzle({ fen, solution, nextPuzzle }: Props) {
   const [userColor, setUserColor] = useState<Color | null>(null);
@@ -120,70 +124,93 @@ function Puzzle({ fen, solution, nextPuzzle }: Props) {
   }, [resetPuzzle]);
 
   return (
-    <div className={css.root}>
-      <div className={css.board}>
-        <Board
-          config={config}
-          complete={state !== "incomplete"}
-          chess={chess}
-          onMove={onBoardMove}
-          orientation={userColor || "white"}
-          showDefenders={showDefenders}
-          showThreats={showThreats}
-        />
-      </div>
-      <div className={css.panel}>
-        <strong>
-          {state !== "incomplete" ? state : turn(chess.turn()) + " to move"}
-        </strong>
-        <ButtonGroup variant="outlined" fullWidth className={css.panelButtons}>
-          <Button
-            disabled={turnToColor(chess.turn()) !== userColor}
-            onClick={hint}
-          >
-            Hint
-          </Button>
-          <Button
-            onClick={resetPuzzle}
-            disabled={!moves.length}
-            variant={state === "incorrect" ? "contained" : "outlined"}
-          >
-            Try again
-          </Button>
-          <Button
-            onClick={nextPuzzle}
-            disabled={!moves.length}
-            variant={state === "correct" ? "contained" : "outlined"}
-          >
-            Next Puzzle
-          </Button>
-        </ButtonGroup>
-        <ToggleButtonGroup
-          className={css.panelButtons}
-          color="primary"
-          exclusive
-          fullWidth
-          onChange={toggleShowThreats}
-          value={showThreats}
+    <>
+      <Toolbar>
+        <Alert
+          severity={
+            state === "correct"
+              ? "success"
+              : state === "incorrect"
+              ? "error"
+              : "info"
+          }
+          variant={state === "incomplete" ? "standard" : "filled"}
         >
-          <ToggleButton value="none">Hide threats</ToggleButton>
-          <ToggleButton value="counts">counts only</ToggleButton>
-          <ToggleButton value="both">show</ToggleButton>
-        </ToggleButtonGroup>
-        <ToggleButtonGroup
-          className={css.panelButtons}
-          color="primary"
-          exclusive
-          fullWidth
-          onChange={toggleShowDefenders}
-          value={showDefenders}
-        >
-          <ToggleButton value="none">hide defenders</ToggleButton>
-          <ToggleButton value="counts">counts only</ToggleButton>
-          <ToggleButton value="both">show</ToggleButton>
-        </ToggleButtonGroup>
+          {state !== "incomplete" ? (
+            state
+          ) : (
+            <span>
+              <strong>{turnToWords(chess.turn())}</strong> to move
+            </span>
+          )}
+        </Alert>
+      </Toolbar>
+      <div className={css.root}>
+        <div className={css.board}>
+          <Board
+            config={config}
+            complete={state !== "incomplete"}
+            chess={chess}
+            onMove={onBoardMove}
+            orientation={userColor || "white"}
+            showDefenders={showDefenders}
+            showThreats={showThreats}
+          />
+        </div>
+        <div className={css.panel}>
+          <ButtonGroup
+            variant="outlined"
+            fullWidth
+            className={css.panelButtons}
+          >
+            <Button
+              disabled={turnToColor(chess.turn()) !== userColor}
+              onClick={hint}
+            >
+              Hint
+            </Button>
+            <Button
+              onClick={resetPuzzle}
+              disabled={!moves.length}
+              variant={state === "incorrect" ? "contained" : "outlined"}
+            >
+              Try again
+            </Button>
+            <Button
+              onClick={nextPuzzle}
+              disabled={!moves.length}
+              variant={state === "correct" ? "contained" : "outlined"}
+            >
+              Next Puzzle
+            </Button>
+          </ButtonGroup>
+          <ToggleButtonGroup
+            className={css.panelButtons}
+            color="primary"
+            exclusive
+            fullWidth
+            onChange={toggleShowThreats}
+            value={showThreats}
+          >
+            <ToggleButton value="none">Hide threats</ToggleButton>
+            <ToggleButton value="counts">counts only</ToggleButton>
+            <ToggleButton value="both">show</ToggleButton>
+          </ToggleButtonGroup>
+          <ToggleButtonGroup
+            className={css.panelButtons}
+            color="primary"
+            exclusive
+            fullWidth
+            onChange={toggleShowDefenders}
+            value={showDefenders}
+          >
+            <ToggleButton value="none">hide defenders</ToggleButton>
+            <ToggleButton value="counts">counts only</ToggleButton>
+            <ToggleButton value="both">show</ToggleButton>
+          </ToggleButtonGroup>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
