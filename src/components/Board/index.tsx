@@ -7,13 +7,14 @@ import "./california.css";
 
 import type { Api } from "chessground/api";
 import type { Config } from "chessground/config";
-import type { Key, Piece } from "chessground/types";
+import type { Color, Key, Piece } from "chessground/types";
 import type { DrawBrush, DrawShape } from "chessground/draw";
 import type { ChessInstance, Move } from "chess.js";
 
 import styles from "./Board.module.css";
 
-export type ShapeOptionType = 'none' | 'counts' | 'both';
+export type ShapeOptionType = "none" | "counts" | "both";
+export type UserColor = Color | "both";
 
 interface Props {
   chess: ChessInstance;
@@ -21,10 +22,18 @@ interface Props {
   config: Partial<Config>;
   showDefenders?: ShapeOptionType;
   showThreats?: ShapeOptionType;
+  orientation: Color;
   onMove: (from: Key, to: Key, promotion: Piece | undefined) => void;
 }
 
 type BrushTypes = "threat" | "defender";
+
+export const turnToColor = (turn: Move["color"]) => (turn === "w" ? "white" : "black");
+
+export const enforceOrientation = (
+  color: Color | "both" | undefined,
+  fallback: Color
+): Color => (color === "white" || color === "black" ? color : fallback);
 
 const threatBBrush: DrawBrush = {
   key: "threatB",
@@ -52,7 +61,7 @@ const defenderWBrush: DrawBrush = {
 const circleSvg = (
   color: "b" | "w",
   key: BrushTypes,
-  text: string | number,
+  text: string | number
 ) => {
   const offset = key === "defender" ? 85 : 15;
   return `<circle class="${key}-circle-${color}" cx="${offset}" cy="${offset}" r="10"/><text class="${key}-text" x="${offset}" y="${offset}" dy=".33em" text-anchor="middle">${text}</text>`;
@@ -69,7 +78,7 @@ function add_shapes(
       orig: t[0].to,
       customSvg: circleSvg(t[0].color, key, t.length),
     });
-    if (options === 'both') {
+    if (options === "both") {
       t.forEach((move) => {
         list.push({
           orig: move.from,
@@ -101,6 +110,7 @@ function Board({
   showThreats,
   showDefenders,
   complete,
+  orientation,
 }: Props) {
   const [api, setApi] = useState<Api | null>(null);
   const ref = useRef<HTMLDivElement | null>(null);
@@ -157,7 +167,7 @@ function Board({
     if (api) {
       api.set({
         fen: chess.fen(),
-        check: chess.in_check(),
+        check: Boolean(chess.in_check()),
         turnColor: chess.turn() === "b" ? "black" : "white",
         movable: {
           dests: toDests(chess),
@@ -175,14 +185,22 @@ function Board({
   }, [api, complete]);
 
   useEffect(() => {
-    if (complete || !api) {
+    if (api) {
+      if (api.state.orientation !== orientation) {
+        api.toggleOrientation();
+      }
+    }
+  }, [api, orientation]);
+
+  useEffect(() => {
+    if (!api) {
       return;
     }
     const shapes: DrawShape[] = [];
-    if (showThreats && showThreats !== 'none') {
+    if (!complete && showThreats && showThreats !== "none") {
       add_shapes(shapes, chess.threats(), "threat", showThreats);
     }
-    if (showDefenders && showDefenders !== 'none') {
+    if (!complete && showDefenders && showDefenders !== "none") {
       add_shapes(shapes, chess.defenders(), "defender", showDefenders);
     }
     api.setShapes(shapes);

@@ -1,30 +1,27 @@
 import { useCallback, useEffect, useState } from "react";
-import Chess, { Move, ShortMove, Square } from "chess.js";
+import Chess from "chess.js";
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
 import { loadScript } from "../lib/scripts";
-import Board from "./Board";
+import Board, { enforceOrientation, turnToColor } from "./Board";
 
-import type { ChessInstance } from "chess.js";
+import type { ChessInstance, Move, ShortMove, Square } from "chess.js";
 import type { Config } from "chessground/config";
-import type { Color, Key, Piece } from "chessground/types";
-import type { ShapeOptionType } from "./Board";
+import type { Key, Piece } from "chessground/types";
+import type { UserColor, ShapeOptionType } from "./Board";
 
 import css from "./Game.module.css";
 
 type Props = {};
 type StockfishWorker = any;
-type UserColor = Color | "both";
-type Turn = "b" | "w";
 
-const isStockfishTurn = (turn: Turn, userColor: UserColor | undefined) =>
+const isStockfishTurn = (turn: Move["color"], userColor: UserColor | undefined) =>
   !userColor || (turn !== userColor[0] && userColor !== "both");
 
-const turn = (turn: Turn) => (turn === "w" ? "White" : "Black");
-const turnToColor = (turn: Turn) => (turn === "w" ? "white" : "black");
+const turn = (turn: Move["color"]) => (turn === "w" ? "White" : "Black");
 
 function Game(props: Props) {
   const [chess] = useState<ChessInstance>(Chess());
@@ -138,6 +135,7 @@ function Game(props: Props) {
           chess={chess}
           complete={chess.game_over()}
           onMove={onBoardMove}
+          orientation={enforceOrientation(userColor, "white")}
           showDefenders={showDefenders}
           showThreats={showThreats}
         />
