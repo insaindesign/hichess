@@ -101,7 +101,7 @@ function Game(props: Props) {
           " moves " +
           moves.map((m) => m.to).join(" ")
       );
-      stockfish.postMessage("go movetime 2000 depth 2");
+      stockfish.postMessage("go movetime 1000 depth 1 nodes 1 multipv 500");
     }
   }, [chess, stockfish, userColor, moves]);
 
@@ -111,8 +111,8 @@ function Game(props: Props) {
         if (line.includes("bestmove") && chess.turn() === "b") {
           const move = line.split(" ")[1];
           onMove(move[0] + move[1], move[2] + move[3], move[4]);
-          // } else if (!line.includes("info")) {
-          //   console.log(line);
+        } else if (!line.includes("info")) {
+          // console.log(line);
         }
       });
     }
@@ -123,7 +123,7 @@ function Game(props: Props) {
       return;
     }
     setStockfish(null);
-    loadScript("/lib/stockfish.js")
+    loadScript("/lib/stockfish/stockfish.js")
       .then((w: any) => w.Stockfish())
       .then((sf) => {
         sf.postMessage("uci");

@@ -24,9 +24,9 @@ clientsClaim();
 // even if you decide not to use precaching. See https://cra.link/PWA
 precacheAndRoute(self.__WB_MANIFEST);
 precacheAndRoute([
-  { url: "/lib/stockfish.js" },
-  { url: "/lib/stockfish.worker.js" },
-  { url: "/lib/stockfish.wasm" },
+  { url: "/lib/stockfish/stockfish.js", revision: "1" },
+  { url: "/lib/stockfish/stockfish.worker.js", revision: "1" },
+  { url: "/lib/stockfish/stockfish.wasm", revision: "665b011c" },
 ]);
 
 // Set up App Shell-style routing, so that all navigation requests
