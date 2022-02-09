@@ -30,7 +30,7 @@ function Toolbar({ children }: Props) {
         </MuiToolbar>
       </AppBar>
       <Drawer anchor="left" open={drawerOpen} onClose={closeDrawer}>
-        <div style={{ width: '80vw' }}><MainMenu /></div>
+        <div style={{ width: '95vw' }}><MainMenu onClick={closeDrawer} /></div>
       </Drawer>
     </>
   );

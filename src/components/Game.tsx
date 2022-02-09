@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import Chess from "chess.js";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
@@ -14,13 +13,14 @@ import Board, {
   turnFlip,
 } from "./Board";
 
-import type { ChessInstance, Move, ShortMove, Square } from "chess.js";
+import type { Move, ShortMove, Square } from "chess.js";
 import type { Config } from "chessground/config";
 import type { Key, Piece } from "chessground/types";
 import type { UserColor, ShapeOptionType } from "./Board";
 
 import css from "./Game.module.css";
 import Toolbar from "./Toolbar";
+import ChessCtrl from "../lib/chess";
 
 type Props = {};
 type StockfishWorker = any;
@@ -31,7 +31,7 @@ const isStockfishTurn = (
 ) => !userColor || (turn !== userColor[0] && userColor !== "both");
 
 function Game(props: Props) {
-  const [chess] = useState<ChessInstance>(Chess());
+  const [chess] = useState(new ChessCtrl());
   const [showDefenders, setShowDefenders] = useState<ShapeOptionType>("none");
   const [showThreats, setShowThreats] = useState<ShapeOptionType>("none");
   const [config] = useState<Config>({ movable: { color: "white" } });
@@ -45,7 +45,7 @@ function Game(props: Props) {
   const onMove = useCallback(
     (from: Square, to: Square, promotion: ShortMove["promotion"]) => {
       if (chess) {
-        chess.move({ from, to, promotion });
+        chess.move(from, to, promotion);
       }
     },
     [chess]
@@ -62,7 +62,7 @@ function Game(props: Props) {
   );
 
   const newGame = useCallback(() => {
-    chess.reset();
+    chess.js.reset();
   }, [chess]);
 
   const toggleShowThreats = useCallback(
@@ -76,28 +76,28 @@ function Game(props: Props) {
 
   useEffect(
     () =>
-      chess.on("history", () => {
-        setMoves(chess.history({ verbose: true }));
+      chess.js.on("history", () => {
+        setMoves(chess.js.history({ verbose: true }));
       }),
     [chess]
   );
 
   const undo = useCallback(() => {
-    if (moves.length && turnToColor(chess.turn()) === userColor) {
-      chess.undo();
-      chess.undo();
+    if (moves.length && chess.color === userColor) {
+      chess.js.undo();
+      chess.js.undo();
     }
   }, [chess, moves, userColor]);
 
   useEffect(() => {
     if (
       stockfish &&
-      isStockfishTurn(chess.turn(), userColor) &&
-      !chess.game_over()
+      isStockfishTurn(chess.js.turn(), userColor) &&
+      !chess.js.game_over()
     ) {
       stockfish.postMessage(
         "position fen " +
-          chess.fen() +
+          chess.js.fen() +
           " moves " +
           moves.map((m) => m.to).join(" ")
       );
@@ -108,7 +108,7 @@ function Game(props: Props) {
   useEffect(() => {
     if (chess && stockfish) {
       stockfish.addMessageListener((line: any) => {
-        if (line.includes("bestmove") && chess.turn() === "b") {
+        if (line.includes("bestmove") && chess.js.turn() === "b") {
           const move = line.split(" ")[1];
           onMove(move[0] + move[1], move[2] + move[3], move[4]);
         } else if (!line.includes("info")) {
@@ -139,19 +139,19 @@ function Game(props: Props) {
       <Toolbar>
         <Alert
           severity={
-            chess.in_draw() ? "warning" : chess.game_over() ? "success" : "info"
+            chess.js.in_draw() ? "warning" : chess.js.game_over() ? "success" : "info"
           }
-          variant={chess.game_over() ? "filled" : "standard"}
+          variant={chess.js.game_over() ? "filled" : "standard"}
         >
-          {chess.game_over() ? (
-            chess.in_draw() ? (
+          {chess.js.game_over() ? (
+            chess.js.in_draw() ? (
               "Draw"
             ) : (
-              turnToWords(turnFlip(chess.turn())) + " wins"
+              turnToWords(turnFlip(chess.js.turn())) + " wins"
             )
           ) : (
             <span>
-              <strong>{turnToWords(chess.turn())}</strong> to move
+              <strong>{turnToWords(chess.js.turn())}</strong> to move
             </span>
           )}
         </Alert>
@@ -161,7 +161,7 @@ function Game(props: Props) {
           <Board
             config={config}
             chess={chess}
-            complete={chess.game_over()}
+            complete={chess.js.game_over()}
             onMove={onBoardMove}
             orientation={enforceOrientation(userColor, "white")}
             showDefenders={showDefenders}
@@ -177,7 +177,7 @@ function Game(props: Props) {
             <Button
               onClick={undo}
               disabled={
-                !moves.length || turnToColor(chess.turn()) !== userColor
+                !moves.length || turnToColor(chess.js.turn()) !== userColor
               }
             >
               Undo

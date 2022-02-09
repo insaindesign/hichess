@@ -3,6 +3,8 @@ import CssBaseline from "@mui/material/CssBaseline";
 
 import Home from "./Home";
 import Game from "./Game";
+import Learn from "./Learn";
+import LearnLevels from "./LearnLevels";
 import Puzzles from "./Puzzles";
 
 function App() {
@@ -12,6 +14,9 @@ function App() {
         <CssBaseline />
         <Routes>
           <Route index element={<Home />} />
+          <Route path="/learn" element={<Learn />} />
+          <Route path="/learn/:category/:stage/" element={<LearnLevels />} />
+          <Route path="/learn/:category/:stage/:index" element={<LearnLevels />} />
           <Route path="/puzzles" element={<Puzzles />} />
           <Route path="/play" element={<Game />} />
         </Routes>

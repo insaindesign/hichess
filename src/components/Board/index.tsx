@@ -9,7 +9,8 @@ import type { Api } from "chessground/api";
 import type { Config } from "chessground/config";
 import type { Color, Key, Piece } from "chessground/types";
 import type { DrawBrush, DrawShape } from "chessground/draw";
-import type { ChessInstance, Move } from "chess.js";
+import type { Move } from "chess.js";
+import type { ChessCtrl } from "../../lib/chess";
 
 import styles from "./Board.module.css";
 
@@ -17,7 +18,7 @@ export type ShapeOptionType = "none" | "counts" | "both";
 export type UserColor = Color | "both";
 
 interface Props {
-  chess: ChessInstance;
+  chess: ChessCtrl;
   complete: boolean;
   config: Partial<Config>;
   showDefenders?: ShapeOptionType;
@@ -93,19 +94,6 @@ function add_shapes(
   });
 }
 
-function toDests(chess: ChessInstance): Map<Key, Key[]> {
-  const dests = new Map();
-  chess.SQUARES.forEach((s) => {
-    const ms = chess.moves({ square: s, verbose: true });
-    if (ms.length)
-      dests.set(
-        s,
-        ms.map((m) => m.to)
-      );
-  });
-  return dests;
-}
-
 function Board({
   config,
   onMove,
@@ -120,7 +108,7 @@ function Board({
   const [history, setHistory] = useState<string[]>([]);
 
   useEffect(
-    () => chess.on("history", () => setHistory(chess.history())),
+    () => chess.js.on("history", () => setHistory(chess.js.history())),
     [chess]
   );
 
@@ -169,11 +157,11 @@ function Board({
   useEffect(() => {
     if (api) {
       api.set({
-        fen: chess.fen(),
-        check: Boolean(chess.in_check()),
-        turnColor: chess.turn() === "b" ? "black" : "white",
+        fen: chess.js.fen(),
+        check: Boolean(chess.js.in_check()),
+        turnColor: chess.color,
         movable: {
-          dests: toDests(chess),
+          dests: chess.dests()
         },
       });
     }
@@ -201,10 +189,10 @@ function Board({
     }
     const shapes: DrawShape[] = [];
     if (!complete && showThreats && showThreats !== "none") {
-      add_shapes(shapes, chess.threats(), "threat", showThreats);
+      add_shapes(shapes, chess.js.threats(), "threat", showThreats);
     }
     if (!complete && showDefenders && showDefenders !== "none") {
-      add_shapes(shapes, chess.defenders(), "defender", showDefenders);
+      add_shapes(shapes, chess.js.defenders(), "defender", showDefenders);
     }
     api.setShapes(shapes);
   }, [api, chess, complete, showThreats, showDefenders, history]);
