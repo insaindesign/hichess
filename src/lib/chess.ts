@@ -45,30 +45,35 @@ export function setFenTurn(fen: string, turn: "b" | "w"): string {
 }
 
 export class ChessCtrl {
+  private events: EventEmitter<{ change: ChessMove[] }>;
   private chess: ChessInstance;
   public js: Pick<
     ChessInstance,
     | "in_check"
     | "in_checkmate"
     | "game_over"
-    | "history"
     | "threats"
     | "defenders"
     | "in_draw"
   >;
-  private events: EventEmitter<{ change: ChessMove[] }>;
+  public moves: ChessMove[];
 
   constructor(fen?: string) {
     this.chess = Chess(fen);
     this.js = this.chess;
     this.events = new EventEmitter();
+    this.moves = [];
     this.handleChange();
   }
 
-  public static toMove(move: ChessMove): Move {
+  public static toMove(move: string): ShortMove {
+    const from = move.slice(0, 2) as Key;
+    const to = move.slice(2, 4) as Key;
+    const promotion = move.slice(2, 4) as ShortMove["promotion"];
     return {
-      orig: move.from,
-      dest: move.to,
+      from,
+      to,
+      promotion,
     };
   }
 
@@ -100,6 +105,7 @@ export class ChessCtrl {
     const loaded = this.chess.load(fen);
     if (loaded) {
       this.handleChange();
+      this.moves = [];
     }
   }
 
@@ -137,29 +143,18 @@ export class ChessCtrl {
     return dests;
   }
 
-  move(orig: Key, dest: Key, prom?: PromotionPiece) {
-    const m = this.chess.move({
-      from: orig,
-      to: dest,
+  move(from: Key, to: Key, prom?: PromotionPiece) {
+    const move: ShortMove = {
+      from: from,
+      to: to,
       promotion: prom ? (isRole(prom) ? roleToSan[prom] : prom) : undefined,
-    });
-    this.handleChange();
+    };
+    const m = this.chess.move(move);
+    if (m) {
+      this.moves = [...this.moves, m ];
+      this.handleChange();
+    }
     return m;
-  }
-
-  getMove(move: string): (ShortMove & { color: Color }) | null {
-    const from = move.slice(0, 2) as Key;
-    const to = move.slice(2, 4) as Key;
-    const promotion = move.slice(2, 4) as ShortMove["promotion"];
-    const piece = this.chess.get(from);
-    return piece
-      ? {
-          from,
-          to,
-          promotion,
-          color: ChessCtrl.toColor(piece.color),
-        }
-      : null;
   }
 
   pieces(): Partial<Record<Key, Piece>> {
@@ -202,16 +197,18 @@ export class ChessCtrl {
 
   reset() {
     this.chess.reset();
+    this.moves = [];
     this.handleChange();
   }
 
   undo() {
     this.chess.undo();
+    this.moves = this.moves.slice(0, -1);
     this.handleChange();
   }
 
   private handleChange = debounce(
-    () => this.events.emit("change", this.chess.history({ verbose: true })),
+    () => this.events.emit("change", this.moves),
     1
   );
 }

@@ -1,4 +1,4 @@
-import { checkIn, noCheckIn } from "../assert";
+import { and, canBeCaptured, checkIn, not, noCheckIn } from "../assert";
 import { arrow, toLevel } from "../util";
 
 import type { Stage } from "../util";
@@ -40,7 +40,7 @@ const Learn: Stage = {
       {
         nbMoves: 1,
         failure: noCheckIn(1),
-        success: checkIn(1),
+        success: and(checkIn(1), not(canBeCaptured)),
         ...l,
       },
       i

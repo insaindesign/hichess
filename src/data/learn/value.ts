@@ -1,4 +1,4 @@
-import { pieceOn } from "../assert";
+import { completedScenario, followScenario, not, pieceOn } from "../assert";
 import { arrow, toLevel, Stage } from "../util";
 
 const Learn: Stage = {
@@ -40,6 +40,8 @@ const Learn: Stage = {
     toLevel(
       {
         nbMoves: 1,
+        success: completedScenario,
+        failure: not(followScenario),
         ...l,
       },
       i

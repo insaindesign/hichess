@@ -1,6 +1,7 @@
 import type { Piece, Square as Key } from "chess.js";
+import { Color } from "chessground/types";
 
-import { readKeys } from "../lib/chess";
+import ChessCtrl, { readKeys } from "../lib/chess";
 
 import type { LevelManager } from "./manager";
 
@@ -65,9 +66,31 @@ export function extinct(color: string) {
 
 export function lastMoveSan(san: string) {
   return function (level: LevelManager) {
-    const moves = level.chess.js.history();
-    return moves[moves.length - 1] === san;
+    const moves = level.chess.moves;
+    return moves[moves.length - 1].san === san;
   };
+}
+
+function canCaptureColor(level: LevelManager, color: Color) {
+  const attacked = level.chess.js.threats();
+  const defended = level.chess.js.defenders();
+  const pieces = level.chess.pieces();
+  const keys = Object.keys(attacked) as Key[];
+  for (let ii = 0; ii < keys.length; ii++) {
+    const piece = pieces[keys[ii]];
+    if (
+      piece &&
+      ChessCtrl.toColor(piece.color) === color &&
+      !defended[keys[ii]]
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function canBeCaptured(level: LevelManager) {
+  return canCaptureColor(level, level.color);
 }
 
 export function check(level: LevelManager) {
@@ -76,13 +99,13 @@ export function check(level: LevelManager) {
 
 export function checkIn(nbMoves: number) {
   return function (level: LevelManager) {
-    return level.moves.length <= nbMoves && check(level);
+    return level.userMoves.length <= nbMoves && check(level);
   };
 }
 
 export function noCheckIn(nbMoves: number) {
   return function (level: LevelManager) {
-    return level.moves.length >= nbMoves && !check(level);
+    return level.userMoves.length >= nbMoves && !check(level);
   };
 }
 
@@ -96,19 +119,25 @@ export function stalemate(level: LevelManager) {
 
 export function mateIn(nbMoves: number) {
   return function (level: LevelManager) {
-    return level.moves.length <= nbMoves && mate(level);
+    return level.userMoves.length <= nbMoves && mate(level);
   };
 }
 
 export function noMateIn(nbMoves: number) {
   return function (level: LevelManager) {
-    return level.moves.length >= nbMoves && !mate(level);
+    return level.userMoves.length >= nbMoves && !mate(level);
   };
 }
 
 export function within(moves: number) {
   return function (level: LevelManager) {
-    return level.moves.length <= moves;
+    return level.userMoves.length <= moves;
+  };
+}
+
+export function without(moves: number) {
+  return function (level: LevelManager) {
+    return level.userMoves.length >= moves;
   };
 }
 
@@ -132,4 +161,18 @@ export function or(...asserts: Assert[]) {
       return a(level);
     });
   };
+}
+
+export function followScenario(manager: LevelManager) {
+  const n = manager.moves.length - 1;
+  const scenario = manager.level.scenario;
+  const scene = scenario ? scenario[n] : null;
+  const sceneMove = typeof scene === "string" ? scene : scene?.move;
+  const move = manager.moves[n];
+  return sceneMove === move.from + move.to;
+}
+
+export function completedScenario(manager: LevelManager) {
+  const scenario = manager.level.scenario || [];
+  return followScenario(manager) && manager.moves.length === scenario.length;
 }

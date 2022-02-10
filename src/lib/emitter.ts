@@ -12,11 +12,14 @@ export class EventEmitter<T extends EventMap> {
     this.events = {};
   }
 
-  emit<K extends EventKey<T>>(event: K, ...args: Array<T[K]>) {
+  emit<K extends EventKey<T>>(event: K, ...args: T[K][]) {
     if (!(event in this.events)) {
       return;
     }
-    this.events[event].forEach((listener) => listener.call(null, args));
+    this.events[event].forEach(
+      // @ts-ignore
+      (listener) => listener.apply(null, args)
+    );
   }
 
   off<K extends EventKey<T>>(event: K, listener: EventReceiver<T[K]>) {

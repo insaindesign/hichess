@@ -45,7 +45,7 @@ function Puzzle({ fen, solution, nextPuzzle }: Props) {
     (from: Square, to: Square, promotion: ShortMove["promotion"]) => {
       if (chess) {
         chess.move(from, to, promotion);
-        setMoves(chess.js.history({ verbose: true }));
+        setMoves(chess.moves);
       }
     },
     [chess]

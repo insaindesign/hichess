@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Chessground } from "chessground";
+import { reset } from "chessground/board";
 
 import "./base.css";
 import "./brown.css";
@@ -117,6 +118,7 @@ function Board({
         Chessground(ref.current, {
           animation: { enabled: true, duration: 200 },
           highlight: { lastMove: true, check: true },
+          autoCastle: true,
           movable: {
             free: false,
             showDests: true,
@@ -155,6 +157,9 @@ function Board({
 
   useEffect(() => {
     if (api) {
+      if (!history.length) {
+        reset(api.state);
+      }
       api.set({
         fen: chess.fen,
         check: Boolean(chess.js.in_check()),

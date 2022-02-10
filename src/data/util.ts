@@ -38,7 +38,7 @@ export type AssertData = {
 interface LevelBase {
   goal: string;
   fen: string;
-  nbMoves: number;
+  nbMoves: number; // TODO: delete and move to (new) scoring function
   scenario?: ScenarioLevel;
   shapes?: DrawShape[];
   cssClass?: string;
@@ -50,14 +50,14 @@ export interface LevelDefaults {
   success(manager: LevelManager): boolean;
   failure(manager: LevelManager): boolean;
   color: Color;
-  }
+}
 
 export function toLevel(l: LevelPartial, it: number): Level {
   if (l.fen.split(" ").length === 4) l.fen += " 0 1";
   return {
     id: it + 1,
     color: / w /.test(l.fen) ? "white" : "black",
-        apples: "",
+    apples: "",
     success: extinct("black"),
     failure: () => false,
     ...l,
