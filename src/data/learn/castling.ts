@@ -1,7 +1,7 @@
 import { and, lastMoveSan, not, or, pieceNotOn } from "../assert";
 import { arrow, circle, toLevel } from "../util";
 
-import type { LevelPartial, Stage } from "../util";
+import type { Stage } from "../util";
 
 const castledKingSide = lastMoveSan("O-O");
 const castledQueenSide = lastMoveSan("O-O-O");
@@ -72,7 +72,7 @@ const Learn: Stage = {
       shapes: [arrow("c4f1", "red"), circle("e1"), circle("f1"), circle("g1")],
       success: castledKingSide,
       failure: cantCastleKingSide,
-      detectCapture: false,
+
     },
     {
       goal: "findAWayToCastleKingSide",
@@ -81,7 +81,7 @@ const Learn: Stage = {
       shapes: [arrow("e1g1")],
       success: castledKingSide,
       failure: cantCastleKingSide,
-      detectCapture: false,
+
     },
     {
       goal: "findAWayToCastleQueenSide",
@@ -90,9 +90,9 @@ const Learn: Stage = {
       shapes: [arrow("e1c1")],
       success: castledQueenSide,
       failure: cantCastleQueenSide,
-      detectCapture: false,
+
     },
-  ].map((l: LevelPartial, i) => toLevel({ autoCastle: true, ...l }, i)),
+  ].map(toLevel),
 };
 
 export default Learn;

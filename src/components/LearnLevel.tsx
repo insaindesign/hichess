@@ -4,12 +4,12 @@ import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 
 import Toolbar from "./Toolbar";
-import Board, { turnToWords } from "./Board";
+import Board from "./Board";
 import LevelManager from "../data/manager";
 
 import type { Config } from "chessground/config";
 import type { Level } from "../data/util";
-import type { Move } from "../data/manager";
+import type { Move } from "chess.js";
 
 import css from "./Game.module.css";
 
@@ -19,7 +19,7 @@ type Props = {
 };
 
 function LearnLevel({ level, nextLevel }: Props) {
-  const [manageLevel, setManageLevel] = useState(new LevelManager(level));
+  const [manageLevel, setManageLevel] = useState(() => new LevelManager(level));
   const [config, setConfig] = useState<Config>({});
   const [history, setHistory] = useState<Move[]>([]);
 
@@ -29,11 +29,7 @@ function LearnLevel({ level, nextLevel }: Props) {
 
   useEffect(() => {
     setConfig({ movable: { color: manageLevel.color } });
-    setHistory([]);
-    return manageLevel.chess.js.on("history", () =>
-      // gotta fix this, caused by history firing a lot, but not enough
-      setTimeout(setHistory, 1, [...manageLevel.moves])
-    );
+    return manageLevel.chess.on("change", setHistory);
   }, [manageLevel]);
 
   useEffect(() => {
@@ -61,8 +57,7 @@ function LearnLevel({ level, nextLevel }: Props) {
             "Bad luck, try again!"
           ) : (
             <span>
-              <strong>{turnToWords(manageLevel.chess.js.turn())}</strong> to
-              move
+              <strong>{manageLevel.chess.color}</strong> to move
             </span>
           )}
         </Alert>
@@ -75,6 +70,7 @@ function LearnLevel({ level, nextLevel }: Props) {
             chess={manageLevel.chess}
             onMove={manageLevel.onMove}
             orientation={manageLevel.color}
+            shapes={manageLevel.shapes}
           />
         </div>
         <div className={css.panel}>

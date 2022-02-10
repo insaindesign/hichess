@@ -21,6 +21,7 @@ interface Props {
   chess: ChessCtrl;
   complete: boolean;
   config: Partial<Config>;
+  shapes?: DrawShape[];
   showDefenders?: ShapeOptionType;
   showThreats?: ShapeOptionType;
   orientation: Color;
@@ -29,10 +30,7 @@ interface Props {
 
 type BrushTypes = "threat" | "defender";
 
-export const turnFlip = (turn: Move["color"]) => (turn === "w" ? "b" : "w");
 export const moveToSan = (move: Move) => move.from + move.to + (move.promotion || "");
-export const turnToColor = (turn: Move["color"]) => (turn === "w" ? "white" : "black");
-export const turnToWords = (turn: Move["color"]) => (turn === "w" ? "White" : "Black");
 
 export const enforceOrientation = (
   color: Color | "both" | undefined,
@@ -102,13 +100,14 @@ function Board({
   showDefenders,
   complete,
   orientation,
+  shapes,
 }: Props) {
   const [api, setApi] = useState<Api | null>(null);
   const ref = useRef<HTMLDivElement | null>(null);
-  const [history, setHistory] = useState<string[]>([]);
+  const [history, setHistory] = useState<Move[]>([]);
 
   useEffect(
-    () => chess.js.on("history", () => setHistory(chess.js.history())),
+    () => chess.on("change", setHistory),
     [chess]
   );
 
@@ -157,7 +156,7 @@ function Board({
   useEffect(() => {
     if (api) {
       api.set({
-        fen: chess.js.fen(),
+        fen: chess.fen,
         check: Boolean(chess.js.in_check()),
         turnColor: chess.color,
         movable: {
@@ -187,15 +186,15 @@ function Board({
     if (!api) {
       return;
     }
-    const shapes: DrawShape[] = [];
+    const draw: DrawShape[] = shapes ? [...shapes] : [];
     if (!complete && showThreats && showThreats !== "none") {
-      add_shapes(shapes, chess.js.threats(), "threat", showThreats);
+      add_shapes(draw, chess.js.threats(), "threat", showThreats);
     }
     if (!complete && showDefenders && showDefenders !== "none") {
-      add_shapes(shapes, chess.js.defenders(), "defender", showDefenders);
+      add_shapes(draw, chess.js.defenders(), "defender", showDefenders);
     }
-    api.setShapes(shapes);
-  }, [api, chess, complete, showThreats, showDefenders, history]);
+    api.setShapes(draw);
+  }, [api, chess, complete, showThreats, showDefenders, history, shapes]);
 
   return <div ref={ref} className={styles.board} />;
 }

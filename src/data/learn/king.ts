@@ -1,6 +1,6 @@
 import { arrow, toLevel } from "../util";
 
-import type { LevelPartial, Stage } from "../util";
+import type { Stage } from "../util";
 
 const Learn: Stage = {
   key: "king",
@@ -24,15 +24,7 @@ const Learn: Stage = {
       apples: "b5 c5 d6 e3 f3 g4",
       nbMoves: 8,
     },
-  ].map((l: LevelPartial, i) =>
-    toLevel(
-      {
-        emptyApples: true,
-        ...l,
-      },
-      i
-    )
-  ),
+  ].map(toLevel),
 };
 
 export default Learn;

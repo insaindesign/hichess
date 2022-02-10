@@ -55,7 +55,6 @@ const Learn: Stage = {
         nbMoves: 1,
         failure: noMateIn(1),
         success: mateIn(1),
-        showFailureFollowUp: true,
         ...l,
       },
       i

@@ -9,7 +9,7 @@ const Learn: Stage = {
       fen: 'rnbqkbnr/pppppppp/8/2P5/8/8/PP1PPPPP/RNBQKBNR b KQkq -',
       color: 'white' as Color,
       nbMoves: 1,
-      detectCapture: false,
+
       scenario: [
         {
           move: 'd7d5',
@@ -24,7 +24,7 @@ const Learn: Stage = {
       fen: 'rnbqkbnr/ppp1pppp/8/2Pp3P/8/8/PP1PPPP1/RNBQKBNR b KQkq -',
       color: 'white' as Color,
       nbMoves: 1,
-      detectCapture: false,
+
       scenario: [
         {
           move: 'g7g5',
@@ -39,7 +39,7 @@ const Learn: Stage = {
       fen: 'rnbqkbnr/pppppppp/P7/2P5/8/8/PP1PPPP1/RNBQKBNR b KQkq -',
       color: 'white' as Color,
       nbMoves: 1,
-      detectCapture: false,
+
       scenario: [
         {
           move: 'b7b5',
@@ -55,7 +55,7 @@ const Learn: Stage = {
       fen: 'rnbqkbnr/pppppppp/8/2PPP2P/8/8/PP1P1PP1/RNBQKBNR b KQkq -',
       color: 'white' as Color,
       nbMoves: 4,
-      detectCapture: false,
+
       scenario: ['b7b5', 'c5b6', 'f7f5', 'e5f6', 'c7c5', 'd5c6', 'g7g5', 'h5g6'],
       captures: 4,
     },

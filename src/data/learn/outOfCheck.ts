@@ -36,8 +36,6 @@ const Learn: Stage = {
   ].map((l, i) =>
     toLevel(
       {
-        detectCapture: false,
-        offerIllegalMove: true,
         success: noCheckIn(1),
         failure: checkIn(1),
         nbMoves: 1,

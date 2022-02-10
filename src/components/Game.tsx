@@ -6,12 +6,7 @@ import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
 import { loadScript } from "../lib/scripts";
-import Board, {
-  enforceOrientation,
-  turnToColor,
-  turnToWords,
-  turnFlip,
-} from "./Board";
+import Board, { enforceOrientation } from "./Board";
 
 import type { Move, ShortMove, Square } from "chess.js";
 import type { Config } from "chessground/config";
@@ -25,13 +20,11 @@ import ChessCtrl from "../lib/chess";
 type Props = {};
 type StockfishWorker = any;
 
-const isStockfishTurn = (
-  turn: Move["color"],
-  userColor: UserColor | undefined
-) => !userColor || (turn !== userColor[0] && userColor !== "both");
+const isStockfishTurn = (turn: UserColor, userColor: UserColor | undefined) =>
+  !userColor || (turn !== userColor && userColor !== "both");
 
 function Game(props: Props) {
-  const [chess] = useState(new ChessCtrl());
+  const [chess] = useState(() => new ChessCtrl());
   const [showDefenders, setShowDefenders] = useState<ShapeOptionType>("none");
   const [showThreats, setShowThreats] = useState<ShapeOptionType>("none");
   const [config] = useState<Config>({ movable: { color: "white" } });
@@ -62,7 +55,7 @@ function Game(props: Props) {
   );
 
   const newGame = useCallback(() => {
-    chess.js.reset();
+    chess.reset();
   }, [chess]);
 
   const toggleShowThreats = useCallback(
@@ -75,29 +68,26 @@ function Game(props: Props) {
   );
 
   useEffect(
-    () =>
-      chess.js.on("history", () => {
-        setMoves(chess.js.history({ verbose: true }));
-      }),
+    () => chess.on("change", setMoves),
     [chess]
   );
 
   const undo = useCallback(() => {
     if (moves.length && chess.color === userColor) {
-      chess.js.undo();
-      chess.js.undo();
+      chess.undo();
+      chess.undo();
     }
   }, [chess, moves, userColor]);
 
   useEffect(() => {
     if (
       stockfish &&
-      isStockfishTurn(chess.js.turn(), userColor) &&
+      isStockfishTurn(chess.color, userColor) &&
       !chess.js.game_over()
     ) {
       stockfish.postMessage(
         "position fen " +
-          chess.js.fen() +
+          chess.fen +
           " moves " +
           moves.map((m) => m.to).join(" ")
       );
@@ -108,7 +98,7 @@ function Game(props: Props) {
   useEffect(() => {
     if (chess && stockfish) {
       stockfish.addMessageListener((line: any) => {
-        if (line.includes("bestmove") && chess.js.turn() === "b") {
+        if (line.includes("bestmove") && chess.color !== userColor) {
           const move = line.split(" ")[1];
           onMove(move[0] + move[1], move[2] + move[3], move[4]);
         } else if (!line.includes("info")) {
@@ -116,7 +106,7 @@ function Game(props: Props) {
         }
       });
     }
-  }, [chess, stockfish, onMove]);
+  }, [chess, stockfish, onMove, userColor]);
 
   useEffect(() => {
     if (stockfish !== undefined || userColor === "both") {
@@ -139,7 +129,11 @@ function Game(props: Props) {
       <Toolbar>
         <Alert
           severity={
-            chess.js.in_draw() ? "warning" : chess.js.game_over() ? "success" : "info"
+            chess.js.in_draw()
+              ? "warning"
+              : chess.js.game_over()
+              ? "success"
+              : "info"
           }
           variant={chess.js.game_over() ? "filled" : "standard"}
         >
@@ -147,11 +141,11 @@ function Game(props: Props) {
             chess.js.in_draw() ? (
               "Draw"
             ) : (
-              turnToWords(turnFlip(chess.js.turn())) + " wins"
+              ChessCtrl.swapColor(chess.color) + " wins"
             )
           ) : (
             <span>
-              <strong>{turnToWords(chess.js.turn())}</strong> to move
+              <strong>{chess.color}</strong> to move
             </span>
           )}
         </Alert>
@@ -176,9 +170,7 @@ function Game(props: Props) {
           >
             <Button
               onClick={undo}
-              disabled={
-                !moves.length || turnToColor(chess.js.turn()) !== userColor
-              }
+              disabled={!moves.length || chess.color !== userColor}
             >
               Undo
             </Button>

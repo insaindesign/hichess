@@ -20,7 +20,16 @@ export interface Stage {
 export type Level = LevelBase & LevelDefaults;
 export type LevelPartial = LevelBase & Partial<LevelDefaults>;
 
-export type ScenarioLevel = {};
+export type Uci = string; // represents a move e.g, dxe5
+
+export type ScenarioLevel = (
+  | Uci
+  | {
+      move: Uci;
+      shapes: DrawShape[];
+    }
+)[];
+
 export type AssertData = {
   chess: ChessCtrl;
   vm: LevelManager;
@@ -32,16 +41,7 @@ interface LevelBase {
   nbMoves: number;
   scenario?: ScenarioLevel;
   shapes?: DrawShape[];
-  autoCastle?: boolean;
-  captures?: number;
   cssClass?: string;
-  emptyApples?: boolean;
-  explainPromotion?: boolean;
-  nextButton?: boolean;
-  offerIllegalMove?: boolean;
-  pointsForCapture?: boolean;
-  showPieceValues?: boolean;
-  showFailureFollowUp?: boolean;
 }
 
 export interface LevelDefaults {
@@ -50,16 +50,14 @@ export interface LevelDefaults {
   success(manager: LevelManager): boolean;
   failure(manager: LevelManager): boolean;
   color: Color;
-  detectCapture: "unprotected" | boolean;
-}
+  }
 
 export function toLevel(l: LevelPartial, it: number): Level {
   if (l.fen.split(" ").length === 4) l.fen += " 0 1";
   return {
     id: it + 1,
     color: / w /.test(l.fen) ? "white" : "black",
-    detectCapture: l.apples ? false : "unprotected",
-    apples: "",
+        apples: "",
     success: extinct("black"),
     failure: () => false,
     ...l,
@@ -79,14 +77,4 @@ export function circle(key: Key, brush?: string) {
     brush: brush || "green",
     orig: key,
   };
-}
-
-export function pieceImg(role: string) {
-  console.log('pieceImg', role);
-  return role; // m('div.is2d.no-square', m('piece.white.' + role));
-}
-
-export function roundSvg(url: string) {
-  console.log('roundSvg', url);
-  return url; // m('div.round-svg', m('img', { src: url }));
 }

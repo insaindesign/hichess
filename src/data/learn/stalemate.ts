@@ -4,14 +4,13 @@ const Learn: Stage = {
   key: "stalemate",
   levels: [
     {
-      fen: "k7/8/8/6B1/8/1R6/8/8 w - -",
+      fen: "k7/8/8/6B1/8/1R6/8/7K w - -",
       shapes: [arrow("g5e3")],
       scenario: [
         {
           move: "g5e3",
           shapes: [
             arrow("e3a7", "blue"),
-            arrow("b3b7", "blue"),
             arrow("b3b8", "blue"),
             circle("a7", "blue"),
             circle("b7", "blue"),
@@ -48,6 +47,11 @@ const Learn: Stage = {
             arrow("d1d8", "blue"),
             arrow("g6e7", "blue"),
             arrow("g6f8", "blue"),
+            circle("d7", "blue"),
+            circle("d8", "blue"),
+            circle("e7", "blue"),
+            circle("f7", "blue"),
+            circle("f8", "blue"),
           ],
         },
       ],
@@ -58,10 +62,11 @@ const Learn: Stage = {
         {
           move: "b1b8",
           shapes: [
-            arrow("b8g8", "blue"),
+            circle("g8", "blue"),
+            circle("h8", "blue"),
+            circle("g6", "red"),
             arrow("b8h8", "blue"),
             arrow("d3h7", "red"),
-            arrow("g6e7", "red"),
           ],
         },
       ],
@@ -76,7 +81,12 @@ const Learn: Stage = {
             arrow("a5b6", "blue"),
             arrow("d6c7", "blue"),
             arrow("e4b7", "red"),
-            arrow("c6c5", "red"),
+            circle("c6", "red"),
+            circle("a8", "blue"),
+            circle("b8", "blue"),
+            circle("c8", "blue"),
+            circle("c7", "blue"),
+            circle("b6", "blue"),
           ],
         },
       ],
@@ -85,10 +95,7 @@ const Learn: Stage = {
     toLevel(
       {
         goal: "stalemateGoal",
-        detectCapture: false,
         nbMoves: 1,
-        nextButton: true,
-        showFailureFollowUp: true,
         ...l,
       },
       i

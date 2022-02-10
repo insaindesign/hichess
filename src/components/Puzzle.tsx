@@ -5,11 +5,7 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
-import Board, {
-  ShapeOptionType,
-  turnToWords,
-  moveToSan,
-} from "./Board";
+import Board, { ShapeOptionType, moveToSan } from "./Board";
 import Toolbar from "./Toolbar";
 import ChessCtrl from "../lib/chess";
 
@@ -28,8 +24,8 @@ type Props = {
 type PuzzleState = "incomplete" | "incorrect" | "correct";
 
 function Puzzle({ fen, solution, nextPuzzle }: Props) {
-  const [userColor, setUserColor] = useState<Color | null>(null);
   const [chess] = useState<ChessCtrl>(new ChessCtrl(fen));
+  const [userColor, setUserColor] = useState<Color>(chess.color);
   const [config, setConfig] = useState<Config>({});
   const [moves, setMoves] = useState<Move[]>([]);
   const [state, setState] = useState<PuzzleState>("incomplete");
@@ -48,7 +44,7 @@ function Puzzle({ fen, solution, nextPuzzle }: Props) {
   const onMove = useCallback(
     (from: Square, to: Square, promotion: ShortMove["promotion"]) => {
       if (chess) {
-        chess.js.move({ from, to, promotion });
+        chess.move(from, to, promotion);
         setMoves(chess.js.history({ verbose: true }));
       }
     },
@@ -66,7 +62,7 @@ function Puzzle({ fen, solution, nextPuzzle }: Props) {
   );
 
   const resetPuzzle = useCallback(() => {
-    chess.js.load(fen);
+    chess.fen = fen;
     const userColor = ChessCtrl.swapColor(chess.color);
     setState("incomplete");
     setMoves([]);
@@ -84,7 +80,7 @@ function Puzzle({ fen, solution, nextPuzzle }: Props) {
         (nextMove[2] + nextMove[3]) as Square,
         nextMove[4] as ShortMove["promotion"]
       );
-      timeout = setTimeout(() => chess.js.undo(), 1000);
+      timeout = setTimeout(() => chess.undo(), 1000);
     }
     return () => clearTimeout(timeout);
   }, [chess, solution, moves]);
@@ -136,7 +132,7 @@ function Puzzle({ fen, solution, nextPuzzle }: Props) {
             state
           ) : (
             <span>
-              <strong>{turnToWords(chess.js.turn())}</strong> to move
+              <strong>{chess.color}</strong> to move
             </span>
           )}
         </Alert>
@@ -148,7 +144,7 @@ function Puzzle({ fen, solution, nextPuzzle }: Props) {
             complete={state !== "incomplete"}
             chess={chess}
             onMove={onBoardMove}
-            orientation={userColor || "white"}
+            orientation={userColor}
             showDefenders={showDefenders}
             showThreats={showThreats}
           />
@@ -159,10 +155,7 @@ function Puzzle({ fen, solution, nextPuzzle }: Props) {
             fullWidth
             className={css.panelButtons}
           >
-            <Button
-              disabled={chess.color !== userColor}
-              onClick={hint}
-            >
+            <Button disabled={chess.color !== userColor} onClick={hint}>
               Hint
             </Button>
             <Button

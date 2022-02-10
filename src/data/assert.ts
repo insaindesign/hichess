@@ -11,7 +11,7 @@ interface Matcher {
 
 type Assert = (level: LevelManager) => boolean;
 
-function pieceMatch(piece: Piece | null, matcher: Matcher) {
+function pieceMatch(piece: Piece | undefined, matcher: Matcher) {
   if (!piece) return false;
   return piece.type === matcher.type && piece.color === matcher.color;
 }
@@ -19,7 +19,7 @@ function pieceMatch(piece: Piece | null, matcher: Matcher) {
 function pieceOnAnyOf(matcher: Matcher, keys: Key[]) {
   return function (level: LevelManager) {
     for (const i in keys)
-      if (pieceMatch(level.chess.js.get(keys[i]), matcher)) return true;
+      if (pieceMatch(level.chess.pieces()[keys[i]], matcher)) return true;
     return false;
   };
 }
@@ -33,13 +33,13 @@ function fenToMatcher(fenPiece: string): Matcher {
 
 export function pieceOn(fenPiece: string, key: Key) {
   return function (level: LevelManager) {
-    return pieceMatch(level.chess.js.get(key), fenToMatcher(fenPiece));
+    return pieceMatch(level.chess.pieces()[key], fenToMatcher(fenPiece));
   };
 }
 
 export function pieceNotOn(fenPiece: string, key: Key) {
   return function (level: LevelManager) {
-    return !pieceMatch(level.chess.js.get(key), fenToMatcher(fenPiece));
+    return !pieceMatch(level.chess.pieces()[key], fenToMatcher(fenPiece));
   };
 }
 
@@ -58,7 +58,7 @@ export function whitePawnOnAnyOf(keys: string | Key[]) {
 
 export function extinct(color: string) {
   return function (level: LevelManager) {
-    const fen = level.chess.js.fen().split(" ")[0].replace(/\//g, "");
+    const fen = level.chess.fen.split(" ")[0].replace(/\//g, "");
     return fen === (color === "white" ? fen.toLowerCase() : fen.toUpperCase());
   };
 }

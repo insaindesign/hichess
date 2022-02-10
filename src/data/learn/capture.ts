@@ -1,5 +1,5 @@
 import { arrow, toLevel } from "../util";
-import type { LevelPartial, Stage } from "../util";
+import type { Stage } from "../util";
 
 const Learn: Stage = {
   key: "capture",
@@ -41,15 +41,7 @@ const Learn: Stage = {
       nbMoves: 6,
       captures: 4,
     },
-  ].map((l: LevelPartial, i) =>
-    toLevel(
-      {
-        pointsForCapture: true,
-        ...l,
-      },
-      i
-    )
-  ),
+  ].map(toLevel),
 };
 
 export default Learn;

@@ -1,3 +1,4 @@
+import { pieceOn } from "../assert";
 import { arrow, toLevel, Stage } from "../util";
 
 const Learn: Stage = {
@@ -9,13 +10,13 @@ const Learn: Stage = {
       fen: "8/8/2qrbnp1/3P4/8/8/8/8 w - -",
       scenario: ["d5c6"],
       shapes: [arrow("d5c6")],
-      detectCapture: false,
+      success: pieceOn("P", "c6"),
     },
     {
       goal: "pieceValueExchange",
       fen: "8/8/4b3/1p6/6r1/8/4Q3/8 w - -",
       scenario: ["e2e6"],
-      detectCapture: true,
+      success: pieceOn("Q", "e6"),
     },
     {
       goal: "pieceValueLegal",
@@ -28,7 +29,6 @@ const Learn: Stage = {
       fen: "1k4q1/pp6/8/3B4/2P5/1P1p2P1/P3Kr1P/3n4 w - -",
       scenario: ["e2d1"],
       offerIllegalMove: true,
-      detectCapture: false,
     },
     {
       goal: "takeThePieceWithTheHighestValue",
@@ -40,9 +40,6 @@ const Learn: Stage = {
     toLevel(
       {
         nbMoves: 1,
-        captures: 1,
-        pointsForCapture: true,
-        showPieceValues: true,
         ...l,
       },
       i
