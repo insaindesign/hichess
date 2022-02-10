@@ -63,7 +63,7 @@ function LearnLevel({ level, nextLevel }: Props) {
         </Alert>
       </Toolbar>
       <div className={css.root}>
-        <div className={css.board}>
+        <div className={`${css.board}${level.apples ? ' apples' : ''}`}>
           <Board
             config={config}
             complete={manageLevel.isComplete}

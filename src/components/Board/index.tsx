@@ -5,6 +5,7 @@ import { reset } from "chessground/board";
 import "./base.css";
 import "./brown.css";
 import "./california.css";
+import "./apples.css";
 
 import type { Api } from "chessground/api";
 import type { Config } from "chessground/config";
