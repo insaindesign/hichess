@@ -90,6 +90,10 @@ export function mate(level: LevelManager) {
   return level.chess.js.in_checkmate();
 }
 
+export function stalemate(level: LevelManager) {
+  return level.chess.js.in_draw();
+}
+
 export function mateIn(nbMoves: number) {
   return function (level: LevelManager) {
     return level.moves.length <= nbMoves && mate(level);
@@ -99,6 +103,12 @@ export function mateIn(nbMoves: number) {
 export function noMateIn(nbMoves: number) {
   return function (level: LevelManager) {
     return level.moves.length >= nbMoves && !mate(level);
+  };
+}
+
+export function within(moves: number) {
+  return function (level: LevelManager) {
+    return level.moves.length <= moves;
   };
 }
 

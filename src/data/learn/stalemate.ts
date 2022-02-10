@@ -1,4 +1,5 @@
 import { arrow, circle, Stage, toLevel } from "../util";
+import {and, not, within, stalemate} from "../assert";
 
 const Learn: Stage = {
   key: "stalemate",
@@ -96,6 +97,8 @@ const Learn: Stage = {
       {
         goal: "stalemateGoal",
         nbMoves: 1,
+        success: and(stalemate, within(1)),
+        failure: and(not(stalemate), within(1)),
         ...l,
       },
       i
