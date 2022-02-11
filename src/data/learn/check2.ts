@@ -1,5 +1,5 @@
 import { canBeCaptured, checkIn, noCheckIn, or } from "../assert";
-import { arrow, toLevel } from "../util";
+import { arrow, learnToLevel } from "../util";
 
 import type { Stage } from "../util";
 
@@ -35,16 +35,13 @@ const Learn: Stage = {
       goal: "checkInTwoGoal",
       fen: "r6r/1Q2nk2/1B3p2/8/8/8/8/8 w - -",
     },
-  ].map((l, i) =>
-    toLevel(
-      {
-        nbMoves: 2,
-        failure: or(noCheckIn(2), canBeCaptured),
-        success: checkIn(2),
-        ...l,
-      },
-      i
-    )
+  ].map((l) =>
+    learnToLevel({
+      nbMoves: 2,
+      failure: or(noCheckIn(2), canBeCaptured),
+      success: checkIn(2),
+      ...l,
+    })
   ),
 };
 

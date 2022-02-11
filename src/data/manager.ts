@@ -1,9 +1,10 @@
 import { Level } from "./util";
 import ChessCtrl from "../lib/chess";
 
-import type { Move, Square } from "chess.js";
+import type { Move, ShortMove, Square } from "chess.js";
 import type { Color, Key } from "chessground/types";
 import { DrawShape } from "chessground/draw";
+import { Config } from "chessground/config";
 
 export class LevelManager {
   public level: Level;
@@ -36,6 +37,10 @@ export class LevelManager {
     this.showShapes();
   }
 
+  get config(): Config {
+    return { movable: { color: this.color } };
+  }
+
   get userMoves(): Move[] {
     return this.chess.moves.filter(
       (m) => ChessCtrl.toColor(m.color) === this.level.color
@@ -55,21 +60,40 @@ export class LevelManager {
   }
 
   get isSuccessful(): boolean {
-    return this.userMoves.length ? this.level.success(this) && !this.isFailure : false;
+    return this.userMoves.length
+      ? this.level.success(this) && !this.isFailure
+      : false;
+  }
+
+  get hasHints(): boolean {
+    return Boolean(this.level.scenario);
   }
 
   get isFailure(): boolean {
     return this.userMoves.length ? this.level.failure(this) : false;
   }
 
-  private makeBotMove() {
+  get isUsersTurn(): boolean {
+    return this.color === this.chess.color;
+  }
+
+  public nextMove(): ShortMove | null {
     const scenario = this.level.scenario;
     const scene = scenario ? scenario[this.moves.length] : null;
-    const move = scene
+    return scene
       ? ChessCtrl.toMove(typeof scene !== "string" ? scene.move : scene)
       : null;
+  }
+
+  private makeBotMove() {
+    const move = this.nextMove();
     const piece = move ? this.chess.pieces()[move.from] : null;
-    if (move && piece && ChessCtrl.toColor(piece.color) !== this.level.color) {
+    if (
+      move &&
+      piece &&
+      ChessCtrl.toColor(piece.color) !== this.level.color &&
+      !this.isComplete
+    ) {
       setTimeout(() => {
         this.chess.move(move.from, move.to, move.promotion);
         this.showShapes();

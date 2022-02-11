@@ -1,5 +1,5 @@
 import { canBeCaptured, not } from "../assert";
-import { arrow, toLevel, Stage } from "../util";
+import { arrow, learnToLevel, Stage } from "../util";
 
 const Learn: Stage = {
   key: "protection",
@@ -46,16 +46,13 @@ const Learn: Stage = {
       goal: "dontLetThemTakeAnyUndefendedPiece",
       fen: "8/3q4/8/1N3R2/8/2PB4/8/8 w - -",
     },
-  ].map((l, i) =>
-    toLevel(
-      {
-        nbMoves: 1,
-        success: not(canBeCaptured),
-        failure: canBeCaptured,
-        ...l
-      },
-      i
-    )
+  ].map((l) =>
+    learnToLevel({
+      nbMoves: 1,
+      success: not(canBeCaptured),
+      failure: canBeCaptured,
+      ...l,
+    })
   ),
 };
 

@@ -1,5 +1,5 @@
 import { checkIn, noCheckIn } from "../assert";
-import { arrow, toLevel, Stage } from "../util";
+import { arrow, learnToLevel, Stage } from "../util";
 
 const Learn: Stage = {
   key: "outOfCheck",
@@ -33,16 +33,13 @@ const Learn: Stage = {
       goal: "escapeOrBlock",
       fen: "8/6b1/8/8/q4P2/2KN4/3P4/8 w - -",
     },
-  ].map((l, i) =>
-    toLevel(
-      {
-        success: noCheckIn(1),
-        failure: checkIn(1),
-        nbMoves: 1,
-        ...l,
-      },
-      i
-    )
+  ].map((l) =>
+    learnToLevel({
+      success: noCheckIn(1),
+      failure: checkIn(1),
+      nbMoves: 1,
+      ...l,
+    })
   ),
 };
 

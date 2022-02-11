@@ -1,5 +1,5 @@
 import { and, lastMoveSan, not, or, pieceNotOn } from "../assert";
-import { arrow, circle, toLevel } from "../util";
+import { arrow, circle, learnToLevel } from "../util";
 
 import type { Stage } from "../util";
 
@@ -92,7 +92,7 @@ const Learn: Stage = {
       failure: cantCastleQueenSide,
 
     },
-  ].map(toLevel),
+  ].map(learnToLevel),
 };
 
 export default Learn;

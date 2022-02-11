@@ -1,9 +1,9 @@
 import type { Square as Key } from "chess.js";
-
-import { DrawShape } from "chessground/draw";
-import { Color } from "chessground/types";
+import { completedScenario, extinct, followScenario, not } from "./assert";
 import ChessCtrl from "../lib/chess";
-import { extinct } from "./assert";
+
+import type { DrawShape } from "chessground/draw";
+import type { Color } from "chessground/types";
 import type LevelManager from "./manager";
 
 export interface Category {
@@ -20,7 +20,7 @@ export interface Stage {
 export type Level = LevelBase & LevelDefaults;
 export type LevelPartial = LevelBase & Partial<LevelDefaults>;
 
-export type Uci = string; // represents a move e.g, dxe5
+export type Uci = string; // represents a move e.g, e2e4
 
 export type ScenarioLevel = (
   | Uci
@@ -35,31 +35,42 @@ export type AssertData = {
   vm: LevelManager;
 };
 
+interface PuzzleBase {
+  fen: string;
+  scenario: ScenarioLevel;
+}
+
 interface LevelBase {
   goal: string;
   fen: string;
-  nbMoves: number; // TODO: delete and move to (new) scoring function
+  apples?: string;
+  nbMoves?: number;
   scenario?: ScenarioLevel;
   shapes?: DrawShape[];
-  cssClass?: string;
 }
 
 export interface LevelDefaults {
-  id: number;
-  apples: string;
+  color: Color;
   success(manager: LevelManager): boolean;
   failure(manager: LevelManager): boolean;
-  color: Color;
 }
 
-export function toLevel(l: LevelPartial, it: number): Level {
+export function learnToLevel(l: LevelPartial): Level {
   if (l.fen.split(" ").length === 4) l.fen += " 0 1";
   return {
-    id: it + 1,
     color: / w /.test(l.fen) ? "white" : "black",
-    apples: "",
     success: extinct("black"),
     failure: () => false,
+    ...l,
+  };
+}
+
+export function puzzleToLevel(l: PuzzleBase): Level {
+  return {
+    color: ChessCtrl.swapColor(/ w /.test(l.fen) ? "white" : "black"),
+    goal: "Complete the puzzle",
+    success: completedScenario,
+    failure: not(followScenario),
     ...l,
   };
 }

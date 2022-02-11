@@ -1,6 +1,6 @@
 import { Color } from "chessground/types";
 import { not, followScenario, completedScenario } from "../assert";
-import { arrow, Stage, toLevel } from "../util";
+import { arrow, Stage, learnToLevel } from "../util";
 
 const Learn: Stage = {
   key: "enpassant",
@@ -43,7 +43,6 @@ const Learn: Stage = {
         },
         "c5b6",
       ],
-      cssClass: "highlight-5th-rank",
     },
     {
       goal: "takeAllThePawnsEnPassant",
@@ -61,16 +60,13 @@ const Learn: Stage = {
         "h5g6",
       ],
     },
-  ].map((l, i) =>
-  toLevel(
-    {
+  ].map((l) =>
+    learnToLevel({
       failure: not(followScenario),
       success: completedScenario,
       ...l,
-    },
-    i
-  )
-),
+    })
+  ),
 };
 
 export default Learn;

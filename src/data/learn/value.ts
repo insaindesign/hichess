@@ -1,5 +1,5 @@
 import { completedScenario, followScenario, not, pieceOn } from "../assert";
-import { arrow, toLevel, Stage } from "../util";
+import { arrow, learnToLevel, Stage } from "../util";
 
 const Learn: Stage = {
   key: "value",
@@ -36,16 +36,13 @@ const Learn: Stage = {
       scenario: ["c1h6"],
       offerIllegalMove: true,
     },
-  ].map((l, i) =>
-    toLevel(
-      {
-        nbMoves: 1,
-        success: completedScenario,
-        failure: not(followScenario),
-        ...l,
-      },
-      i
-    )
+  ].map((l) =>
+    learnToLevel({
+      nbMoves: 1,
+      success: completedScenario,
+      failure: not(followScenario),
+      ...l,
+    })
   ),
 };
 

@@ -1,4 +1,4 @@
-import { arrow, toLevel } from "../util";
+import { arrow, learnToLevel } from "../util";
 import { mateIn, noMateIn } from "../assert";
 
 import type { Stage } from "../util";
@@ -49,16 +49,13 @@ const Learn: Stage = {
       goal: "attackYourOpponentsKing",
       fen: "r1b5/ppp5/2N2kpN/5q2/8/Q7/8/4B3 w - -",
     },
-  ].map((l, i) =>
-    toLevel(
-      {
-        nbMoves: 1,
-        failure: noMateIn(1),
-        success: mateIn(1),
-        ...l,
-      },
-      i
-    )
+  ].map((l) =>
+    learnToLevel({
+      nbMoves: 1,
+      failure: noMateIn(1),
+      success: mateIn(1),
+      ...l,
+    })
   ),
 };
 

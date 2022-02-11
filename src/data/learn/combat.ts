@@ -1,4 +1,4 @@
-import { arrow, toLevel } from "../util";
+import { arrow, learnToLevel } from "../util";
 import { canBeCaptured } from "../assert";
 
 import type { Stage } from "../util";
@@ -38,14 +38,11 @@ const Learn: Stage = {
       fen: "8/6q1/8/4P1P1/8/4B3/r2P2N1/8 w - -",
       nbMoves: 8,
     },
-  ].map((l, i) =>
-    toLevel(
-      {
-        failure: canBeCaptured,
-        ...l,
-      },
-      i
-    )
+  ].map((l) =>
+    learnToLevel({
+      failure: canBeCaptured,
+      ...l,
+    })
   ),
 };
 

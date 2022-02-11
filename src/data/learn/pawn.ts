@@ -1,5 +1,5 @@
 import { noPieceOn, whitePawnOnAnyOf } from '../assert';
-import { arrow, toLevel, Stage } from '../util';
+import { arrow, learnToLevel, Stage } from '../util';
 
 const Learn: Stage = {
   key: 'pawn',
@@ -52,7 +52,6 @@ const Learn: Stage = {
       nbMoves: 3,
       shapes: [arrow('e2e4')],
       failure: whitePawnOnAnyOf('e3'),
-      cssClass: 'highlight-2nd-rank',
     },
     {
       goal: 'grabAllTheStarsNoNeedToPromote',
@@ -60,7 +59,7 @@ const Learn: Stage = {
       apples: 'c5 d5 e5 f5 d3 e4',
       nbMoves: 9,
     },
-  ].map(toLevel),
+  ].map(learnToLevel),
 };
 
 export default Learn;

@@ -1,4 +1,4 @@
-import { arrow, toLevel, Stage } from "../util";
+import { arrow, learnToLevel, Stage } from "../util";
 import { and, pieceOn } from "../assert";
 
 const Learn: Stage = {
@@ -40,7 +40,7 @@ const Learn: Stage = {
       nbMoves: 3,
       success: pieceOn("K", "e1"),
     },
-  ].map(toLevel),
+  ].map(learnToLevel),
 };
 
 export default Learn;

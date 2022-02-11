@@ -164,12 +164,15 @@ export function or(...asserts: Assert[]) {
 }
 
 export function followScenario(manager: LevelManager) {
-  const n = manager.moves.length - 1;
   const scenario = manager.level.scenario;
-  const scene = scenario ? scenario[n] : null;
+  if (!manager.moves.length || !scenario) {
+    return true;
+  }
+  const n = manager.moves.length - 1;
+  const scene = scenario[n];
+  const lastMove = manager.moves[n];
   const sceneMove = typeof scene === "string" ? scene : scene?.move;
-  const move = manager.moves[n];
-  return sceneMove === move.from + move.to;
+  return sceneMove === lastMove.from + lastMove.to + (lastMove.promotion || "");
 }
 
 export function completedScenario(manager: LevelManager) {

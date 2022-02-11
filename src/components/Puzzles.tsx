@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 
-import Puzzle from "./Puzzle";
 import getPuzzles from "../data/puzzles";
-import type { Puzzle as PuzzleType } from "../data/puzzles";
+import type { Level } from "../data/util";
+import Problem from "./Problem";
 
 type Props = {};
 
 function Puzzles(props: Props) {
-  const [puzzles, setPuzzles] = useState<PuzzleType[]>([]);
+  const [puzzles, setPuzzles] = useState<Level[]>([]);
   const [ii, setIndex] = useState(0);
 
   const nextPuzzle = useCallback(
@@ -18,7 +18,7 @@ function Puzzles(props: Props) {
   useEffect(() => {
     getPuzzles().then((p) => {
       setPuzzles(p);
-      setIndex(Math.floor(Math.random() * p.length));
+      setIndex(4);
     });
   }, []);
 
@@ -27,13 +27,7 @@ function Puzzles(props: Props) {
     return <div>Loading</div>;
   }
 
-  return (
-    <Puzzle
-      fen={puzzle.fen}
-      solution={puzzle.solution}
-      nextPuzzle={nextPuzzle}
-    />
-  );
+  return <Problem level={puzzle} nextLevel={nextPuzzle} />;
 }
 
 export default Puzzles;

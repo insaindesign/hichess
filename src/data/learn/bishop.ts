@@ -1,4 +1,4 @@
-import { arrow, toLevel } from '../util';
+import { arrow, learnToLevel } from '../util';
 import {Stage} from "../util";
 
 const Learn: Stage = {
@@ -41,7 +41,7 @@ const Learn: Stage = {
       apples: 'a3 c2 e7 f5 f6 g8 h4 h7',
       nbMoves: 11,
     },
-  ].map(toLevel),
+  ].map(learnToLevel),
 };
 
 export default Learn;

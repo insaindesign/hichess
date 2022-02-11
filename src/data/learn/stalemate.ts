@@ -1,5 +1,5 @@
-import { arrow, circle, Stage, toLevel } from "../util";
-import {and, not, within, stalemate} from "../assert";
+import { arrow, circle, Stage, learnToLevel } from "../util";
+import { and, not, within, stalemate } from "../assert";
 
 const Learn: Stage = {
   key: "stalemate",
@@ -92,17 +92,14 @@ const Learn: Stage = {
         },
       ],
     },
-  ].map((l, i) =>
-    toLevel(
-      {
-        goal: "stalemateGoal",
-        nbMoves: 1,
-        success: and(stalemate, within(1)),
-        failure: and(not(stalemate), within(1)),
-        ...l,
-      },
-      i
-    )
+  ].map((l) =>
+    learnToLevel({
+      goal: "stalemateGoal",
+      nbMoves: 1,
+      success: and(stalemate, within(1)),
+      failure: and(not(stalemate), within(1)),
+      ...l,
+    })
   ),
 };
 

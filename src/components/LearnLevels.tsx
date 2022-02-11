@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 
 import categories from "../data/learn";
 import Learn from "./Learn";
-import LearnLevel from "./LearnLevel";
+import Problem from "./Problem";
 
 type Props = {};
 
@@ -42,7 +42,7 @@ function LearnLevels(props: Props) {
 
   return (
     <>
-      <LearnLevel level={level} nextLevel={nextLevel} />
+      <Problem level={level} nextLevel={nextLevel} />
       <Learn />
     </>
   );
