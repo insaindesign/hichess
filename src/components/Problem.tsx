@@ -10,7 +10,7 @@ import Board from "./Board";
 import LevelManager from "../data/manager";
 
 import type { Level } from "../data/util";
-import type { ShapeOptionType } from "./Board";
+import type { ShapeOptionType } from "./Board/brushes";
 
 import css from "./Game.module.css";
 

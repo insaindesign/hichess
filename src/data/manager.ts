@@ -9,7 +9,6 @@ import { Config } from "chessground/config";
 export class LevelManager {
   public level: Level;
   public chess: ChessCtrl;
-  public shapes: DrawShape[] = [];
 
   constructor(level: Level) {
     this.chess = new ChessCtrl();
@@ -24,17 +23,14 @@ export class LevelManager {
     } else if (!this.isComplete) {
       this.chess.color = this.color;
     }
-    this.showShapes();
   };
 
   reset(): void {
     this.chess.fen = this.level.fen;
-    this.shapes.length = 0;
     if (this.level.apples) {
       this.chess.addObstacles(this.level.apples.split(" ") as Square[]);
     }
     this.makeBotMove();
-    this.showShapes();
   }
 
   get config(): Config {
@@ -77,6 +73,16 @@ export class LevelManager {
     return this.color === this.chess.color;
   }
 
+  get shapes(): DrawShape[] {
+    const shapes = !this.userMoves.length ? this.level.shapes || [] : [];
+    const scenario = this.level.scenario;
+    const scene = scenario ? scenario[this.moves.length - 1] : null;
+    if (scene && typeof scene !== "string") {
+      return scene.shapes;
+    }
+    return shapes;
+  }
+
   public nextMove(): ShortMove | null {
     const scenario = this.level.scenario;
     const scene = scenario ? scenario[this.moves.length] : null;
@@ -94,19 +100,10 @@ export class LevelManager {
       ChessCtrl.toColor(piece.color) !== this.level.color &&
       !this.isComplete
     ) {
-      setTimeout(() => {
-        this.chess.move(move.from, move.to, move.promotion);
-        this.showShapes();
-      }, 1000);
-    }
-  }
-
-  private showShapes() {
-    this.shapes = !this.userMoves.length ? this.level.shapes || [] : [];
-    const scenario = this.level.scenario;
-    const scene = scenario ? scenario[this.moves.length - 1] : null;
-    if (scene && typeof scene !== "string") {
-      this.shapes = scene.shapes;
+      setTimeout(
+        () => this.chess.move(move.from, move.to, move.promotion),
+        1000
+      );
     }
   }
 }

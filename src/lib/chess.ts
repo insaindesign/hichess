@@ -47,14 +47,15 @@ export function setFenTurn(fen: string, turn: "b" | "w"): string {
 export class ChessCtrl {
   private events: EventEmitter<{ change: ChessMove[] }>;
   private chess: ChessInstance;
+  // Use typescript to ensure mutations are handled in ChessCtrl
   public js: Pick<
     ChessInstance,
     | "in_check"
     | "in_checkmate"
+    | "in_draw"
     | "game_over"
     | "threats"
     | "defenders"
-    | "in_draw"
   >;
   public moves: ChessMove[];
 
@@ -113,6 +114,11 @@ export class ChessCtrl {
     return this.chess.fen();
   }
 
+  get lastMove(): Key[] | undefined {
+    const last = this.moves[this.moves.length - 1];
+    return last ? [last.from, last.to] : undefined;
+  }
+
   addObstacles(obstacle: Key[]) {
     const color = this.chess.turn() === "w" ? "b" : "w";
     obstacle.forEach((key) => {
@@ -151,7 +157,7 @@ export class ChessCtrl {
     };
     const m = this.chess.move(move);
     if (m) {
-      this.moves = [...this.moves, m ];
+      this.moves = [...this.moves, m];
       this.handleChange();
     }
     return m;

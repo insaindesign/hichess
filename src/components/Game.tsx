@@ -6,12 +6,13 @@ import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
 import { loadScript } from "../lib/scripts";
-import Board, { enforceOrientation } from "./Board";
+import Board from "./Board";
 
 import type { Move, ShortMove, Square } from "chess.js";
 import type { Config } from "chessground/config";
-import type { Key, Piece } from "chessground/types";
-import type { UserColor, ShapeOptionType } from "./Board";
+import type { Color, Key, Piece } from "chessground/types";
+import type { UserColor } from "./Board";
+import type { ShapeOptionType } from "./Board/brushes";
 
 import css from "./Game.module.css";
 import Toolbar from "./Toolbar";
@@ -21,6 +22,11 @@ type Props = {
   fen?: string;
 };
 type StockfishWorker = any;
+
+const enforceOrientation = (
+  color: UserColor | undefined,
+  fallback: Color
+): Color => (color === "white" || color === "black" ? color : fallback);
 
 const isStockfishTurn = (turn: UserColor, userColor: UserColor | undefined) =>
   !userColor || (turn !== userColor && userColor !== "both");
