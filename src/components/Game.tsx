@@ -17,14 +17,16 @@ import css from "./Game.module.css";
 import Toolbar from "./Toolbar";
 import ChessCtrl from "../lib/chess";
 
-type Props = {};
+type Props = {
+  fen?: string;
+};
 type StockfishWorker = any;
 
 const isStockfishTurn = (turn: UserColor, userColor: UserColor | undefined) =>
   !userColor || (turn !== userColor && userColor !== "both");
 
-function Game(props: Props) {
-  const [chess] = useState(() => new ChessCtrl());
+function Game({ fen }: Props) {
+  const [chess] = useState(() => new ChessCtrl(fen));
   const [showDefenders, setShowDefenders] = useState<ShapeOptionType>("none");
   const [showThreats, setShowThreats] = useState<ShapeOptionType>("none");
   const [config] = useState<Config>({ movable: { color: "white" } });
@@ -32,6 +34,7 @@ function Game(props: Props) {
   const [stockfish, setStockfish] = useState<
     StockfishWorker | null | undefined
   >(undefined);
+  const [stockfishLevel, setStockfishLevel] = useState(0);
 
   const userColor = config.movable?.color;
 
@@ -66,11 +69,15 @@ function Game(props: Props) {
     (e, value) => (value ? setShowDefenders(value) : setShowDefenders("none")),
     []
   );
-
-  useEffect(
-    () => chess.on("change", setMoves),
-    [chess]
+  const toggleStockfishLevel = useCallback(
+    (e, value) =>
+      value != null
+        ? setStockfishLevel(value)
+        : setStockfishLevel(stockfishLevel),
+    [stockfishLevel]
   );
+
+  useEffect(() => chess.on("change", setMoves), [chess]);
 
   const undo = useCallback(() => {
     if (moves.length && chess.color === userColor) {
@@ -91,18 +98,28 @@ function Game(props: Props) {
           " moves " +
           moves.map((m) => m.to).join(" ")
       );
-      stockfish.postMessage("go movetime 1000 depth 1 nodes 1 multipv 500");
+      stockfish.postMessage("go movetime 1500");
     }
   }, [chess, stockfish, userColor, moves]);
 
   useEffect(() => {
+    if (stockfish) {
+      stockfish.postMessage(
+        "setoption name Skill Level value " + stockfishLevel
+      );
+    }
+  }, [stockfish, stockfishLevel]);
+
+  useEffect(() => {
     if (chess && stockfish) {
-      stockfish.addMessageListener((line: any) => {
-        if (line.includes("bestmove") && chess.color !== userColor) {
+      stockfish.addMessageListener((line?: string) => {
+        if (line && line.includes("bestmove") && chess.color !== userColor) {
           const move = line.split(" ")[1];
-          onMove(move[0] + move[1], move[2] + move[3], move[4]);
-        } else if (!line.includes("info")) {
-          // console.log(line);
+          onMove(
+            move.slice(0, 2) as Square,
+            move.slice(2, 4) as Square,
+            move.slice(4) as ShortMove["promotion"]
+          );
         }
       });
     }
@@ -117,9 +134,6 @@ function Game(props: Props) {
       .then((w: any) => w.Stockfish())
       .then((sf) => {
         sf.postMessage("uci");
-        sf.postMessage("setoption name Use NNUE value false");
-        sf.postMessage("setoption name Skill Level value 0");
-        sf.postMessage("setoption name UCI_LimitStrength value true");
         setStockfish(sf);
       });
   }, [userColor, stockfish]);
@@ -202,6 +216,26 @@ function Game(props: Props) {
             <ToggleButton value="counts">counts only</ToggleButton>
             <ToggleButton value="both">show</ToggleButton>
           </ToggleButtonGroup>
+          {userColor !== "both" ? (
+            <ToggleButtonGroup
+              className={css.panelButtons}
+              color="primary"
+              exclusive
+              fullWidth
+              onChange={toggleStockfishLevel}
+              value={stockfishLevel}
+            >
+              <ToggleButton value={0}>1</ToggleButton>
+              <ToggleButton value={1}>2</ToggleButton>
+              <ToggleButton value={2}>3</ToggleButton>
+              <ToggleButton value={3}>4</ToggleButton>
+              <ToggleButton value={4}>5</ToggleButton>
+              <ToggleButton value={5}>6</ToggleButton>
+              <ToggleButton value={6}>7</ToggleButton>
+              <ToggleButton value={7}>8</ToggleButton>
+              <ToggleButton value={20}>20</ToggleButton>
+            </ToggleButtonGroup>
+          ) : null}
         </div>
       </div>
     </>
