@@ -6,7 +6,10 @@ import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
 import { loadScript } from "../lib/scripts";
+import { isBestMove, parseUci } from "../lib/uci";
+import ChessCtrl from "../lib/chess";
 import Board from "./Board";
+import Toolbar from "./Toolbar";
 
 import type { Move, ShortMove, Square } from "chess.js";
 import type { Config } from "chessground/config";
@@ -15,8 +18,6 @@ import type { UserColor } from "./Board";
 import type { ShapeOptionType } from "./Board/brushes";
 
 import css from "./Game.module.css";
-import Toolbar from "./Toolbar";
-import ChessCtrl from "../lib/chess";
 
 type Props = {
   fen?: string;
@@ -27,9 +28,6 @@ const enforceOrientation = (
   color: UserColor | undefined,
   fallback: Color
 ): Color => (color === "white" || color === "black" ? color : fallback);
-
-const isStockfishTurn = (turn: UserColor, userColor: UserColor | undefined) =>
-  !userColor || (turn !== userColor && userColor !== "both");
 
 function Game({ fen }: Props) {
   const [chess] = useState(() => new ChessCtrl(fen));
@@ -93,20 +91,20 @@ function Game({ fen }: Props) {
   }, [chess, moves, userColor]);
 
   useEffect(() => {
-    if (
-      stockfish &&
-      isStockfishTurn(chess.color, userColor) &&
-      !chess.js.game_over()
-    ) {
+    let timeout: any;
+    if (stockfish && !chess.js.game_over()) {
+      stockfish.postMessage("stop");
       stockfish.postMessage(
         "position fen " +
           chess.fen +
           " moves " +
           moves.map((m) => m.to).join(" ")
       );
-      stockfish.postMessage("go movetime 1500");
+      stockfish.postMessage("go multipv 25");
+      timeout = setTimeout(() => stockfish.postMessage("stop"), 1500);
     }
-  }, [chess, stockfish, userColor, moves]);
+    return () => clearTimeout(timeout);
+  }, [chess, stockfish, moves]);
 
   useEffect(() => {
     if (stockfish) {
@@ -118,14 +116,10 @@ function Game({ fen }: Props) {
 
   useEffect(() => {
     if (chess && stockfish) {
-      stockfish.addMessageListener((line?: string) => {
-        if (line && line.includes("bestmove") && chess.color !== userColor) {
-          const move = line.split(" ")[1];
-          onMove(
-            move.slice(0, 2) as Square,
-            move.slice(2, 4) as Square,
-            move.slice(4) as ShortMove["promotion"]
-          );
+      stockfish.addMessageListener((line: string) => {
+        const parsed = parseUci(line);
+        if (isBestMove(parsed) && chess.color !== userColor) {
+          onMove(parsed.from, parsed.to, parsed.promotion);
         }
       });
     }
@@ -140,9 +134,11 @@ function Game({ fen }: Props) {
       .then((w: any) => w.Stockfish())
       .then((sf) => {
         sf.postMessage("uci");
+        sf.postMessage("setoption name MultiPV value 25");
+        sf.postMessage("setoption name Skill Level value " + stockfishLevel);
         setStockfish(sf);
       });
-  }, [userColor, stockfish]);
+  }, [userColor, stockfish, stockfishLevel]);
 
   return (
     <>

@@ -13,11 +13,6 @@ import type {
   ShortMove,
 } from "chess.js";
 
-export type Move = {
-  orig: Key;
-  dest: Key;
-};
-
 export const roleToSan: {
   [R in PromotionRole]: PromotionChar;
 } = {
@@ -70,7 +65,7 @@ export class ChessCtrl {
   public static toMove(move: string): ShortMove {
     const from = move.slice(0, 2) as Key;
     const to = move.slice(2, 4) as Key;
-    const promotion = move.slice(2, 4) as ShortMove["promotion"];
+    const promotion = move[4] as ShortMove["promotion"];
     return {
       from,
       to,
