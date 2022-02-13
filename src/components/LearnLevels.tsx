@@ -24,10 +24,10 @@ function LearnLevels(props: Props) {
 
   const nextLevel = useCallback(() => {
     const levels = stage ? stage.levels : [];
-    const next = index + 1 >= levels.length ? 0 : index + 1;
-    next
+    const next = index + 1;
+    next < levels.length
       ? navigate(`/learn/${params.category}/${params.stage}/${next}/`)
-      : navigate(`/learn/${params.category}/${params.stage}/`);
+      : navigate(`/learn`);
   }, [params, stage, index, navigate]);
 
   useEffect(() => {

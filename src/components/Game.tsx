@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
-import ButtonGroup from "@mui/material/ButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
 import ChessCtrl from "../lib/chess";
 import StockfishCtrl from "../lib/stockfish";
+import ButtonGroup from "./ButtonGroup";
+import ToggleButtonGroup from "./ToggleButtonGroup";
 import Board from "./Board";
 import EvaluationBar from "./EvaluationBar";
 import Toolbar from "./Toolbar";

@@ -13,8 +13,8 @@ function MainMenu({ onClick }: Props) {
     <Paper className={css.root}>
       <Grid container spacing={2} className={css.grid}>
         <Grid item xs={6}>
-          <Link to="/play" className={css.link} onClick={onClick}>
-            Play a game
+          <Link to="/learn" className={css.link} onClick={onClick}>
+            Learn
           </Link>
         </Grid>
         <Grid item xs={6}>
@@ -23,8 +23,8 @@ function MainMenu({ onClick }: Props) {
           </Link>
         </Grid>
         <Grid item xs={6}>
-          <Link to="/learn" className={css.link} onClick={onClick}>
-            Learn
+          <Link to="/play" className={css.link} onClick={onClick}>
+            Play a game
           </Link>
         </Grid>
       </Grid>
