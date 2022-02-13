@@ -2,9 +2,9 @@ import { Level } from "./util";
 import ChessCtrl from "../lib/chess";
 
 import type { Move, ShortMove, Square } from "chess.js";
-import type { Color, Key } from "chessground/types";
-import { DrawShape } from "chessground/draw";
-import { Config } from "chessground/config";
+import type { Color } from "chessground/types";
+import type { DrawShape } from "chessground/draw";
+import type { Config } from "chessground/config";
 
 export class LevelManager {
   public level: Level;
@@ -16,8 +16,8 @@ export class LevelManager {
     this.reset();
   }
 
-  onMove = (from: Key, to: Key): void => {
-    this.chess.move(from as Square, to as Square, "q");
+  onMove = (move: ShortMove): void => {
+    this.chess.move(move);
     if (this.level.scenario) {
       this.makeBotMove();
     } else if (!this.isComplete) {
@@ -100,10 +100,7 @@ export class LevelManager {
       ChessCtrl.toColor(piece.color) !== this.level.color &&
       !this.isComplete
     ) {
-      setTimeout(
-        () => this.chess.move(move.from, move.to, move.promotion),
-        1000
-      );
+      setTimeout(this.chess.move, 1000, move);
     }
   }
 }

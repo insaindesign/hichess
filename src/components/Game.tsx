@@ -11,9 +11,9 @@ import Board from "./Board";
 import EvaluationBar from "./EvaluationBar";
 import Toolbar from "./Toolbar";
 
-import type { Move, ShortMove, Square } from "chess.js";
+import type { Move, ShortMove } from "chess.js";
 import type { Config } from "chessground/config";
-import type { Color, Key, Piece } from "chessground/types";
+import type { Color } from "chessground/types";
 import type { UserColor } from "./Board";
 import type { ShapeOptionType } from "./Board/brushes";
 import type { BestMove, Evaluations } from "../lib/uci";
@@ -43,22 +43,12 @@ function Game({ fen }: Props) {
   const userColor = config.movable?.color;
 
   const onMove = useCallback(
-    (from: Square, to: Square, promotion: ShortMove["promotion"]) => {
+    (move: ShortMove) => {
       if (chess) {
-        chess.move(from, to, promotion);
+        chess.move(move);
       }
     },
     [chess]
-  );
-
-  const onBoardMove = useCallback(
-    (from: Key, to: Key, promotion: Piece | undefined) =>
-      onMove(
-        from as Square,
-        to as Square,
-        (promotion || "q") as ShortMove["promotion"]
-      ),
-    [onMove]
   );
 
   const newGame = useCallback(() => chess.reset(), [chess]);
@@ -90,7 +80,7 @@ function Game({ fen }: Props) {
 
   useEffect(() => {
     if (bestMove && chess.color !== userColor && userColor !== "both") {
-      onMove(bestMove.move.from, bestMove.move.to, bestMove.move.promotion);
+      onMove(bestMove.move);
     }
   }, [bestMove, onMove, userColor, chess]);
 
@@ -148,7 +138,7 @@ function Game({ fen }: Props) {
             config={config}
             chess={chess}
             complete={chess.js.game_over()}
-            onMove={onBoardMove}
+            onMove={onMove}
             orientation={enforceOrientation(userColor, "white")}
             showDefenders={showDefenders}
             showThreats={showThreats}
@@ -167,7 +157,11 @@ function Game({ fen }: Props) {
             >
               Undo
             </Button>
-            <Button onClick={newGame} disabled={!moves.length} variant={chess.js.game_over() ? "contained" : "outlined"}>
+            <Button
+              onClick={newGame}
+              disabled={!moves.length}
+              variant={chess.js.game_over() ? "contained" : "outlined"}
+            >
               New Game
             </Button>
           </ButtonGroup>

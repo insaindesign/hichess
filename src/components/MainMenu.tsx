@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 
 import css from "./MainMenu.module.css";
@@ -10,7 +9,7 @@ type Props = {
 
 function MainMenu({ onClick }: Props) {
   return (
-    <Paper className={css.root}>
+    <div className={css.root}>
       <Grid container spacing={2} className={css.grid}>
         <Grid item xs={6}>
           <Link to="/learn" className={css.link} onClick={onClick}>
@@ -28,7 +27,7 @@ function MainMenu({ onClick }: Props) {
           </Link>
         </Grid>
       </Grid>
-    </Paper>
+    </div>
   );
 }
 

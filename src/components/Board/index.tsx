@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Chessground } from "chessground";
 import { brushes, add_shapes } from "./brushes";
 
@@ -10,11 +10,13 @@ import styles from "./Board.module.css";
 
 import type { Api } from "chessground/api";
 import type { Config } from "chessground/config";
-import type { Color, Key, Piece } from "chessground/types";
+import type { Color, Key } from "chessground/types";
 import type { DrawShape } from "chessground/draw";
-import type { Move } from "chess.js";
+import type { Move, ShortMove } from "chess.js";
 import type { ChessCtrl } from "../../lib/chess";
 import type { ShapeOptionType } from "./brushes";
+import { HeadlessState } from "chessground/state";
+import PickAPiece from "../PickAPiece";
 
 interface Props {
   chess: ChessCtrl;
@@ -24,9 +26,17 @@ interface Props {
   showDefenders?: ShapeOptionType;
   showThreats?: ShapeOptionType;
   orientation: Color;
-  onMove: (from: Key, to: Key, promotion: Piece | undefined) => void;
+  onMove: (move: ShortMove) => void;
 }
 export type UserColor = Color | "both";
+
+const isPromotion = (state: HeadlessState, from: Key, to: Key): boolean => {
+  const piece = state.pieces.get(to);
+  const rank = to.slice(1);
+  return Boolean(
+    piece && piece.role === "pawn" && (rank === "1" || rank === "8")
+  );
+};
 
 function Board({
   config,
@@ -41,6 +51,29 @@ function Board({
   const [api, setApi] = useState<Api | null>(null);
   const ref = useRef<HTMLDivElement | null>(null);
   const [history, setHistory] = useState<Move[]>([]);
+  const [showPromotion, setShowPromotion] = useState<ShortMove | null>(null);
+
+  const onSelectPiece = useCallback(
+    (promotion: ShortMove["promotion"]) => {
+      if (showPromotion) {
+        setShowPromotion(null);
+        onMove({ ...showPromotion, promotion });
+      }
+    },
+    [showPromotion, onMove]
+  );
+
+  const handleMove = useCallback(
+    (from: Key, to: Key) => {
+      const promo = api ? isPromotion(api.state, from, to) : false;
+      const move = {
+        from: from as ShortMove["from"],
+        to: to as ShortMove["from"],
+      };
+      promo ? setShowPromotion(move) : onMove(move);
+    },
+    [api, onMove]
+  );
 
   useEffect(() => chess.on("change", setHistory), [chess]);
 
@@ -69,11 +102,11 @@ function Board({
     if (api) {
       api.set({
         events: {
-          move: onMove,
+          move: handleMove,
         },
       });
     }
-  }, [api, onMove]);
+  }, [api, handleMove]);
 
   useEffect(() => {
     if (api) {
@@ -117,7 +150,16 @@ function Board({
     api.setShapes(draw);
   }, [api, chess, complete, showThreats, showDefenders, history, shapes]);
 
-  return <div ref={ref} className={styles.board} />;
+  return (
+    <>
+      <div ref={ref} className={styles.board} />
+      <PickAPiece
+        open={Boolean(showPromotion)}
+        onSelect={onSelectPiece}
+        pieces={["q", "b", "n", "r"]}
+      />
+    </>
+  );
 }
 
 export default Board;

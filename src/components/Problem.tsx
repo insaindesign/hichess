@@ -42,7 +42,7 @@ function Problem({ level, nextLevel }: Props) {
     let timeout: any;
     const nextMove = manageLevel.nextMove();
     if (nextMove && manageLevel.isUsersTurn) {
-      manageLevel.chess.move(nextMove.from, nextMove.to, nextMove.promotion);
+      manageLevel.chess.move(nextMove);
       timeout = setTimeout(() => manageLevel.chess.undo(), 1000);
     }
     return () => clearTimeout(timeout);

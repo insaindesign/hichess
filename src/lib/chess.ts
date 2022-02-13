@@ -13,24 +13,6 @@ import type {
   ShortMove,
 } from "chess.js";
 
-export const roleToSan: {
-  [R in PromotionRole]: PromotionChar;
-} = {
-  knight: "n",
-  bishop: "b",
-  rook: "r",
-  queen: "q",
-};
-export type PromotionRole = "knight" | "bishop" | "rook" | "queen";
-export type PromotionChar = "n" | "b" | "r" | "q";
-export type PromotionPiece = PromotionChar | PromotionRole | "";
-
-export function isRole(
-  str: PromotionChar | PromotionRole
-): str is PromotionRole {
-  return str.length > 1;
-}
-
 export function readKeys(keys: string | Key[]): Key[] {
   return typeof keys === "string" ? (keys.split(" ") as Key[]) : keys;
 }
@@ -143,12 +125,7 @@ export class ChessCtrl {
     return dests;
   }
 
-  move(from: Key, to: Key, prom?: PromotionPiece) {
-    const move: ShortMove = {
-      from: from,
-      to: to,
-      promotion: prom ? (isRole(prom) ? roleToSan[prom] : prom) : undefined,
-    };
+  move(move: ShortMove) {
     const m = this.chess.move(move);
     if (m) {
       this.moves = [...this.moves, m];
