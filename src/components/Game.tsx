@@ -5,10 +5,10 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
-import { loadScript } from "../lib/scripts";
-import { isBestMove, parseUci } from "../lib/uci";
 import ChessCtrl from "../lib/chess";
+import StockfishCtrl from "../lib/stockfish";
 import Board from "./Board";
+import EvaluationBar from "./EvaluationBar";
 import Toolbar from "./Toolbar";
 
 import type { Move, ShortMove, Square } from "chess.js";
@@ -16,13 +16,13 @@ import type { Config } from "chessground/config";
 import type { Color, Key, Piece } from "chessground/types";
 import type { UserColor } from "./Board";
 import type { ShapeOptionType } from "./Board/brushes";
+import type { BestMove, Evaluations } from "../lib/uci";
 
 import css from "./Game.module.css";
 
 type Props = {
   fen?: string;
 };
-type StockfishWorker = any;
 
 const enforceOrientation = (
   color: UserColor | undefined,
@@ -35,10 +35,10 @@ function Game({ fen }: Props) {
   const [showThreats, setShowThreats] = useState<ShapeOptionType>("none");
   const [config] = useState<Config>({ movable: { color: "white" } });
   const [moves, setMoves] = useState<Move[]>([]);
-  const [stockfish, setStockfish] = useState<
-    StockfishWorker | null | undefined
-  >(undefined);
+  const [stockfish] = useState(() => new StockfishCtrl());
   const [stockfishLevel, setStockfishLevel] = useState(0);
+  const [bestMove, setBestMove] = useState<BestMove | null>(null);
+  const [evaluation, setEvaluation] = useState<Evaluations | null>(null);
 
   const userColor = config.movable?.color;
 
@@ -61,9 +61,7 @@ function Game({ fen }: Props) {
     [onMove]
   );
 
-  const newGame = useCallback(() => {
-    chess.reset();
-  }, [chess]);
+  const newGame = useCallback(() => chess.reset(), [chess]);
 
   const toggleShowThreats = useCallback(
     (e, value) => (value ? setShowThreats(value) : setShowThreats("none")),
@@ -91,54 +89,32 @@ function Game({ fen }: Props) {
   }, [chess, moves, userColor]);
 
   useEffect(() => {
+    if (bestMove && chess.color !== userColor && userColor !== "both") {
+      onMove(bestMove.move.from, bestMove.move.to, bestMove.move.promotion);
+    }
+  }, [bestMove, onMove, userColor, chess]);
+
+  useEffect(() => {
     let timeout: any;
-    if (stockfish && !chess.js.game_over()) {
-      stockfish.postMessage("stop");
-      stockfish.postMessage(
-        "position fen " +
-          chess.fen +
-          " moves " +
-          moves.map((m) => m.to).join(" ")
-      );
-      stockfish.postMessage("go multipv 25");
-      timeout = setTimeout(() => stockfish.postMessage("stop"), 1500);
+    if (
+      !chess.js.game_over() &&
+      ChessCtrl.swapColor(chess.color) === userColor
+    ) {
+      stockfish.bestMove(chess).then(setBestMove);
+      timeout = setTimeout(stockfish.stop, 1500);
     }
     return () => clearTimeout(timeout);
+  }, [chess, stockfish, moves, userColor]);
+
+  useEffect(() => {
+    if (!chess.js.game_over()) {
+      stockfish.evaluate(chess).then(setEvaluation);
+    }
   }, [chess, stockfish, moves]);
 
   useEffect(() => {
-    if (stockfish) {
-      stockfish.postMessage(
-        "setoption name Skill Level value " + stockfishLevel
-      );
-    }
+    stockfish.setLevel(stockfishLevel);
   }, [stockfish, stockfishLevel]);
-
-  useEffect(() => {
-    if (chess && stockfish) {
-      stockfish.addMessageListener((line: string) => {
-        const parsed = parseUci(line);
-        if (isBestMove(parsed) && chess.color !== userColor) {
-          onMove(parsed.from, parsed.to, parsed.promotion);
-        }
-      });
-    }
-  }, [chess, stockfish, onMove, userColor]);
-
-  useEffect(() => {
-    if (stockfish !== undefined || userColor === "both") {
-      return;
-    }
-    setStockfish(null);
-    loadScript("/lib/stockfish/stockfish.js")
-      .then((w: any) => w.Stockfish())
-      .then((sf) => {
-        sf.postMessage("uci");
-        sf.postMessage("setoption name MultiPV value 25");
-        sf.postMessage("setoption name Skill Level value " + stockfishLevel);
-        setStockfish(sf);
-      });
-  }, [userColor, stockfish, stockfishLevel]);
 
   return (
     <>
@@ -179,6 +155,7 @@ function Game({ fen }: Props) {
           />
         </div>
         <div className={css.panel}>
+          <EvaluationBar min={-20} max={20} evaluation={evaluation} />
           <ButtonGroup
             variant="outlined"
             fullWidth
@@ -190,7 +167,7 @@ function Game({ fen }: Props) {
             >
               Undo
             </Button>
-            <Button onClick={newGame} disabled={!moves.length}>
+            <Button onClick={newGame} disabled={!moves.length} variant={chess.js.game_over() ? "contained" : "outlined"}>
               New Game
             </Button>
           </ButtonGroup>

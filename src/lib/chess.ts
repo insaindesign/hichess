@@ -59,7 +59,6 @@ export class ChessCtrl {
     this.js = this.chess;
     this.events = new EventEmitter();
     this.moves = [];
-    this.handleChange();
   }
 
   public static toMove(move: string): ShortMove {
