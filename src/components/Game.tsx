@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import ToggleButton from "@mui/material/ToggleButton";
+import { useTranslation } from "react-i18next";
 
 import ChessCtrl from "../lib/chess";
 import StockfishCtrl from "../lib/stockfish";
@@ -30,6 +31,7 @@ const enforceOrientation = (
 ): Color => (color === "white" || color === "black" ? color : fallback);
 
 function Game({ fen }: Props) {
+  const { t } = useTranslation();
   const [chess] = useState(() => new ChessCtrl(fen));
   const [showDefenders, setShowDefenders] = useState<ShapeOptionType>("none");
   const [showThreats, setShowThreats] = useState<ShapeOptionType>("none");
@@ -119,17 +121,11 @@ function Game({ fen }: Props) {
           }
           variant={chess.js.game_over() ? "filled" : "standard"}
         >
-          {chess.js.game_over() ? (
-            chess.js.in_draw() ? (
-              "Draw"
-            ) : (
-              ChessCtrl.swapColor(chess.color) + " wins"
-            )
-          ) : (
-            <span>
-              <strong>{chess.color}</strong> to move
-            </span>
-          )}
+          {chess.js.game_over()
+            ? chess.js.in_draw()
+              ? t("result.draw")
+              : t("result.win." + ChessCtrl.swapColor(chess.color))
+            : t("move." + chess.color)}
         </Alert>
       </Toolbar>
       <div className={css.root}>
@@ -155,14 +151,14 @@ function Game({ fen }: Props) {
               onClick={undo}
               disabled={!moves.length || chess.color !== userColor}
             >
-              Undo
+              {t('undo')}
             </Button>
             <Button
               onClick={newGame}
               disabled={!moves.length}
               variant={chess.js.game_over() ? "contained" : "outlined"}
             >
-              New Game
+              {t('newGame')}
             </Button>
           </ButtonGroup>
           <ToggleButtonGroup

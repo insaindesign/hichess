@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import ToggleButton from "@mui/material/ToggleButton";
+import { useTranslation } from "react-i18next";
 
 import ButtonGroup from "./ButtonGroup";
 import ToggleButtonGroup from "./ToggleButtonGroup";
@@ -20,6 +21,7 @@ type Props = {
 };
 
 function Problem({ level, nextLevel }: Props) {
+  const { t } = useTranslation();
   const [manageLevel, setManageLevel] = useState(() => new LevelManager(level));
   const [history, setHistory] = useState(manageLevel.moves);
   const [showThreats, setShowThreats] = useState<ShapeOptionType>("none");
@@ -69,15 +71,11 @@ function Problem({ level, nextLevel }: Props) {
           }
           variant={!manageLevel.isComplete ? "standard" : "filled"}
         >
-          {manageLevel.isSuccessful ? (
-            "Well done!!"
-          ) : manageLevel.isFailure ? (
-            "Bad luck, try again!"
-          ) : (
-            <span>
-              <strong>{manageLevel.chess.color}</strong> to move
-            </span>
-          )}
+          {manageLevel.isSuccessful
+            ? t("problem.success")
+            : manageLevel.isFailure
+            ? t("problem.fail")
+            : t("move." + manageLevel.chess.color)}
         </Alert>
       </Toolbar>
       <div className={css.root}>
@@ -101,7 +99,7 @@ function Problem({ level, nextLevel }: Props) {
           >
             {manageLevel.hasHints ? (
               <Button disabled={!manageLevel.isUsersTurn} onClick={hint}>
-                Hint
+                {t("hint")}
               </Button>
             ) : null}
             <Button
@@ -109,13 +107,13 @@ function Problem({ level, nextLevel }: Props) {
               disabled={!history.length}
               variant={manageLevel.isFailure ? "contained" : "outlined"}
             >
-              Try again
+              {t("tryAgain")}
             </Button>
             <Button
               onClick={nextLevel}
               variant={manageLevel.isSuccessful ? "contained" : "outlined"}
             >
-              Next
+              {t("next")}
             </Button>
           </ButtonGroup>
           <ToggleButtonGroup
