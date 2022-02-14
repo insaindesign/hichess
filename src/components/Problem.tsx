@@ -104,7 +104,7 @@ function Problem({ level, nextLevel }: Props) {
             ) : null}
             <Button
               onClick={resetLevel}
-              disabled={!history.length}
+              disabled={!manageLevel.userMoves.length}
               variant={manageLevel.isFailure ? "contained" : "outlined"}
             >
               {t("tryAgain")}

@@ -18,7 +18,7 @@ function Puzzles(props: Props) {
   useEffect(() => {
     getPuzzles().then((p) => {
       setPuzzles(p);
-      setIndex(4);
+      setIndex(Math.floor(Math.random() * p.length));
     });
   }, []);
 

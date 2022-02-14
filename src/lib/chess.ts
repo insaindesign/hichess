@@ -125,14 +125,14 @@ export class ChessCtrl {
     return dests;
   }
 
-  move(move: ShortMove) {
+  move = (move: ShortMove) => {
     const m = this.chess.move(move);
     if (m) {
       this.moves = [...this.moves, m];
       this.handleChange();
     }
     return m;
-  }
+  };
 
   pieces(): Partial<Record<Key, Piece>> {
     const map: Partial<Record<Key, Piece>> = {};

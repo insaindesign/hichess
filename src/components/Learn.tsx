@@ -18,7 +18,7 @@ type Props = {
 
 function Learn({ category, stage }: Props) {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(category || "");
+  const [open, setOpen] = useState(category || "chess-pieces");
 
   const handleClick = (key: string) => () => setOpen(key !== open ? key : "");
 
