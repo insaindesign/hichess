@@ -1,4 +1,3 @@
-import { Color } from "chessground/types";
 import { not, followScenario, completedScenario } from "../assert";
 import { arrow, Stage, learnToLevel } from "../util";
 
@@ -8,7 +7,6 @@ const Learn: Stage = {
     {
       goal: "blackJustMovedThePawnByTwoSquares",
       fen: "rnbqkbnr/pppppppp/8/2P5/8/8/PP1PPPPP/RNBQKBNR b KQkq -",
-      color: "white" as Color,
       nbMoves: 1,
       scenario: [
         {
@@ -21,7 +19,6 @@ const Learn: Stage = {
     {
       goal: "enPassantOnlyWorksImmediately",
       fen: "rnbqkbnr/ppp1pppp/8/2Pp3P/8/8/PP1PPPP1/RNBQKBNR b KQkq -",
-      color: "white" as Color,
       nbMoves: 1,
       scenario: [
         {
@@ -34,7 +31,6 @@ const Learn: Stage = {
     {
       goal: "enPassantOnlyWorksOnFifthRank",
       fen: "rnbqkbnr/pppppppp/P7/2P5/8/8/PP1PPPP1/RNBQKBNR b KQkq -",
-      color: "white" as Color,
       nbMoves: 1,
       scenario: [
         {
@@ -47,7 +43,6 @@ const Learn: Stage = {
     {
       goal: "takeAllThePawnsEnPassant",
       fen: "rnbqkbnr/pppppppp/8/2PPP2P/8/8/PP1P1PP1/RNBQKBNR b KQkq -",
-      color: "white" as Color,
       nbMoves: 4,
       scenario: [
         "b7b5",
@@ -62,6 +57,7 @@ const Learn: Stage = {
     },
   ].map((l) =>
     learnToLevel({
+      color: "white",
       failure: not(followScenario),
       success: completedScenario,
       ...l,

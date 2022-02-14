@@ -14,6 +14,8 @@ import setup from "./setup";
 import castling from "./castling";
 import enpassant from "./enpassant";
 import stalemate from "./stalemate";
+import pin from "./pin";
+import skewer from "./skewer";
 import value from "./value";
 import check2 from "./check2";
 
@@ -41,6 +43,8 @@ const Categs: Category[] = [
     stages: [
       value,
       check2,
+      pin,
+      skewer,
     ],
   },
 ];

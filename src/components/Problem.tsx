@@ -23,7 +23,7 @@ type Props = {
 function Problem({ level, nextLevel }: Props) {
   const { t } = useTranslation();
   const [manageLevel, setManageLevel] = useState(() => new LevelManager(level));
-  const [history, setHistory] = useState(manageLevel.moves);
+  const [, setHistory] = useState(manageLevel.moves);
   const [showThreats, setShowThreats] = useState<ShapeOptionType>("none");
   const [showDefenders, setShowDefenders] = useState<ShapeOptionType>("none");
 

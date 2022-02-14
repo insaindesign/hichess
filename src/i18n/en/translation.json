@@ -15,13 +15,15 @@
     "combat": "Attacking and defending",
     "check1": "Attacking the king (check in one move)",
     "outOfCheck": "Get out of check",
-    "checkmate1": "Winning the game (Checkmate)",
+    "checkmate": "Winning the game (Checkmate)",
     "setup": "Where the pieces start (Setting up the board)",
     "castling": "King and rook dance (Castling)",
     "enpassant": "Enpassant",
     "stalemate": "It's a draw (Stalemate)",
     "value": "Piece value",
-    "check2": "Putting the king in check (two moves)"
+    "check2": "Putting the king in check (two moves)",
+    "skewer": "Skewered",
+    "pin": "Pin it to win it"
   },
   "move": {
     "black": "Black to move",
