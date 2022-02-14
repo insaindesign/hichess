@@ -36,14 +36,14 @@ function LearnLevels(props: Props) {
     }
   }, [navigate, level]);
 
-  if (!level) {
+  if (!level || !cat || !stage) {
     return null;
   }
 
   return (
     <>
       <Problem level={level} nextLevel={nextLevel} />
-      <Learn />
+      <Learn category={cat.key} stage={stage.key} />
     </>
   );
 }
