@@ -1,6 +1,6 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import CssBaseline from "@mui/material/CssBaseline";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
+import Root from "./Root";
 import Home from "./Home";
 import Game from "./Game";
 import GameFrom from "./GameFrom";
@@ -10,20 +10,19 @@ import Puzzles from "./Puzzles";
 
 function App() {
   return (
-    <Router>
-      <>
-        <CssBaseline />
-        <Routes>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Root />}>
           <Route index element={<Home />} />
-          <Route path="/learn" element={<LearnPage />} />
-          <Route path="/learn/:category/:stage/" element={<LearnLevels />} />
-          <Route path="/learn/:category/:stage/:index" element={<LearnLevels />} />
-          <Route path="/puzzles" element={<Puzzles />} />
-          <Route path="/play" element={<Game />} />
-          <Route path="/play/:fen" element={<GameFrom />} />
-        </Routes>
-      </>
-    </Router>
+          <Route path="learn" element={<LearnPage />} />
+          <Route path="learn/:category/:stage/" element={<LearnLevels />} />
+          <Route path="learn/:category/:stage/:index" element={<LearnLevels />} />
+          <Route path="puzzles" element={<Puzzles />} />
+          <Route path="play" element={<Game />} />
+          <Route path="play/:fen" element={<GameFrom />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
