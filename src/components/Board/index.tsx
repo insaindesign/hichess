@@ -16,7 +16,7 @@ import type { Move, ShortMove } from "chess.js";
 import type { ChessCtrl } from "../../lib/chess";
 import type { ShapeOptionType } from "./brushes";
 import { HeadlessState } from "chessground/state";
-import PickAPiece from "../PickAPiece";
+import PickAPiece from "./PickAPiece";
 
 interface Props {
   chess: ChessCtrl;
@@ -100,11 +100,7 @@ function Board({
 
   useEffect(() => {
     if (api) {
-      api.set({
-        events: {
-          move: handleMove,
-        },
-      });
+      api.set({ events: { move: handleMove } });
     }
   }, [api, handleMove]);
 
@@ -122,9 +118,7 @@ function Board({
 
   useEffect(() => {
     if (api) {
-      api.set({
-        viewOnly: complete,
-      });
+      api.set({ viewOnly: complete });
     }
   }, [api, complete]);
 
@@ -152,11 +146,12 @@ function Board({
 
   return (
     <>
-      <div ref={ref} className={styles.board} />
+      <div className={styles.board} ref={ref} />
       <PickAPiece
+        color={chess.color}
         open={Boolean(showPromotion)}
         onSelect={onSelectPiece}
-        pieces={["q", "b", "n", "r"]}
+        pieces={["q", "r", "b", "n"]}
       />
     </>
   );
