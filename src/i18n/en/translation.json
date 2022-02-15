@@ -1,5 +1,6 @@
 {
   "learn": {
+    "title": "Learn to play",
     "chessPieces": "Meet the pieces",
     "fundamentals": "Chess Basics",
     "intermediate": "Intermediate",
@@ -39,10 +40,33 @@
     "fail": "Nuts! Try again.",
     "success": "Well done! You did it!"
   },
+  "mainmenu": {
+    "learn": "Learn",
+    "play": "Play",
+    "puzzles": "Puzzles",
+    "hideGrownups": "Hide Grownups",
+    "grownups": "Grownups",
+    "about": "About",
+    "privacy": "Privacy",
+    "donate": "Donate"
+  },
+  "about": {
+    "title": "About HiChess",
+    "description": "HiChess was born out of a desire to create a simple and private app learn and improve playing chess, built for kids.",
+    "description1": "There are many apps that are amazing tools for improving or learning you chess, but few are built for kids, and fewer with our level of data privacy."
+  },
+  "privacy": {
+    "title": "HiChess Privacy Policy",
+    "description": "We keep things simple. No data is uploaded from this device to HiChess, or any other entity.",
+    "description1": "HiChess app will occasionally download updates, including new lessons and puzzles, but mostly, HiChess is built to run completely offline."
+  },
   "tryAgain": "Try again",
   "done": "Done",
   "hint": "Hint",
   "next": "Next",
+  "clear": "Clear",
+  "cancel": "Cancel",
   "undo": "Undo",
+  "yearofbirth": "What is your year of birth?",
   "newGame": "New Game"
 }

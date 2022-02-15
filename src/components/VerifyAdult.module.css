@@ -1,0 +1,23 @@
+.title.title,
+.content {
+  font-size: 1.8em;
+  text-align: center;
+  width: 400px;
+  max-width: 90vw;
+}
+
+.buttons {
+  display: grid;
+  grid: auto-flow / 1fr 1fr 1fr;
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
+}
+
+.buttons > :last-child {
+  grid-column-end: 4;
+  grid-column-start: 1;
+}
+
+.clearButton {
+  flex: 1 1 auto;
+}

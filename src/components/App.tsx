@@ -4,6 +4,8 @@ import Root from "./Root";
 import Home from "./Home";
 import Game from "./Game";
 import GameFrom from "./GameFrom";
+import AboutPage from "./AboutPage";
+import PrivacyPage from "./PrivacyPage";
 import LearnPage from "./LearnPage";
 import LearnLevels from "./LearnLevels";
 import Puzzles from "./Puzzles";
@@ -14,6 +16,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Root />}>
           <Route index element={<Home />} />
+          <Route path="about" element={<AboutPage />} />
+          <Route path="privacy" element={<PrivacyPage />} />
           <Route path="learn" element={<LearnPage />} />
           <Route path="learn/:category/:stage/" element={<LearnLevels />} />
           <Route path="learn/:category/:stage/:index" element={<LearnLevels />} />
