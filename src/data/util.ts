@@ -20,7 +20,7 @@ export interface Stage {
 export type Level = LevelBase & LevelDefaults;
 export type LevelPartial = LevelBase & Partial<LevelDefaults>;
 
-export type Uci = string; // represents a move e.g, e2e4
+export type Uci = string; // represents a move e.g, e4
 
 export type ScenarioLevel = (
   | Uci
@@ -29,11 +29,6 @@ export type ScenarioLevel = (
       shapes: DrawShape[];
     }
 )[];
-
-export type AssertData = {
-  chess: ChessCtrl;
-  vm: LevelManager;
-};
 
 interface PuzzleBase {
   fen: string;

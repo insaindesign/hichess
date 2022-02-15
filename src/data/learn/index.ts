@@ -7,9 +7,9 @@ import pawn from "./pawn";
 import capture from "./capture";
 import protection from "./protection";
 import combat from "./combat";
-import check1 from "./check1";
+import check from "./check";
 import outOfCheck from "./outOfCheck";
-import checkmate1 from "./checkmate1";
+import checkmate from "./checkmate";
 import setup from "./setup";
 import castling from "./castling";
 import enpassant from "./enpassant";
@@ -17,7 +17,6 @@ import stalemate from "./stalemate";
 import pin from "./pin";
 import skewer from "./skewer";
 import value from "./value";
-import check2 from "./check2";
 
 import type { Category } from "../util";
 
@@ -30,7 +29,7 @@ const Categs: Category[] = [
   {
     key: "fundamentals",
     name: "fundamentals",
-    stages: [capture, protection, combat, check1, outOfCheck, checkmate1],
+    stages: [capture, protection, combat, check, outOfCheck, checkmate],
   },
   {
     key: "intermediate",
@@ -42,7 +41,6 @@ const Categs: Category[] = [
     name: "advanced",
     stages: [
       value,
-      check2,
       pin,
       skewer,
     ],
