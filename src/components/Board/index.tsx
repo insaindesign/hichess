@@ -5,7 +5,7 @@ import { brushes, add_shapes } from "./brushes";
 import "./base.css";
 import "./brown.css";
 import "./california.css";
-import "./apples.css";
+import "./obstacles.css";
 import styles from "./Board.module.css";
 
 import type { Api } from "chessground/api";

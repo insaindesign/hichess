@@ -23,9 +23,8 @@ function LearnLevels(props: Props) {
   const level = stage ? stage.levels[index] : null;
 
   const nextLevel = useCallback(() => {
-    const levels = stage ? stage.levels : [];
     const next = index + 1;
-    next < levels.length
+    next < (stage?.levels || []).length
       ? navigate(`/learn/${params.category}/${params.stage}/${next}/`)
       : navigate(`/learn`);
   }, [params, stage, index, navigate]);
@@ -42,7 +41,7 @@ function LearnLevels(props: Props) {
 
   return (
     <>
-      <Problem level={level} nextLevel={nextLevel} />
+      <Problem level={level} nextLevel={nextLevel} done={index + 1 === stage.levels.length} />
       <Learn category={cat.key} stage={stage.key} />
     </>
   );

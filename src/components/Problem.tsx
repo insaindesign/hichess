@@ -16,11 +16,12 @@ import type { ShapeOptionType } from "./Board/brushes";
 import css from "./Game.module.css";
 
 type Props = {
+  done?: boolean;
   level: Level;
   nextLevel: () => void;
 };
 
-function Problem({ level, nextLevel }: Props) {
+function Problem({ level, nextLevel, done }: Props) {
   const { t } = useTranslation();
   const [manageLevel, setManageLevel] = useState(() => new LevelManager(level));
   const [, setHistory] = useState(manageLevel.moves);
@@ -79,7 +80,7 @@ function Problem({ level, nextLevel }: Props) {
         </Alert>
       </Toolbar>
       <div className={css.root}>
-        <div className={`${css.board}${level.apples ? " apples" : ""}`}>
+        <div className={`${css.board}${level.apples ? " apples" : ""}${level.walls ? " walls" : ""}`}>
           <Board
             config={manageLevel.config}
             complete={false}
@@ -113,7 +114,7 @@ function Problem({ level, nextLevel }: Props) {
               onClick={nextLevel}
               variant={manageLevel.isSuccessful ? "contained" : "outlined"}
             >
-              {t("next")}
+              {done ? t("done") : t("next")}
             </Button>
           </ButtonGroup>
           <ToggleButtonGroup

@@ -44,6 +44,7 @@ interface LevelBase {
   goal: string;
   fen: string;
   apples?: string;
+  walls?: string;
   nbMoves?: number;
   scenario?: ScenarioLevel;
   shapes?: DrawShape[];

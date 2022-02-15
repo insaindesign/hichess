@@ -28,7 +28,16 @@ export class LevelManager {
   reset(): void {
     this.chess.fen = this.level.fen;
     if (this.level.apples) {
-      this.chess.addObstacles(this.level.apples.split(" ") as Square[]);
+      this.chess.addObstacles(
+        this.level.apples.split(" ") as Square[],
+        this.chess.color === "white" ? "b" : "w"
+      );
+    }
+    if (this.level.walls) {
+      this.chess.addObstacles(
+        this.level.walls.split(" ") as Square[],
+        this.chess.color === "black" ? "b" : "w"
+      );
     }
     this.makeBotMove();
   }

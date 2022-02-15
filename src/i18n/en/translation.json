@@ -41,6 +41,7 @@
     "success": "Well done! You did it!"
   },
   "tryAgain": "Try again",
+  "done": "Done",
   "hint": "Hint",
   "next": "Next",
   "undo": "Undo",
