@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
+import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 import { useTranslation } from "react-i18next";
 
 import css from "./VerifyAdult.module.css";
@@ -42,8 +44,10 @@ const yobQuestion: Question = {
 const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
 function VerifyAdult({ onChange }: Props) {
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const { t } = useTranslation();
-  const [yob, setYob] = useState<string|null>(null);
+  const [yob, setYob] = useState<string | null>(null);
   const [question, setQuestion] = useState(yobQuestion);
   const [input, setInput] = useState("");
   const [correct, setCorrect] = useState(0);
@@ -52,7 +56,7 @@ function VerifyAdult({ onChange }: Props) {
   const handleClose = useCallback(() => onChange(false), [onChange]);
 
   const handleNext = useCallback(() => {
-    if (question.type === 'yob') {
+    if (question.type === "yob") {
       if (yob && yob !== input) {
         return setCorrect(0);
       } else if (correct && yob && yob === input) {
@@ -80,7 +84,7 @@ function VerifyAdult({ onChange }: Props) {
   useEffect(() => {
     setInput("");
     if (question.type === "math") {
-      setTimeRemaining(5000);
+      setTimeRemaining(10000);
     }
   }, [question]);
 
@@ -93,27 +97,38 @@ function VerifyAdult({ onChange }: Props) {
   }, [timeRemaining]);
 
   return (
-    <Dialog open={true} onClose={handleClose}>
+    <Dialog fullScreen={fullScreen} open={true} onClose={handleClose}>
       <DialogTitle className={css.title}>{t(question.title)}</DialogTitle>
       <DialogContent className={css.content}>
-        <h1>{input}&nbsp;</h1>
+        <Typography variant="h2">{input}&nbsp;</Typography>
         <div className={css.buttons}>
           {numbers.map((n) => (
-            <Button size="large" variant="outlined" key={n} onClick={add(n)}>
+            <Button
+              className={css.button}
+              variant="outlined"
+              key={n}
+              onClick={add(n)}
+            >
               {n}
             </Button>
           ))}
+          <Button
+            className={css.button}
+            variant="outlined"
+            onClick={() => setInput("")}
+          >
+            {t("clear")}
+          </Button>
+          <Button
+            className={css.button}
+            disabled={!question.validate(input)}
+            variant={question.validate(input) ? "contained" : "outlined"}
+            onClick={handleNext}
+          >
+            {t("next")}
+          </Button>
         </div>
       </DialogContent>
-      <DialogActions>
-        <div className={css.clearButton}>
-          <Button onClick={() => setInput("")}>{t('clear')}</Button>
-        </div>
-        <Button onClick={handleClose}>{t('cancel')}</Button>
-        <Button disabled={!question.validate(input)} onClick={handleNext}>
-          {t('next')}
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 }

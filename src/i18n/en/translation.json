@@ -44,7 +44,7 @@
     "learn": "Learn",
     "play": "Play",
     "puzzles": "Puzzles",
-    "hideGrownups": "Hide Grownups",
+    "hideGrownups": "Kid mode",
     "grownups": "Grownups",
     "about": "About",
     "privacy": "Privacy",
@@ -52,12 +52,12 @@
   },
   "about": {
     "title": "About HiChess",
-    "description": "HiChess was born out of a desire to create a simple and private app learn and improve playing chess, built for kids.",
-    "description1": "There are many apps that are amazing tools for improving or learning you chess, but few are built for kids, and fewer with our level of data privacy."
+    "description": "HiChess was born out of a desire to create a simple and private app, to learn and improve playing chess, built for kids.",
+    "description1": "There are many apps that are amazing tools for improving or learning chess, but few are built for kids, and fewer with our level of data privacy."
   },
   "privacy": {
     "title": "HiChess Privacy Policy",
-    "description": "We keep things simple. No data is uploaded from this device to HiChess, or any other entity.",
+    "description": "We keep things simple and private. No data is uploaded from this device to HiChess, or any other entity.",
     "description1": "HiChess app will occasionally download updates, including new lessons and puzzles, but mostly, HiChess is built to run completely offline."
   },
   "tryAgain": "Try again",

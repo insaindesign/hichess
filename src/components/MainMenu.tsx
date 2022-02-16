@@ -122,11 +122,11 @@ function MainMenu({ onClick }: Props) {
       </Grid>
       {showVerify ? (
         <VerifyAdult onChange={handleVerify} />
-      ) : (
+      ) : !amAnAdult ? (
         <Button fullWidth onClick={verifyAdult}>
           {t("mainmenu.grownups")}
         </Button>
-      )}
+      ) : null}
     </div>
   );
 }

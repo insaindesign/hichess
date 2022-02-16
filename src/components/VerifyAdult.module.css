@@ -2,6 +2,10 @@
 .content {
   font-size: 1.8em;
   text-align: center;
+}
+
+.content {
+  margin: 0 auto;
   width: 400px;
   max-width: 90vw;
 }
@@ -13,9 +17,14 @@
   grid-row-gap: 10px;
 }
 
-.buttons > :last-child {
-  grid-column-end: 4;
-  grid-column-start: 1;
+.button.button {
+  border-radius: 50%;
+  padding: 0;
+}
+
+.button::after {
+  content: '';
+  padding-bottom: 100%;
 }
 
 .clearButton {
