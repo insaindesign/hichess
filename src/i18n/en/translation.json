@@ -47,7 +47,7 @@
     "hideGrownups": "Kid mode",
     "grownups": "Grownups",
     "about": "About",
-    "privacy": "Privacy",
+    "privacy": "Privacy Policy",
     "donate": "Donate"
   },
   "about": {
@@ -60,8 +60,13 @@
     "description": "We keep things simple and private. No data is uploaded from this device to HiChess, or any other entity.",
     "description1": "HiChess app will occasionally download updates, including new lessons and puzzles, but mostly, HiChess is built to run completely offline."
   },
+  "account": {
+    "add": "New account",
+    "name": "Add a nickname"
+  },
   "tryAgain": "Try again",
   "done": "Done",
+  "save": "Save",
   "hint": "Hint",
   "next": "Next",
   "clear": "Clear",

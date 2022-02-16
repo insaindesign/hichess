@@ -1,7 +1,7 @@
-import MainMenu from "./MainMenu";
+import UserPicker from "./AccountPicker";
 
 function Home() {
-  return <MainMenu />;
+  return <UserPicker />;
 }
 
 export default Home;

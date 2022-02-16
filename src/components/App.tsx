@@ -9,6 +9,7 @@ import PrivacyPage from "./PrivacyPage";
 import LearnPage from "./LearnPage";
 import LearnLevels from "./LearnLevels";
 import Puzzles from "./Puzzles";
+import MainMenu from "./MainMenu";
 
 function App() {
   return (
@@ -16,6 +17,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Root />}>
           <Route index element={<Home />} />
+          <Route path="login" element={<Home />} />
+          <Route path="menu" element={<MainMenu />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="privacy" element={<PrivacyPage />} />
           <Route path="learn" element={<LearnPage />} />
