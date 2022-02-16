@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import {useRecoilState} from "recoil";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import { useTranslation } from "react-i18next";
@@ -6,24 +7,20 @@ import { Link, useNavigate } from "react-router-dom";
 
 import AccountAdd from "./AccountAdd";
 import AccountIcon from "./AsyncAccountIcon";
+import { selectedAccountState, accountsState } from "../state/accounts";
 
-import type { IconName } from "./AsyncAccountIcon";
+import type { Account } from "../state/accounts";
 
 import css from "./AccountPicker.module.css";
 
 type Props = {};
-export type Account = {
-  id: string;
-  name: string;
-  icon: IconName;
-};
 
 function AccountPicker(props: Props) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [showAddAccount, setShowAddAccount] = useState(false);
-  const [account, setAccount] = useState<Account | null>(null);
-  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [account, setAccount] = useRecoilState(selectedAccountState);
+  const [accounts, setAccounts] = useRecoilState(accountsState);
 
   useEffect(() => {
     if (account) {
@@ -34,10 +31,9 @@ function AccountPicker(props: Props) {
   const addAccount = useCallback(
     (account: Account) => {
       setAccounts([...accounts, account]);
-      // setAccount(account);
       setShowAddAccount(false);
     },
-    [accounts]
+    [accounts, setAccounts]
   );
 
   const toggleAddAccount = useCallback(() => {

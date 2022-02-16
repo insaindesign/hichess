@@ -48,7 +48,8 @@
     "grownups": "Grownups",
     "about": "About",
     "privacy": "Privacy Policy",
-    "donate": "Donate"
+    "donate": "Donate",
+    "logout": "Logout"
   },
   "about": {
     "title": "About HiChess",

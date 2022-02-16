@@ -1,10 +1,13 @@
 import { useCallback, useState } from "react";
-import { Link } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { Link, useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import { useTranslation } from "react-i18next";
 
+import { selectedAccountState } from "../state/accounts";
 import VerifyAdult from "./VerifyAdult";
+import AsyncAccountIcon from "./AsyncAccountIcon";
 
 import css from "./MainMenu.module.css";
 
@@ -14,8 +17,10 @@ type Props = {
 
 function MainMenu({ onClick }: Props) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [amAnAdult, setImAnAdult] = useState(false);
   const [showVerify, setShowVerify] = useState(false);
+  const [account, setAccount] = useRecoilState(selectedAccountState);
 
   const verifyAdult = useCallback(() => {
     if (amAnAdult) {
@@ -29,6 +34,11 @@ function MainMenu({ onClick }: Props) {
     setShowVerify(false);
     setImAnAdult(success);
   }, []);
+
+  const logout = useCallback(() => {
+    setAccount(null);
+    navigate("/");
+  }, [setAccount, navigate]);
 
   return (
     <div className={css.root}>
@@ -69,6 +79,19 @@ function MainMenu({ onClick }: Props) {
             {t("mainmenu.play")}
           </Button>
         </Grid>
+        {account ? (
+          <Grid item xs={6}>
+            <Button
+              fullWidth
+              variant="outlined"
+              className={css.link}
+              onClick={logout}
+            >
+              <AsyncAccountIcon icon={account.icon} sx={{ fontSize: 32 }} />
+              {t("mainmenu.logout")}
+            </Button>
+          </Grid>
+        ) : null}
         {amAnAdult ? (
           <Grid item xs={6}>
             <Button

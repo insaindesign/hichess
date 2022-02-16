@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 
 import AccountIcon, { accountIcons } from "./AsyncAccountIcon";
 
-import type { Account } from "./AccountPicker";
+import type { Account } from "../state/accounts";
 import type { IconName } from "./AsyncAccountIcon";
 
 import css from "./AccountPicker.module.css";
