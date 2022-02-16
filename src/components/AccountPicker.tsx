@@ -5,7 +5,9 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 
 import AccountAdd from "./AccountAdd";
-import AccountIcon, { IconName } from "./AccountIcon";
+import AccountIcon from "./AsyncAccountIcon";
+
+import type { IconName } from "./AsyncAccountIcon";
 
 import css from "./AccountPicker.module.css";
 

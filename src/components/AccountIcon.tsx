@@ -1,119 +1,88 @@
-import SvgIcon, { SvgIconProps } from "@mui/material/SvgIcon";
-import { ReactComponent as Boy0 } from "../icons/boy0.svg";
-import { ReactComponent as Boy1 } from "../icons/boy1.svg";
-import { ReactComponent as Boy2 } from "../icons/boy2.svg";
-import { ReactComponent as Boy3 } from "../icons/boy3.svg";
-import { ReactComponent as Boy4 } from "../icons/boy4.svg";
-import { ReactComponent as Boy5 } from "../icons/boy5.svg";
-import { ReactComponent as Boy6 } from "../icons/boy6.svg";
-import { ReactComponent as Boy7 } from "../icons/boy7.svg";
-import { ReactComponent as Boy8 } from "../icons/boy8.svg";
-import { ReactComponent as Boy9 } from "../icons/boy9.svg";
-import { ReactComponent as Boy10 } from "../icons/boy10.svg";
-import { ReactComponent as Boy11 } from "../icons/boy11.svg";
-import { ReactComponent as Boy12 } from "../icons/boy12.svg";
-import { ReactComponent as Boy13 } from "../icons/boy13.svg";
-import { ReactComponent as Boy14 } from "../icons/boy14.svg";
-import { ReactComponent as Boy15 } from "../icons/boy15.svg";
-import { ReactComponent as Boy16 } from "../icons/boy16.svg";
-import { ReactComponent as Girl0 } from "../icons/girl0.svg";
-import { ReactComponent as Girl1 } from "../icons/girl1.svg";
-import { ReactComponent as Girl2 } from "../icons/girl2.svg";
-import { ReactComponent as Girl3 } from "../icons/girl3.svg";
-import { ReactComponent as Girl4 } from "../icons/girl4.svg";
-import { ReactComponent as Girl5 } from "../icons/girl5.svg";
-import { ReactComponent as Girl6 } from "../icons/girl6.svg";
-import { ReactComponent as Girl7 } from "../icons/girl7.svg";
-import { ReactComponent as Girl8 } from "../icons/girl8.svg";
-import { ReactComponent as Girl9 } from "../icons/girl9.svg";
-import { ReactComponent as Girl10 } from "../icons/girl10.svg";
-import { ReactComponent as Girl11 } from "../icons/girl11.svg";
-import { ReactComponent as Girl12 } from "../icons/girl12.svg";
-import { ReactComponent as Girl13 } from "../icons/girl13.svg";
-import { ReactComponent as Girl14 } from "../icons/girl14.svg";
-import { ReactComponent as Girl15 } from "../icons/girl15.svg";
-import { ReactComponent as Girl16 } from "../icons/girl16.svg";
+import SvgIcon from "@mui/material/SvgIcon";
+import { ReactComponent as person0 } from "../icons/person0.svg";
+import { ReactComponent as person1 } from "../icons/person1.svg";
+import { ReactComponent as person2 } from "../icons/person2.svg";
+import { ReactComponent as person3 } from "../icons/person3.svg";
+import { ReactComponent as person4 } from "../icons/person4.svg";
+import { ReactComponent as person5 } from "../icons/person5.svg";
+import { ReactComponent as person6 } from "../icons/person6.svg";
+import { ReactComponent as person7 } from "../icons/person7.svg";
+import { ReactComponent as person8 } from "../icons/person8.svg";
+import { ReactComponent as person9 } from "../icons/person9.svg";
+import { ReactComponent as person10 } from "../icons/person10.svg";
+import { ReactComponent as person11 } from "../icons/person11.svg";
+import { ReactComponent as person12 } from "../icons/person12.svg";
+import { ReactComponent as person13 } from "../icons/person13.svg";
+import { ReactComponent as person14 } from "../icons/person14.svg";
+import { ReactComponent as person15 } from "../icons/person15.svg";
+import { ReactComponent as person16 } from "../icons/person16.svg";
+import { ReactComponent as person17 } from "../icons/person17.svg";
+import { ReactComponent as person19 } from "../icons/person19.svg";
+import { ReactComponent as person20 } from "../icons/person20.svg";
+import { ReactComponent as person21 } from "../icons/person21.svg";
+import { ReactComponent as person22 } from "../icons/person22.svg";
+import { ReactComponent as person23 } from "../icons/person23.svg";
+import { ReactComponent as person24 } from "../icons/person24.svg";
+import { ReactComponent as person25 } from "../icons/person25.svg";
+import { ReactComponent as person26 } from "../icons/person26.svg";
+import { ReactComponent as person27 } from "../icons/person27.svg";
+import { ReactComponent as person28 } from "../icons/person28.svg";
+import { ReactComponent as person29 } from "../icons/person29.svg";
+import { ReactComponent as person30 } from "../icons/person30.svg";
+import { ReactComponent as person31 } from "../icons/person31.svg";
+import { ReactComponent as person32 } from "../icons/person32.svg";
+import { ReactComponent as person33 } from "../icons/person33.svg";
+import { ReactComponent as person34 } from "../icons/person34.svg";
+import { ReactComponent as person35 } from "../icons/person35.svg";
+import { ReactComponent as person36 } from "../icons/person36.svg";
+import { ReactComponent as person37 } from "../icons/person37.svg";
+import { ReactComponent as person38 } from "../icons/person38.svg";
+import { ReactComponent as person39 } from "../icons/person39.svg";
 
 import type { FC } from "react";
-
-export type IconName =
-  | "boy0"
-  | "boy1"
-  | "boy2"
-  | "boy3"
-  | "boy4"
-  | "boy5"
-  | "boy6"
-  | "boy7"
-  | "boy8"
-  | "boy9"
-  | "boy10"
-  | "boy11"
-  | "boy12"
-  | "boy13"
-  | "boy14"
-  | "boy15"
-  | "boy16"
-  | "girl0"
-  | "girl1"
-  | "girl2"
-  | "girl3"
-  | "girl4"
-  | "girl5"
-  | "girl6"
-  | "girl7"
-  | "girl8"
-  | "girl9"
-  | "girl10"
-  | "girl11"
-  | "girl12"
-  | "girl13"
-  | "girl14"
-  | "girl15"
-  | "girl16";
-
-type Props = {
-  icon: IconName;
-} & SvgIconProps;
+import type { IconName, Props } from "./AsyncAccountIcon";
 
 const nameToComponent: Record<IconName, FC> = {
-  boy0: Boy0,
-  boy1: Boy1,
-  boy2: Boy2,
-  boy3: Boy3,
-  boy4: Boy4,
-  boy5: Boy5,
-  boy6: Boy6,
-  boy7: Boy7,
-  boy8: Boy8,
-  boy9: Boy9,
-  boy10: Boy10,
-  boy11: Boy11,
-  boy12: Boy12,
-  boy13: Boy13,
-  boy14: Boy14,
-  boy15: Boy15,
-  boy16: Boy16,
-  girl0: Girl0,
-  girl1: Girl1,
-  girl2: Girl2,
-  girl3: Girl3,
-  girl4: Girl4,
-  girl5: Girl5,
-  girl6: Girl6,
-  girl7: Girl7,
-  girl8: Girl8,
-  girl9: Girl9,
-  girl10: Girl10,
-  girl11: Girl11,
-  girl12: Girl12,
-  girl13: Girl13,
-  girl14: Girl14,
-  girl15: Girl15,
-  girl16: Girl16,
+  person0,
+  person1,
+  person2,
+  person3,
+  person4,
+  person5,
+  person6,
+  person7,
+  person8,
+  person9,
+  person10,
+  person11,
+  person12,
+  person13,
+  person14,
+  person15,
+  person16,
+  person17,
+  person19,
+  person20,
+  person21,
+  person22,
+  person23,
+  person24,
+  person25,
+  person26,
+  person27,
+  person28,
+  person29,
+  person30,
+  person31,
+  person32,
+  person33,
+  person34,
+  person35,
+  person36,
+  person37,
+  person38,
+  person39,
 };
-
-export const accountIcons = Object.keys(nameToComponent) as IconName[];
 
 function AccountIcon({ icon, ...props }: Props) {
   return (

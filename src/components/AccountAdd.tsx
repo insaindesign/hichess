@@ -5,10 +5,10 @@ import ToggleButton from "@mui/material/ToggleButton";
 import TextField from "@mui/material/TextField";
 import { useTranslation } from "react-i18next";
 
-import AccountIcon, { accountIcons } from "./AccountIcon";
+import AccountIcon, { accountIcons } from "./AsyncAccountIcon";
 
 import type { Account } from "./AccountPicker";
-import type { IconName } from "./AccountIcon";
+import type { IconName } from "./AsyncAccountIcon";
 
 import css from "./AccountPicker.module.css";
 
@@ -43,6 +43,8 @@ function AccountAdd({ onAdd, onCancel }: Props) {
               key={i}
               onChange={() => setIcon(i)}
               selected={i === icon}
+              title={i}
+              sx={{borderRadius: '50%', border: 0 }}
             >
               <AccountIcon icon={i} sx={{ fontSize: 64 }} />
             </ToggleButton>
