@@ -7,7 +7,7 @@
     "@emotion/styled": "^11.6.0",
     "@mui/icons-material": "^5.3.1",
     "@mui/material": "^5.4.0",
-    "chess.js": "github:insaindesign/chess.js#188b644",
+    "chess.js": "https://github.com/insaindesign/chess.js.git",
     "chessground": "^8.2.0",
     "i18next": "^21.6.11",
     "i18next-http-backend": "^1.3.2",
@@ -18,7 +18,7 @@
     "react-i18next": "^11.15.4",
     "react-router-dom": "^6.2.1",
     "recoil": "^0.6.1",
-    "recoil-persist": "^4.0.0"
+    "recoil-persist": "../recoil-persist"
   },
   "devDependencies": {
     "@craco/craco": "^6.4.3",

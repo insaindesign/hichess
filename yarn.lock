@@ -3355,9 +3355,9 @@ check-types@^11.1.1:
   resolved "https://registry.yarnpkg.com/check-types/-/check-types-11.1.2.tgz#86a7c12bf5539f6324eb0e70ca8896c0e38f3e2f"
   integrity sha512-tzWzvgePgLORb9/3a0YenggReLKAIb2owL03H2Xdoe5pKcUyWRSEQ8xfCar8t2SIAuEDwtmx2da1YB52YuHQMQ==
 
-"chess.js@github:insaindesign/chess.js#188b644":
+"chess.js@https://github.com/insaindesign/chess.js.git":
   version "0.12.0"
-  resolved "https://codeload.github.com/insaindesign/chess.js/tar.gz/188b644b8a833b494d6e07d2c4efcb1a19283cf9"
+  resolved "https://github.com/insaindesign/chess.js.git#188b644b8a833b494d6e07d2c4efcb1a19283cf9"
 
 chessground@^8.2.0:
   version "8.2.0"
@@ -8200,10 +8200,8 @@ readdirp@~3.6.0:
   dependencies:
     picomatch "^2.2.1"
 
-recoil-persist@^4.0.0:
+recoil-persist@../recoil-persist:
   version "4.0.0"
-  resolved "https://registry.yarnpkg.com/recoil-persist/-/recoil-persist-4.0.0.tgz#03496afd3c742cefbc19fdb1cae0408cd1e0b424"
-  integrity sha512-hJFWxAFYpEMF1/rdF+AjBQABWuERFMWoJ5Ag1vJKG1Aj1603MuBmk3epaz8rU/Jy4IUBRkFibl6zFrvwhRhCew==
 
 recoil@^0.6.1:
   version "0.6.1"
