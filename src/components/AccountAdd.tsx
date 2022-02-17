@@ -3,6 +3,7 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import ToggleButton from "@mui/material/ToggleButton";
 import TextField from "@mui/material/TextField";
+import Cancel from "@mui/icons-material/Clear";
 import { useTranslation } from "react-i18next";
 
 import AccountIcon, { accountIcons } from "./AsyncAccountIcon";
@@ -11,7 +12,6 @@ import type { Account } from "../state/accounts";
 import type { IconName } from "./AsyncAccountIcon";
 
 import css from "./AccountPicker.module.css";
-import Cancel from "@mui/icons-material/Cancel";
 
 type Props = {
   onAdd: (account: Account) => void;
@@ -77,7 +77,7 @@ function AccountAdd({ onAdd, onCancel }: Props) {
         </>
       )}
       <IconButton onClick={onCancel}>
-        <Cancel titleAccess={t("cancel")} sx={{ fontSize: 64 }} />
+        <Cancel titleAccess={t("cancel")} sx={{ fontSize: 48 }} />
       </IconButton>
     </div>
   );

@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import Cancel from "@mui/icons-material/Cancel";
+import Cancel from "@mui/icons-material/Clear";
 import { useTranslation } from "react-i18next";
 
 import { selectedAccountState } from "../state/accounts";

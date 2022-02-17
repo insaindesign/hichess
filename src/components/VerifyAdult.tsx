@@ -7,7 +7,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import Cancel from "@mui/icons-material/Cancel";
+import Cancel from "@mui/icons-material/Clear";
 import { useTranslation } from "react-i18next";
 
 import css from "./VerifyAdult.module.css";
@@ -135,7 +135,7 @@ function VerifyAdult({ onChange }: Props) {
             </Button>
           </div>
           <IconButton onClick={handleClose} sx={{ marginTop: 1 }}>
-            <Cancel titleAccess={t("cancel")} sx={{ fontSize: 64 }} />
+            <Cancel titleAccess={t("cancel")} sx={{ fontSize: 48 }} />
           </IconButton>
         </div>
       </DialogContent>
