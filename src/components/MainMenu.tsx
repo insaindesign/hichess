@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 
 import { selectedAccountState } from "../state/accounts";
 import VerifyAdult from "./VerifyAdult";
-import AsyncAccountIcon from "./AsyncAccountIcon";
+import AccountAvatarAsync from "./AccountAvatarAsync";
 
 import type { ButtonProps } from "@mui/material/Button";
 
@@ -99,7 +99,7 @@ function MainMenu({ onClick }: Props) {
     menuItems.push({
       children: (
         <>
-          <AsyncAccountIcon icon={account.icon} sx={{ fontSize: 32 }} />
+          <AccountAvatarAsync icon={account.icon} sx={{ fontSize: 32 }} />
           {t("mainmenu.logout")}
         </>
       ),

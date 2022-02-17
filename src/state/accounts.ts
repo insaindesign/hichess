@@ -1,7 +1,7 @@
 import { atom } from "recoil";
 import { globalPersist } from "./";
 
-import type { IconName } from "../components/AsyncAccountIcon";
+import type { IconName } from "../components/AccountAvatarAsync";
 
 export type Account = {
   id: string;

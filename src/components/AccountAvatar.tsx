@@ -40,7 +40,7 @@ import { ReactComponent as person38 } from "../icons/person38.svg";
 import { ReactComponent as person39 } from "../icons/person39.svg";
 
 import type { FC } from "react";
-import type { IconName, Props } from "./AsyncAccountIcon";
+import type { IconName, Props } from "./AccountAvatarAsync";
 
 const nameToComponent: Record<IconName, FC> = {
   person0,
@@ -84,10 +84,10 @@ const nameToComponent: Record<IconName, FC> = {
   person39,
 };
 
-function AccountIcon({ icon, ...props }: Props) {
+function AccountAvatar({ icon, ...props }: Props) {
   return (
     <SvgIcon {...props} component={nameToComponent[icon]} inheritViewBox />
   );
 }
 
-export default AccountIcon;
+export default AccountAvatar;

@@ -90,14 +90,14 @@ export const accountIcons = [
   "person39",
 ].sort(() => Math.random() - Math.random()) as IconName[];
 
-const LazyAccountIcon = lazy(() => import("./AccountIcon" /* webpackChunkName: "AccountIcon" */));
+const LazyAccountAvatar = lazy(() => import("./AccountAvatar" /* webpackChunkName: "AccountAvatar" */));
 
-function AsyncAccountIcon({ icon, ...props}: Props) {
+function AccountAvatarAsync({ icon, ...props}: Props) {
   return (
     <Suspense fallback={<FaceIcon color="disabled" {...props} />}>
-      <LazyAccountIcon icon={icon} {...props} />
+      <LazyAccountAvatar icon={icon} {...props} />
     </Suspense>
   );
 }
 
-export default AsyncAccountIcon;
+export default AccountAvatarAsync;

@@ -6,10 +6,10 @@ import TextField from "@mui/material/TextField";
 import Cancel from "@mui/icons-material/Clear";
 import { useTranslation } from "react-i18next";
 
-import AccountIcon, { accountIcons } from "./AsyncAccountIcon";
+import AccountAvatar, { accountIcons } from "./AccountAvatarAsync";
 
 import type { Account } from "../state/accounts";
-import type { IconName } from "./AsyncAccountIcon";
+import type { IconName } from "./AccountAvatarAsync";
 
 import css from "./AccountPicker.module.css";
 
@@ -47,14 +47,14 @@ function AccountAdd({ onAdd, onCancel }: Props) {
               title={i}
               sx={{ borderRadius: "50%", border: 0 }}
             >
-              <AccountIcon icon={i} sx={{ fontSize: 64 }} />
+              <AccountAvatar icon={i} sx={{ fontSize: 64 }} />
             </ToggleButton>
           ))}
         </div>
       ) : (
         <>
           <IconButton onClick={() => setIcon(null)}>
-            <AccountIcon icon={icon} sx={{ fontSize: 92 }} />
+            <AccountAvatar icon={icon} sx={{ fontSize: 92 }} />
           </IconButton>
           <TextField
             placeholder={t("account.name")}

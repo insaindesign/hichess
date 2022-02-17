@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 
 import AccountAdd from "./AccountAdd";
-import AccountIcon from "./AsyncAccountIcon";
+import AccountAvatar from "./AccountAvatarAsync";
 import { selectedAccountState, accountsState } from "../state/accounts";
 
 import type { Account } from "../state/accounts";
@@ -61,7 +61,7 @@ function AccountPicker(props: Props) {
           {accounts.map((account) => (
             <span key={account.id} className={css.icon}>
               <IconButton onClick={() => setAccount(account)}>
-                <AccountIcon icon={account.icon} sx={{ fontSize: 96 }} />
+                <AccountAvatar icon={account.icon} sx={{ fontSize: 96 }} />
               </IconButton>
               <div>{account.name}</div>
             </span>
