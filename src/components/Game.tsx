@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import ToggleButton from "@mui/material/ToggleButton";
+import UndoIcon from "@mui/icons-material/Undo";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useTranslation } from "react-i18next";
 
 import ChessCtrl from "../lib/chess";
@@ -11,6 +13,8 @@ import ToggleButtonGroup from "./ToggleButtonGroup";
 import Board from "./Board";
 import EvaluationBar from "./EvaluationBar";
 import Toolbar from "./Toolbar";
+import ShowDefenders from "./ShowDefenders";
+import ShowAttackers from "./ShowAttackers";
 
 import type { Move, ShortMove } from "chess.js";
 import type { Config } from "chessground/config";
@@ -151,40 +155,26 @@ function Game({ fen }: Props) {
               onClick={undo}
               disabled={!moves.length || chess.color !== userColor}
             >
-              {t('undo')}
+              <UndoIcon titleAccess={t("undo")} />
             </Button>
             <Button
               onClick={newGame}
               disabled={!moves.length}
               variant={chess.js.game_over() ? "contained" : "outlined"}
             >
-              {t('newGame')}
+              <AddCircleIcon titleAccess={t("newGame")} />
             </Button>
           </ButtonGroup>
-          <ToggleButtonGroup
+          <ShowDefenders
             className={css.panelButtons}
-            color="primary"
-            exclusive
-            fullWidth
-            onChange={toggleShowThreats}
-            value={showThreats}
-          >
-            <ToggleButton value="none">Hide threats</ToggleButton>
-            <ToggleButton value="counts">counts only</ToggleButton>
-            <ToggleButton value="both">show</ToggleButton>
-          </ToggleButtonGroup>
-          <ToggleButtonGroup
-            className={css.panelButtons}
-            color="primary"
-            exclusive
-            fullWidth
-            onChange={toggleShowDefenders}
             value={showDefenders}
-          >
-            <ToggleButton value="none">hide defenders</ToggleButton>
-            <ToggleButton value="counts">counts only</ToggleButton>
-            <ToggleButton value="both">show</ToggleButton>
-          </ToggleButtonGroup>
+            onChange={toggleShowDefenders}
+          />
+          <ShowAttackers
+            className={css.panelButtons}
+            value={showThreats}
+            onChange={toggleShowThreats}
+          />
           {userColor !== "both" ? (
             <ToggleButtonGroup
               className={css.panelButtons}

@@ -5,7 +5,11 @@ const StyledButtonGroup = styled(ButtonGroup)(({ theme }) => ({
   border: "1px solid #ccc",
   "& .MuiButtonGroup-grouped": {
     margin: theme.spacing(0.5),
+    padding: '11px',
     borderColor: "transparent",
+    "&:hover": {
+      borderColor: "transparent",
+    },
     "&.Mui-disabled": {
       borderColor: "transparent",
     },

@@ -9,11 +9,10 @@
   min-height: 240px;
 }
 
-.grid.grid {
-  padding: 20px;
-}
-
 .root {
   flex: 1 1 auto;
-  height: 100vh;
+  min-height: 100vh;
+  text-align: center;
+  padding: 24px;
+  box-sizing: border-box;
 }

@@ -11,6 +11,7 @@ import type { Account } from "../state/accounts";
 import type { IconName } from "./AsyncAccountIcon";
 
 import css from "./AccountPicker.module.css";
+import Cancel from "@mui/icons-material/Cancel";
 
 type Props = {
   onAdd: (account: Account) => void;
@@ -44,7 +45,7 @@ function AccountAdd({ onAdd, onCancel }: Props) {
               onChange={() => setIcon(i)}
               selected={i === icon}
               title={i}
-              sx={{borderRadius: '50%', border: 0 }}
+              sx={{ borderRadius: "50%", border: 0 }}
             >
               <AccountIcon icon={i} sx={{ fontSize: 64 }} />
             </ToggleButton>
@@ -53,10 +54,10 @@ function AccountAdd({ onAdd, onCancel }: Props) {
       ) : (
         <>
           <IconButton onClick={() => setIcon(null)}>
-            <AccountIcon icon={icon} sx={{ fontSize: 64 }} />
+            <AccountIcon icon={icon} sx={{ fontSize: 92 }} />
           </IconButton>
           <TextField
-            placeholder={t('account.name')}
+            placeholder={t("account.name")}
             autoFocus
             fullWidth
             value={name}
@@ -64,13 +65,20 @@ function AccountAdd({ onAdd, onCancel }: Props) {
             inputProps={{ sx: { textAlign: "center", fontSize: 32 } }}
           />
           {icon ? (
-            <Button disabled={!Boolean(name)} variant="contained" size="large" onClick={done}>
+            <Button
+              disabled={!Boolean(name)}
+              variant="contained"
+              size="large"
+              onClick={done}
+            >
               {t("save")}
             </Button>
           ) : null}
         </>
       )}
-      <Button onClick={onCancel}>{t("cancel")}</Button>
+      <IconButton onClick={onCancel}>
+        <Cancel titleAccess={t("cancel")} sx={{ fontSize: 64 }} />
+      </IconButton>
     </div>
   );
 }

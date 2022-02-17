@@ -49,7 +49,8 @@
     "about": "About",
     "privacy": "Privacy Policy",
     "donate": "Donate",
-    "logout": "Logout"
+    "logout": "Logout",
+    "login": "Login"
   },
   "about": {
     "title": "About HiChess",

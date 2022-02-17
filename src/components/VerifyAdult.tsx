@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
+import Cancel from "@mui/icons-material/Cancel";
 import { useTranslation } from "react-i18next";
 
 import css from "./VerifyAdult.module.css";
@@ -41,11 +43,11 @@ const yobQuestion: Question = {
   validate: (input) => input.length === 4,
 };
 
-const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 function VerifyAdult({ onChange }: Props) {
   const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { t } = useTranslation();
   const [yob, setYob] = useState<string | null>(null);
   const [question, setQuestion] = useState(yobQuestion);
@@ -99,34 +101,42 @@ function VerifyAdult({ onChange }: Props) {
   return (
     <Dialog fullScreen={fullScreen} open={true} onClose={handleClose}>
       <DialogTitle className={css.title}>{t(question.title)}</DialogTitle>
-      <DialogContent className={css.content}>
-        <Typography variant="h2">{input}&nbsp;</Typography>
-        <div className={css.buttons}>
-          {numbers.map((n) => (
+      <DialogContent>
+        <div className={css.content}>
+          <Typography variant="h2">{input}&nbsp;</Typography>
+          <div className={css.buttons}>
+            {numbers.map((n) => (
+              <Button
+                className={css.button}
+                variant="outlined"
+                key={n}
+                onClick={add(n)}
+              >
+                {n}
+              </Button>
+            ))}
             <Button
               className={css.button}
               variant="outlined"
-              key={n}
-              onClick={add(n)}
+              onClick={() => setInput("")}
             >
-              {n}
+              {t("clear")}
             </Button>
-          ))}
-          <Button
-            className={css.button}
-            variant="outlined"
-            onClick={() => setInput("")}
-          >
-            {t("clear")}
-          </Button>
-          <Button
-            className={css.button}
-            disabled={!question.validate(input)}
-            variant={question.validate(input) ? "contained" : "outlined"}
-            onClick={handleNext}
-          >
-            {t("next")}
-          </Button>
+            <Button className={css.button} variant="outlined" onClick={add(0)}>
+              0
+            </Button>
+            <Button
+              className={css.button}
+              disabled={!question.validate(input)}
+              variant={question.validate(input) ? "contained" : "outlined"}
+              onClick={handleNext}
+            >
+              {t("next")}
+            </Button>
+          </div>
+          <IconButton onClick={handleClose} sx={{ marginTop: 1 }}>
+            <Cancel titleAccess={t("cancel")} sx={{ fontSize: 64 }} />
+          </IconButton>
         </div>
       </DialogContent>
     </Dialog>

@@ -1,13 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
-import ToggleButton from "@mui/material/ToggleButton";
+import HintIcon from "@mui/icons-material/TipsAndUpdates";
+import RestartIcon from "@mui/icons-material/RestartAlt";
+import NextIcon from "@mui/icons-material/SkipNext";
+import DoneIcon from "@mui/icons-material/Done";
 import { useTranslation } from "react-i18next";
 
 import ButtonGroup from "./ButtonGroup";
-import ToggleButtonGroup from "./ToggleButtonGroup";
 import Toolbar from "./Toolbar";
 import Board from "./Board";
+import ShowDefenders from "./ShowDefenders";
+import ShowAttackers from "./ShowAttackers";
 import LevelManager from "../data/manager";
 
 import type { Level } from "../data/util";
@@ -80,7 +84,11 @@ function Problem({ level, nextLevel, done }: Props) {
         </Alert>
       </Toolbar>
       <div className={css.root}>
-        <div className={`${css.board}${level.apples ? " apples" : ""}${level.walls ? " walls" : ""}`}>
+        <div
+          className={`${css.board}${level.apples ? " apples" : ""}${
+            level.walls ? " walls" : ""
+          }`}
+        >
           <Board
             config={manageLevel.config}
             complete={false}
@@ -100,7 +108,7 @@ function Problem({ level, nextLevel, done }: Props) {
           >
             {manageLevel.hasHints ? (
               <Button disabled={!manageLevel.isUsersTurn} onClick={hint}>
-                {t("hint")}
+                <HintIcon titleAccess={t("hint")} />
               </Button>
             ) : null}
             <Button
@@ -108,39 +116,29 @@ function Problem({ level, nextLevel, done }: Props) {
               disabled={!manageLevel.userMoves.length}
               variant={manageLevel.isFailure ? "contained" : "outlined"}
             >
-              {t("tryAgain")}
+              <RestartIcon titleAccess={t("tryAgain")} />
             </Button>
             <Button
               onClick={nextLevel}
               variant={manageLevel.isSuccessful ? "contained" : "outlined"}
             >
-              {done ? t("done") : t("next")}
+              {done ? (
+                <DoneIcon titleAccess={t("done")} />
+              ) : (
+                <NextIcon titleAccess={t("next")} />
+              )}
             </Button>
           </ButtonGroup>
-          <ToggleButtonGroup
+          <ShowDefenders
             className={css.panelButtons}
-            color="primary"
-            exclusive
-            fullWidth
-            onChange={toggleShowThreats}
-            value={showThreats}
-          >
-            <ToggleButton value="none">Hide threats</ToggleButton>
-            <ToggleButton value="counts">counts only</ToggleButton>
-            <ToggleButton value="both">show</ToggleButton>
-          </ToggleButtonGroup>
-          <ToggleButtonGroup
-            className={css.panelButtons}
-            color="primary"
-            exclusive
-            fullWidth
-            onChange={toggleShowDefenders}
             value={showDefenders}
-          >
-            <ToggleButton value="none">hide defenders</ToggleButton>
-            <ToggleButton value="counts">counts only</ToggleButton>
-            <ToggleButton value="both">show</ToggleButton>
-          </ToggleButtonGroup>
+            onChange={toggleShowDefenders}
+          />
+          <ShowAttackers
+            className={css.panelButtons}
+            value={showThreats}
+            onChange={toggleShowThreats}
+          />
         </div>
       </div>
     </>
