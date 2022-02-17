@@ -3,7 +3,7 @@ import { createStore } from "../storage";
 
 // Each state module should have it's own persist,
 // Some atoms may have their own persist
-export const persist = (key: string) => {
+const persist = (key: string) => {
   const storage = createStore(key);
   const { persistAtom } = recoilPersist({ storage });
   return persistAtom;

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import {useRecoilState} from "recoil";
+import { useRecoilState } from "recoil";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
+import Add from "@mui/icons-material/Add";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -44,6 +45,8 @@ function AccountPicker(props: Props) {
     return <AccountAdd onAdd={addAccount} onCancel={toggleAddAccount} />;
   }
 
+  const hasAccounts = accounts.length;
+
   return (
     <div className={css.root}>
       <img
@@ -53,23 +56,28 @@ function AccountPicker(props: Props) {
         height={64}
         className={css.logo}
       />
-      <div className={css.icons}>
-        {accounts.map((account) => (
-          <span key={account.id} className={css.icon}>
-            <IconButton onClick={() => setAccount(account)}>
-              <AccountIcon icon={account.icon} sx={{ fontSize: 96 }} />
-            </IconButton>
-            <div>{account.name}</div>
-          </span>
-        ))}
-      </div>
-      <Button
-        size={accounts.length ? "medium" : "large"}
-        variant={accounts.length ? "text" : "contained"}
+      {hasAccounts ? (
+        <div className={css.icons}>
+          {accounts.map((account) => (
+            <span key={account.id} className={css.icon}>
+              <IconButton onClick={() => setAccount(account)}>
+                <AccountIcon icon={account.icon} sx={{ fontSize: 96 }} />
+              </IconButton>
+              <div>{account.name}</div>
+            </span>
+          ))}
+        </div>
+      ) : null}
+      <IconButton
+        color={hasAccounts ? "default" : "primary"}
+        size={hasAccounts ? "medium" : "large"}
         onClick={toggleAddAccount}
       >
-        {t("account.add")}
-      </Button>
+        <Add
+          sx={{ fontSize: hasAccounts ? 48 : 96 }}
+          titleAccess={t("account.add")}
+        />
+      </IconButton>
       <Button component={Link} to="/privacy">
         {t("mainmenu.privacy")}
       </Button>
