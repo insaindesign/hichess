@@ -15,6 +15,7 @@ import EvaluationBar from "./EvaluationBar";
 import Toolbar from "./Toolbar";
 import ShowDefenders from "./ShowDefenders";
 import ShowAttackers from "./ShowAttackers";
+import MoveBar from "./MoveBar";
 
 import type { Move, ShortMove } from "chess.js";
 import type { Config } from "chessground/config";
@@ -115,22 +116,18 @@ function Game({ fen }: Props) {
   return (
     <>
       <Toolbar>
-        <Alert
-          severity={
-            chess.js.in_draw()
-              ? "warning"
-              : chess.js.game_over()
-              ? "success"
-              : "info"
-          }
-          variant={chess.js.game_over() ? "filled" : "standard"}
-        >
-          {chess.js.game_over()
-            ? chess.js.in_draw()
+        {chess.js.game_over() ? (
+          <Alert
+            severity={chess.js.in_draw() ? "warning" : "success"}
+            variant="filled"
+          >
+            {chess.js.in_draw()
               ? t("result.draw")
-              : t("result.win." + ChessCtrl.swapColor(chess.color))
-            : t("move." + chess.color)}
-        </Alert>
+              : t("result.win." + ChessCtrl.swapColor(chess.color))}
+          </Alert>
+        ) : (
+          <MoveBar color={chess.color} />
+        )}
       </Toolbar>
       <div className={css.root}>
         <div className={css.board}>

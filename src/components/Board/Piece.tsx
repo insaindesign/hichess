@@ -4,7 +4,7 @@ import { Color } from "chessground/types";
 type Props = {
   color: Color;
   piece: PieceType;
-};
+} & { style?: any };
 
 const pieceToClassName: Record<PieceType, string> = {
   p: "pawn",
@@ -15,8 +15,12 @@ const pieceToClassName: Record<PieceType, string> = {
   n: "knight",
 };
 
-function Piece({ color, piece }: Props) {
-  return <span className={`piece ${color} ${pieceToClassName[piece]}`}>{piece}</span>;
+function Piece({ color, piece, ...props }: Props) {
+  return (
+    <span {...props} className={`piece ${color} ${pieceToClassName[piece]}`}>
+      {piece}
+    </span>
+  );
 }
 
 export default Piece;

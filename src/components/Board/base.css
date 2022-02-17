@@ -48,9 +48,8 @@ cg-board square.last-move {
   background-size: cover;
   color: transparent;
   display: block;
-  height: 0;
-  padding-bottom: 100%;
-  width: 100%;
+  height: 1em;
+  width: 1em;
 }
 
 .cg-wrap piece {

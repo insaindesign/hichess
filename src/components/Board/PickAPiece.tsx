@@ -21,8 +21,8 @@ function PickAPiece<T extends PieceType>({
   return (
     <Dialog open={open}>
       {pieces.map((p) => (
-        <Button key={p} onClick={() => onSelect(p)} style={{ width: 100 }}>
-          <Piece color={color} piece={p} />
+        <Button key={p} onClick={() => onSelect(p)}>
+          <Piece color={color} piece={p} style={{ fontSize: 92 }} />
         </Button>
       ))}
     </Dialog>

@@ -7,12 +7,13 @@ import NextIcon from "@mui/icons-material/SkipNext";
 import DoneIcon from "@mui/icons-material/Done";
 import { useTranslation } from "react-i18next";
 
+import LevelManager from "../data/manager";
 import ButtonGroup from "./ButtonGroup";
 import Toolbar from "./Toolbar";
 import Board from "./Board";
 import ShowDefenders from "./ShowDefenders";
 import ShowAttackers from "./ShowAttackers";
-import LevelManager from "../data/manager";
+import MoveBar from "./MoveBar";
 
 import type { Level } from "../data/util";
 import type { ShapeOptionType } from "./Board/brushes";
@@ -66,22 +67,18 @@ function Problem({ level, nextLevel, done }: Props) {
   return (
     <>
       <Toolbar>
-        <Alert
-          severity={
-            manageLevel.isSuccessful
-              ? "success"
-              : manageLevel.isFailure
-              ? "error"
-              : "info"
-          }
-          variant={!manageLevel.isComplete ? "standard" : "filled"}
-        >
-          {manageLevel.isSuccessful
-            ? t("problem.success")
-            : manageLevel.isFailure
-            ? t("problem.fail")
-            : t("move." + manageLevel.chess.color)}
-        </Alert>
+        {manageLevel.isComplete ? (
+          <Alert
+            severity={manageLevel.isSuccessful ? "success" : "error"}
+            variant="filled"
+          >
+            {manageLevel.isSuccessful
+              ? t("problem.success")
+              : t("problem.fail")}
+          </Alert>
+        ) : (
+          <MoveBar color={manageLevel.chess.color} />
+        )}
       </Toolbar>
       <div className={css.root}>
         <div
