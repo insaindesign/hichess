@@ -9,7 +9,7 @@ function Root() {
       <CssBaseline />
       <Suspense fallback={null}>
         <Outlet />
-      </Suspense>s
+      </Suspense>
     </RecoilRoot>
   );
 }

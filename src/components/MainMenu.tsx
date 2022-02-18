@@ -1,19 +1,23 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, Suspense, lazy } from "react";
 import { useRecoilState } from "recoil";
 import { Link, useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
+import Toolbar from "@mui/material/Toolbar";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
 import Cancel from "@mui/icons-material/Clear";
 import { useTranslation } from "react-i18next";
 
 import { selectedAccountState } from "../state/accounts";
-import VerifyAdult from "./VerifyAdult";
 import AccountAvatarAsync from "./AccountAvatarAsync";
 
 import type { ButtonProps } from "@mui/material/Button";
 
 import css from "./MainMenu.module.css";
+
+const VerifyAdult = lazy(() => import("./VerifyAdult"));
 
 type Props = {
   onClick?: () => void;
@@ -97,12 +101,7 @@ function MainMenu({ onClick }: Props) {
     });
   } else {
     menuItems.push({
-      children: (
-        <>
-          <AccountAvatarAsync icon={account.icon} sx={{ fontSize: 32 }} />
-          {t("mainmenu.logout")}
-        </>
-      ),
+      children: t("mainmenu.logout"),
       onClick: logout,
       key: "logout",
     });
@@ -123,6 +122,35 @@ function MainMenu({ onClick }: Props) {
 
   return (
     <div className={css.root}>
+      <AppBar position="static" color="transparent" elevation={0}>
+        <Toolbar disableGutters>
+          <IconButton edge="start" onClick={logout}>
+            <img alt="HiChess" src="/icon-192.png" width="32" />
+          </IconButton>
+          <Box sx={{ flex: "1 1 auto" }}>
+            {account ? (
+              <Button
+                size="large"
+                variant="outlined"
+                sx={{ borderRadius: 12 }}
+                onClick={onClick}
+                component={Link}
+                to="/profile"
+                startIcon={<AccountAvatarAsync icon={account.icon} />}
+              >
+                {account.name}
+              </Button>
+            ) : null}
+          </Box>
+          {onClick ? (
+            <IconButton edge="end" onClick={onClick}>
+              <Cancel titleAccess={t("cancel")} sx={{ fontSize: 32 }} />
+            </IconButton>
+          ) : (
+            <Box sx={{ width: 32 }} />
+          )}
+        </Toolbar>
+      </AppBar>
       <Grid container spacing={2} className={css.grid}>
         {menuItems.map(({ key, ...item }) => (
           <Grid item xs={6} key={key}>
@@ -135,16 +163,13 @@ function MainMenu({ onClick }: Props) {
           </Grid>
         ))}
       </Grid>
-      {showVerify ? <VerifyAdult onChange={handleVerify} /> : null}
+      <Suspense fallback={null}>
+        {showVerify ? <VerifyAdult onChange={handleVerify} /> : null}
+      </Suspense>
       {!amAnAdult ? (
         <Button fullWidth onClick={verifyAdult} sx={{ marginTop: 2 }}>
           {t("mainmenu.grownups")}
         </Button>
-      ) : null}
-      {onClick ? (
-        <IconButton onClick={onClick} sx={{ marginTop: 2 }}>
-          <Cancel titleAccess={t("cancel")} sx={{ fontSize: 48 }} />
-        </IconButton>
       ) : null}
     </div>
   );

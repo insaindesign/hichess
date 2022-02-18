@@ -5,10 +5,11 @@ import Root from "../components/Root";
 import Home from "./Home";
 import MainMenu from "../components/MainMenu";
 
-const AboutPage = lazy(() => import("./AboutPage" /* webpackChunkName: "AboutPage" */));
-const PrivacyPage = lazy(() => import("./PrivacyPage" /* webpackChunkName: "PrivacyPage" */));
+const About = lazy(() => import("./About" /* webpackChunkName: "About" */));
+const Profile = lazy(() => import("./Profile" /* webpackChunkName: "Profile" */));
+const Privacy = lazy(() => import("./Privacy" /* webpackChunkName: "Privacy" */));
 const GameFrom = lazy(() => import("./GameFrom" /* webpackChunkName: "GameFrom" */));
-const LearnPage = lazy(() => import("./LearnPage" /* webpackChunkName: "LearnPage" */));
+const Learn = lazy(() => import("./Learn" /* webpackChunkName: "Learn" */));
 const LearnLevels = lazy(() => import("./LearnLevels" /* webpackChunkName: "LearnLevels" */));
 const Puzzles = lazy(() => import("./Puzzles" /* webpackChunkName: "Puzzles" */));
 
@@ -20,9 +21,10 @@ function App() {
           <Route index element={<Home />} />
           <Route path="login" element={<Home />} />
           <Route path="menu" element={<MainMenu />} />
-          <Route path="about" element={<AboutPage />} />
-          <Route path="privacy" element={<PrivacyPage />} />
-          <Route path="learn" element={<LearnPage />} />
+          <Route path="about" element={<About />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="privacy" element={<Privacy />} />
+          <Route path="learn" element={<Learn />} />
           <Route path="learn/:category/:stage/" element={<LearnLevels />} />
           <Route
             path="learn/:category/:stage/:index"

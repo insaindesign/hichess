@@ -7,7 +7,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import MainMenu from "./MainMenu";
 
 type Props = {
-  children: any;
+  children?: any;
 };
 
 function Toolbar({ children }: Props) {

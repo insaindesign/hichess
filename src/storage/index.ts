@@ -1,8 +1,9 @@
 import localForage from "localforage";
-import type {PersistStorage} from "recoil-persist";
 
-export const createStore = (name: string): PersistStorage => {
+export const createStore = (name: string) => {
   return localForage.createInstance({
     name,
   });
 };
+
+export const appStore = createStore('app');
