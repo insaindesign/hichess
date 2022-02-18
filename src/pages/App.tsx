@@ -2,8 +2,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { lazy } from "react";
 
 import Root from "../components/Root";
+import Menu from "./Menu";
 import Home from "./Home";
-import MainMenu from "../components/MainMenu";
 
 const About = lazy(() => import("./About" /* webpackChunkName: "About" */));
 const Profile = lazy(() => import("./Profile" /* webpackChunkName: "Profile" */));
@@ -20,7 +20,7 @@ function App() {
         <Route path="/" element={<Root />}>
           <Route index element={<Home />} />
           <Route path="login" element={<Home />} />
-          <Route path="menu" element={<MainMenu />} />
+          <Route path="menu" element={<Menu />} />
           <Route path="about" element={<About />} />
           <Route path="profile" element={<Profile />} />
           <Route path="privacy" element={<Privacy />} />

@@ -1,6 +1,6 @@
 import { useCallback, useState, Suspense, lazy } from "react";
-import { useRecoilState } from "recoil";
-import { Link, useNavigate } from "react-router-dom";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
@@ -11,6 +11,7 @@ import Cancel from "@mui/icons-material/Clear";
 import { useTranslation } from "react-i18next";
 
 import { selectedAccountState } from "../state/accounts";
+import { menuOpenState } from "../state/app";
 import AccountAvatarAsync from "./AccountAvatarAsync";
 
 import type { ButtonProps } from "@mui/material/Button";
@@ -19,21 +20,23 @@ import css from "./MainMenu.module.css";
 
 const VerifyAdult = lazy(() => import("./VerifyAdult"));
 
-type Props = {
-  onClick?: () => void;
-};
-
 type MenuItem = ButtonProps<
   typeof Button,
   { component?: any; to?: string; key: string }
 >;
 
-function MainMenu({ onClick }: Props) {
+function MainMenu() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [amAnAdult, setImAnAdult] = useState(false);
   const [showVerify, setShowVerify] = useState(false);
   const [account, setAccount] = useRecoilState(selectedAccountState);
+  const setDrawerOpen = useSetRecoilState(menuOpenState);
+
+  const onClick = useCallback(() => setDrawerOpen(false), [setDrawerOpen]);
+  const showClose = location.pathname !== "/menu";
 
   const verifyAdult = useCallback(() => {
     if (amAnAdult) {
@@ -51,7 +54,8 @@ function MainMenu({ onClick }: Props) {
   const logout = useCallback(() => {
     setAccount(null);
     navigate("/");
-  }, [setAccount, navigate]);
+    setDrawerOpen(false);
+  }, [setAccount, navigate, setDrawerOpen]);
 
   const menuItems: MenuItem[] = [];
   if (account) {
@@ -97,7 +101,7 @@ function MainMenu({ onClick }: Props) {
     menuItems.push({
       key: "login",
       children: t("mainmenu.login"),
-      onClick: () => navigate("/"),
+      onClick: logout,
     });
   } else {
     menuItems.push({
@@ -127,28 +131,25 @@ function MainMenu({ onClick }: Props) {
           <IconButton edge="start" onClick={logout}>
             <img alt="HiChess" src="/icon-192.png" width="32" />
           </IconButton>
-          <Box sx={{ flex: "1 1 auto" }}>
-            {account ? (
-              <Button
-                size="large"
-                variant="outlined"
-                sx={{ borderRadius: 12 }}
-                onClick={onClick}
-                component={Link}
-                to="/profile"
-                startIcon={<AccountAvatarAsync icon={account.icon} />}
-              >
-                {account.name}
-              </Button>
-            ) : null}
-          </Box>
-          {onClick ? (
+          <Box sx={{ flex: "1 1 auto" }} />
+          {account ? (
+            <Button
+              size="large"
+              variant="outlined"
+              sx={{ borderRadius: 12 }}
+              onClick={onClick}
+              component={Link}
+              to="/profile"
+              startIcon={<AccountAvatarAsync icon={account.icon} />}
+            >
+              {account.name}
+            </Button>
+          ) : null}
+          {showClose ? (
             <IconButton edge="end" onClick={onClick}>
               <Cancel titleAccess={t("cancel")} sx={{ fontSize: 32 }} />
             </IconButton>
-          ) : (
-            <Box sx={{ width: 32 }} />
-          )}
+          ) : null}
         </Toolbar>
       </AppBar>
       <Grid container spacing={2} className={css.grid}>
