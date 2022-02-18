@@ -51,7 +51,7 @@ function AccountPicker(props: Props) {
     <div className={css.root}>
       <img
         alt="HiChess"
-        src="/icon-512.png"
+        src="/icon-192.png"
         width={64}
         height={64}
         className={css.logo}
