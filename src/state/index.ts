@@ -1,13 +1,13 @@
 import { recoilPersist } from "recoil-persist";
 import { appStore } from "../storage";
 
-import type { PersistStorage } from "recoil-persist";
+import type { PersistConfiguration } from "recoil-persist";
 
 // Each state module should have it's own persist,
 // Some atoms may have their own persist
-const persist = (storage: PersistStorage) => {
-  const { persistAtom } = recoilPersist({ storage });
+export const persist = (config: Partial<PersistConfiguration>) => {
+  const { persistAtom } = recoilPersist(config);
   return persistAtom;
 };
 
-export const globalPersist = persist(appStore);
+export const globalPersist = persist({storage: appStore});
