@@ -1,4 +1,4 @@
-import UserPicker from "./AccountPicker";
+import UserPicker from "../components/AccountPicker";
 
 function Home() {
   return <UserPicker />;

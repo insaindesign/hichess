@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import App from './components/App';
+import App from './pages/App';
 import {register} from './registerServiceWorker';
 
 import './i18n';

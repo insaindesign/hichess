@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import getPuzzles from "../data/puzzles";
 import type { Level } from "../data/util";
-import Problem from "./Problem";
+import Problem from "../components/Problem";
 
 type Props = {};
 

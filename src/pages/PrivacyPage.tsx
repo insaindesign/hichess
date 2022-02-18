@@ -2,7 +2,7 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import { useTranslation } from "react-i18next";
 
-import Toolbar from "./Toolbar";
+import Toolbar from "../components/Toolbar";
 
 type Props = {};
 

@@ -2,8 +2,8 @@ import { useCallback, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import categories from "../data/learn";
-import Learn from "./Learn";
-import Problem from "./Problem";
+import Learn from "../components/Learn";
+import Problem from "../components/Problem";
 
 type Props = {};
 

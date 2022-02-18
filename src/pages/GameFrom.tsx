@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 
-import Game from "./Game";
+import Game from "../components/Game";
 
 type Props = {};
 

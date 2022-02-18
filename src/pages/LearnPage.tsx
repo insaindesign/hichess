@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 
-import Learn from "./Learn";
-import Toolbar from "./Toolbar";
+import Learn from "../components/Learn";
+import Toolbar from "../components/Toolbar";
 
 type Props = {};
 
