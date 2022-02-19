@@ -25,7 +25,7 @@ yarn-error.log*
 
 
 # massive puzzle database
-server/puzzles/puzzles.csv
+server/puzzles/data
 
 ## private keys
 **account.json

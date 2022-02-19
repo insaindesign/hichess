@@ -27,6 +27,10 @@ precacheAndRoute([
   { url: "/lib/stockfish/stockfish.js", revision: "1" },
   { url: "/lib/stockfish/stockfish.worker.js", revision: "1" },
   { url: "/lib/stockfish/stockfish.wasm", revision: "665b011c" },
+  { url: "/lib/puzzles/600.json", revision: "1" },
+  { url: "/lib/puzzles/700.json", revision: "1" },
+  { url: "/lib/puzzles/800.json", revision: "1" },
+  { url: "/lib/puzzles/900.json", revision: "1" },
 ]);
 
 // Set up App Shell-style routing, so that all navigation requests

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 
 import getPuzzles from "../data/puzzles";
-import type { Level } from "../data/util";
 import Problem from "../components/Problem";
+
+import type { Level } from "../data/util";
 
 type Props = {};
 
@@ -16,7 +17,7 @@ function Puzzles(props: Props) {
   );
 
   useEffect(() => {
-    getPuzzles().then((p) => {
+    getPuzzles(600).then((p) => {
       setPuzzles(p);
       setIndex(Math.floor(Math.random() * p.length));
     });

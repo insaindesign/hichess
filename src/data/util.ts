@@ -30,9 +30,10 @@ export type ScenarioLevel = (
     }
 )[];
 
-interface PuzzleBase {
+export interface PuzzleBase {
   fen: string;
-  scenario: ScenarioLevel;
+  solution: string;
+  themes: string;
 }
 
 interface LevelBase {
@@ -42,6 +43,7 @@ interface LevelBase {
   walls?: string;
   nbMoves?: number;
   scenario?: ScenarioLevel;
+  themes?: string[];
   shapes?: DrawShape[];
 }
 
@@ -64,10 +66,12 @@ export function learnToLevel(l: LevelPartial): Level {
 export function puzzleToLevel(l: PuzzleBase): Level {
   return {
     color: ChessCtrl.swapColor(/ w /.test(l.fen) ? "white" : "black"),
-    goal: "Complete the puzzle",
+    goal: "solvepuzzle",
     success: completedScenario,
     failure: not(followScenario),
     ...l,
+    scenario: l.solution.split(" "),
+    themes: l.themes.split(" "),
   };
 }
 
