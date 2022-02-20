@@ -1,4 +1,4 @@
-import { arrow, learnToLevel } from "../util";
+import { arrow } from "../util";
 import {
   completedScenario,
   followScenario,
@@ -7,10 +7,11 @@ import {
   noMateIn,
 } from "../assert";
 
-import type { Stage } from "../util";
+import type { RawStage } from "../util";
 
-const Learn: Stage = {
-  key: "checkmate",
+const Learn: RawStage = {
+  stage: "checkmate",
+  category: "fundamentals",
 
   levels: [
     {
@@ -28,13 +29,13 @@ const Learn: Stage = {
       // smothered in 2
       fen: "6rk/6pp/6q1/6N1/8/7Q/6PP/6K1 w - -",
       nbMoves: 2,
-      scenario: ['h3h7', 'g6h7', 'g5f7']
+      scenario: ["h3h7", "g6h7", "g5f7"],
     },
     {
       // smothered in 2
       fen: "3r3k/1p1b1Qbp/1n2B1p1/p5N1/Pq6/8/1P4PP/R6K w - -",
       nbMoves: 2,
-      scenario: ['f7g8', 'd8g8', 'g5f7']
+      scenario: ["f7g8", "d8g8", "g5f7"],
     },
     {
       // rook
@@ -83,13 +84,13 @@ const Learn: Stage = {
       // anastasia
       fen: "5r1k/1b2Nppp/8/2R5/4Q3/8/5PPP/6K1 w - -",
       nbMoves: 2,
-      scenario: ["e4h7", 'h8h7', "c5h5"],
+      scenario: ["e4h7", "h8h7", "c5h5"],
     },
     {
       // anastasia
       fen: "5rk1/1b3ppp/8/2RN4/8/8/2Q2PPP/6K1 w - -",
       nbMoves: 3,
-      scenario: ["d5e7", 'g8h8', "c2h7", 'h8h7', "c5h5"],
+      scenario: ["d5e7", "g8h8", "c2h7", "h8h7", "c5h5"],
     },
     {
       // anastasia
@@ -101,7 +102,7 @@ const Learn: Stage = {
       // blind swine
       fen: "5rk1/1R2R1pp/8/8/8/8/8/1K6 w - -",
       nbMoves: 3,
-      scenario: ['e7g7', 'g8h8', 'g7h7', 'h8g8', 'b7g7'],
+      scenario: ["e7g7", "g8h8", "g7h7", "h8g8", "b7g7"],
     },
     {
       // tricky
@@ -119,14 +120,12 @@ const Learn: Stage = {
       fen: "r1b5/ppp5/2N2kpN/5q2/8/Q7/8/4B3 w - -",
       nbMoves: 1,
     },
-  ].map((l) =>
-    learnToLevel({
-      goal: "attackYourOpponentsKing",
-      failure: l.scenario ? not(followScenario) : noMateIn(l.nbMoves),
-      success: l.scenario ? completedScenario : mateIn(l.nbMoves),
-      ...l,
-    })
-  ),
+  ].map((l) => ({
+    goal: "attackYourOpponentsKing",
+    failure: l.scenario ? not(followScenario) : noMateIn(l.nbMoves),
+    success: l.scenario ? completedScenario : mateIn(l.nbMoves),
+    ...l,
+  })),
 };
 
 export default Learn;

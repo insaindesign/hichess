@@ -1,8 +1,9 @@
 import { noPieceOn, whitePawnOnAnyOf } from '../assert';
-import { arrow, learnToLevel, Stage } from '../util';
+import { arrow, RawStage } from '../util';
 
-const Learn: Stage = {
-  key: 'pawn',
+const Learn: RawStage = {
+  category: "pieces",
+  stage: 'pawn',
   levels: [
     {
       goal: 'pawnsMoveOneSquareOnly',
@@ -10,7 +11,6 @@ const Learn: Stage = {
       apples: 'f3',
       nbMoves: 4,
       shapes: [arrow('a5a6'), arrow('a6a7'), arrow('a7a8'), arrow('a8f3')],
-      explainPromotion: true,
     },
     {
       goal: 'mostOfTheTimePromotingToAQueenIsBest',
@@ -59,7 +59,7 @@ const Learn: Stage = {
       apples: 'c5 d5 e5 f5 d3 e4',
       nbMoves: 9,
     },
-  ].map(learnToLevel),
+  ],
 };
 
 export default Learn;

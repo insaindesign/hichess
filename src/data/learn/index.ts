@@ -18,33 +18,60 @@ import pin from "./pin";
 import skewer from "./skewer";
 import value from "./value";
 
-import type { Category } from "../util";
+import { Category, learnToLevel, RawStage, Stage } from "../util";
 
-const Categs: Category[] = [
+const rawStages: RawStage[] = [
+  rook,
+  bishop,
+  queen,
+  king,
+  knight,
+  pawn,
+  capture,
+  protection,
+  combat,
+  check,
+  outOfCheck,
+  checkmate,
+  setup,
+  castling,
+  enpassant,
+  stalemate,
+  value,
+  pin,
+  skewer,
+];
+
+const Categs = [
   {
-    key: "chess-pieces",
-    name: "chessPieces",
-    stages: [rook, bishop, queen, king, knight, pawn],
+    key: "pieces",
+    name: "pieces",
   },
   {
     key: "fundamentals",
     name: "fundamentals",
-    stages: [capture, protection, combat, check, outOfCheck, checkmate],
   },
   {
     key: "intermediate",
     name: "intermediate",
-    stages: [setup, castling, enpassant, stalemate],
   },
   {
     key: "advanced",
     name: "advanced",
-    stages: [
-      value,
-      pin,
-      skewer,
-    ],
   },
-];
+].map((cat) => ({
+  ...cat,
+  stages: rawStages
+    .filter((s) => s.category === cat.key)
+    .map((s) => {
+      const levels = s.levels.map((level, ii) =>
+        learnToLevel(level, [s.category, s.stage, ii].join("/"))
+      );
+      return {
+        key: s.stage,
+        levels,
+      } as Stage;
+    }),
+})) as Category[];
 
 export default Categs;

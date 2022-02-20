@@ -1,8 +1,9 @@
-import { arrow, circle, Stage, learnToLevel } from "../util";
+import { arrow, circle, RawStage,  } from "../util";
 import { and, not, within, stalemate } from "../assert";
 
-const Learn: Stage = {
-  key: "stalemate",
+const Learn: RawStage = {
+  stage: "stalemate",
+  category: "intermediate",
   levels: [
     {
       fen: "k7/8/8/6B1/8/1R6/8/7K w - -",
@@ -93,7 +94,7 @@ const Learn: Stage = {
       ],
     },
   ].map((l) =>
-    learnToLevel({
+    ({
       goal: "stalemateGoal",
       nbMoves: 1,
       success: and(stalemate, within(1)),

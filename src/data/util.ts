@@ -6,10 +6,22 @@ import type { DrawShape } from "chessground/draw";
 import type { Color } from "chessground/types";
 import type LevelManager from "./manager";
 
+export type CategoryType =
+  | "pieces"
+  | "fundamentals"
+  | "intermediate"
+  | "advanced";
+
 export interface Category {
-  key: string;
+  key: CategoryType;
   name: string;
   stages: Stage[];
+}
+
+export interface RawStage {
+  category: string;
+  stage: string;
+  levels: LevelPartial[];
 }
 
 export interface Stage {
@@ -17,7 +29,7 @@ export interface Stage {
   levels: Level[];
 }
 
-export type Level = LevelBase & LevelDefaults;
+export type Level = LevelBase & LevelDefaults & { id: string };
 export type LevelPartial = LevelBase & Partial<LevelDefaults>;
 
 export type Uci = string; // represents a move e.g, e4
@@ -55,13 +67,13 @@ export interface LevelDefaults {
   failure(manager: LevelManager): boolean;
 }
 
-export function learnToLevel(l: LevelPartial): Level {
+export function learnToLevel(l: LevelPartial, id: string): Level {
   if (l.fen.split(" ").length === 4) l.fen += " 0 1";
   return {
     color: / w /.test(l.fen) ? "white" : "black",
     success: extinct("black"),
     failure: () => false,
-    id: '', // TODO
+    id,
     ...l,
   };
 }

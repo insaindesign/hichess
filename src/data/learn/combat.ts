@@ -1,10 +1,11 @@
-import { arrow, learnToLevel } from "../util";
+import { arrow,  } from "../util";
 import { canBeCaptured } from "../assert";
 
-import type { Stage } from "../util";
+import type { RawStage } from "../util";
 
-const Learn: Stage = {
-  key: "combat",
+const Learn: RawStage = {
+  stage: "combat",
+  category: "fundamentals",
   levels: [
     {
       // rook
@@ -39,7 +40,7 @@ const Learn: Stage = {
       nbMoves: 8,
     },
   ].map((l) =>
-    learnToLevel({
+    ({
       failure: canBeCaptured,
       ...l,
     })

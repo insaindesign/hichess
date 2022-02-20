@@ -1,8 +1,9 @@
 import { not, followScenario, completedScenario } from "../assert";
-import { arrow, Stage, learnToLevel } from "../util";
+import { arrow, RawStage,  } from "../util";
 
-const Learn: Stage = {
-  key: "enpassant",
+const Learn: RawStage = {
+  stage: "enpassant",
+  category: "intermediate",
   levels: [
     {
       goal: "blackJustMovedThePawnByTwoSquares",
@@ -56,7 +57,7 @@ const Learn: Stage = {
       ],
     },
   ].map((l) =>
-    learnToLevel({
+    ({
       color: "white",
       failure: not(followScenario),
       success: completedScenario,

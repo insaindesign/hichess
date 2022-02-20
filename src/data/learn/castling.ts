@@ -1,7 +1,7 @@
 import { and, lastMoveSan, not, or, pieceNotOn } from "../assert";
-import { arrow, circle, learnToLevel } from "../util";
+import { arrow, circle } from "../util";
 
-import type { Stage } from "../util";
+import type { RawStage } from "../util";
 
 const castledKingSide = lastMoveSan("O-O");
 const castledQueenSide = lastMoveSan("O-O-O");
@@ -14,8 +14,9 @@ const cantCastleQueenSide = and(
   or(pieceNotOn("K", "e1"), pieceNotOn("R", "a1"))
 );
 
-const Learn: Stage = {
-  key: "castling",
+const Learn: RawStage = {
+  stage: "castling",
+  category: "intermediate",
   levels: [
     {
       goal: "castleKingSide",
@@ -72,7 +73,6 @@ const Learn: Stage = {
       shapes: [arrow("c4f1", "red"), circle("e1"), circle("f1"), circle("g1")],
       success: castledKingSide,
       failure: cantCastleKingSide,
-
     },
     {
       goal: "findAWayToCastleKingSide",
@@ -81,7 +81,6 @@ const Learn: Stage = {
       shapes: [arrow("e1g1")],
       success: castledKingSide,
       failure: cantCastleKingSide,
-
     },
     {
       goal: "findAWayToCastleQueenSide",
@@ -90,9 +89,8 @@ const Learn: Stage = {
       shapes: [arrow("e1c1")],
       success: castledQueenSide,
       failure: cantCastleQueenSide,
-
     },
-  ].map(learnToLevel),
+  ],
 };
 
 export default Learn;

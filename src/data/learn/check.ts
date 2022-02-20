@@ -1,10 +1,11 @@
 import { and, canBeCaptured, checkIn, not, noCheckIn } from "../assert";
-import { arrow, learnToLevel } from "../util";
+import { arrow } from "../util";
 
-import type { Stage } from "../util";
+import type { RawStage } from "../util";
 
-const Learn: Stage = {
-  key: "check",
+const Learn: RawStage = {
+  stage: "check",
+  category: "fundamentals",
   levels: [
     {
       goal: "checkInOneGoal",
@@ -78,13 +79,11 @@ const Learn: Stage = {
       fen: "r6r/1Q2nk2/1B3p2/8/8/8/8/8 w - -",
       nbMoves: 2,
     },
-  ].map((l) =>
-    learnToLevel({
-      failure: noCheckIn(l.nbMoves),
-      success: and(checkIn(l.nbMoves), not(canBeCaptured)),
-      ...l,
-    })
-  ),
+  ].map((l) => ({
+    failure: noCheckIn(l.nbMoves),
+    success: and(checkIn(l.nbMoves), not(canBeCaptured)),
+    ...l,
+  })),
 };
 
 export default Learn;

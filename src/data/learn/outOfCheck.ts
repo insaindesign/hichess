@@ -1,8 +1,9 @@
 import { checkIn, noCheckIn } from "../assert";
-import { arrow, learnToLevel, Stage } from "../util";
+import { arrow, RawStage } from "../util";
 
-const Learn: Stage = {
-  key: "outOfCheck",
+const Learn: RawStage = {
+  category: "fundamentals",
+  stage: "outOfCheck",
   levels: [
     {
       goal: "escapeWithTheKing",
@@ -34,7 +35,7 @@ const Learn: Stage = {
       fen: "8/6b1/8/8/q4P2/2KN4/3P4/8 w - -",
     },
   ].map((l) =>
-    learnToLevel({
+    ({
       success: noCheckIn(1),
       failure: checkIn(1),
       nbMoves: 1,

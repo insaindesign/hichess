@@ -1,8 +1,9 @@
 import { canBeCaptured, not } from "../assert";
-import { arrow, learnToLevel, Stage } from "../util";
+import { arrow, RawStage } from "../util";
 
-const Learn: Stage = {
-  key: "protection",
+const Learn: RawStage = {
+  category: "fundamentals",
+  stage: "protection",
   levels: [
     {
       goal: "escape",
@@ -47,7 +48,7 @@ const Learn: Stage = {
       fen: "8/3q4/8/1N3R2/8/2PB4/8/8 w - -",
     },
   ].map((l) =>
-    learnToLevel({
+    ({
       nbMoves: 1,
       success: not(canBeCaptured),
       failure: canBeCaptured,

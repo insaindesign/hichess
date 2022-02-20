@@ -1,9 +1,10 @@
-import { arrow, learnToLevel } from "../util";
+import { arrow,  } from "../util";
 
-import type { Stage } from "../util";
+import type { RawStage } from "../util";
 
-const Learn: Stage = {
-  key: "king",
+const Learn: RawStage = {
+  category: "pieces",
+  stage: "king",
   levels: [
     {
       goal: "theKingIsSlow",
@@ -24,7 +25,7 @@ const Learn: Stage = {
       apples: "b5 c5 d6 e3 f3 g3",
       nbMoves: 8,
     },
-  ].map(learnToLevel),
+  ],
 };
 
 export default Learn;
