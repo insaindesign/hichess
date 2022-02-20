@@ -31,6 +31,7 @@ export type ScenarioLevel = (
 )[];
 
 export interface PuzzleBase {
+  id: string;
   fen: string;
   solution: string;
   themes: string;
@@ -48,6 +49,7 @@ interface LevelBase {
 }
 
 export interface LevelDefaults {
+  id: string;
   color: Color;
   success(manager: LevelManager): boolean;
   failure(manager: LevelManager): boolean;
@@ -59,6 +61,7 @@ export function learnToLevel(l: LevelPartial): Level {
     color: / w /.test(l.fen) ? "white" : "black",
     success: extinct("black"),
     failure: () => false,
+    id: '', // TODO
     ...l,
   };
 }

@@ -6,6 +6,7 @@ import RestartIcon from "@mui/icons-material/RestartAlt";
 import NextIcon from "@mui/icons-material/SkipNext";
 import DoneIcon from "@mui/icons-material/Done";
 import { useTranslation } from "react-i18next";
+import { useRecoilState } from "recoil";
 
 import LevelManager from "../data/manager";
 import ButtonGroup from "./ButtonGroup";
@@ -19,19 +20,24 @@ import type { Level } from "../data/util";
 import type { ShapeOptionType } from "./Board/brushes";
 
 import css from "./Game.module.css";
+import { promblemStateForAccountId } from "../state/problems";
 
 type Props = {
   done?: boolean;
   level: Level;
   nextLevel: () => void;
+  accountId: string;
 };
 
-function Problem({ level, nextLevel, done }: Props) {
+function Problem({ level, nextLevel, done, accountId }: Props) {
   const { t } = useTranslation();
+  const { currentProblemState } = promblemStateForAccountId(accountId);
   const [manageLevel, setManageLevel] = useState(() => new LevelManager(level));
-  const [, setHistory] = useState(manageLevel.moves);
+  const [history, setHistory] = useState(manageLevel.moves);
   const [showThreats, setShowThreats] = useState<ShapeOptionType>("none");
   const [showDefenders, setShowDefenders] = useState<ShapeOptionType>("none");
+  const [currentProblem, setCurrentProblem] =
+    useRecoilState(currentProblemState);
 
   const toggleShowThreats = useCallback(
     (e, value) => (value ? setShowThreats(value) : setShowThreats("none")),
@@ -63,6 +69,41 @@ function Problem({ level, nextLevel, done }: Props) {
       setManageLevel(new LevelManager(level));
     }
   }, [level, manageLevel]);
+
+  useEffect(() => {
+    const moves = manageLevel.userMoves;
+    if (!moves.length) {
+      return;
+    }
+    if (
+      moves.length === 1 &&
+      (!currentProblem || currentProblem.id !== manageLevel.level.id)
+    ) {
+      setCurrentProblem({
+        id: manageLevel.level.id,
+        date: Date.now(),
+        moves: manageLevel.userMoves,
+        result: !manageLevel.isComplete
+          ? "incomplete"
+          : manageLevel.isSuccessful
+          ? "success"
+          : "failure",
+      });
+    } else if (
+      currentProblem &&
+      manageLevel.userMoves.join(" ") !== currentProblem.moves.join(" ")
+    ) {
+      setCurrentProblem({
+        ...currentProblem,
+        moves: manageLevel.userMoves,
+        result: !manageLevel.isComplete
+          ? "incomplete"
+          : manageLevel.isSuccessful
+          ? "success"
+          : "failure",
+      });
+    }
+  }, [currentProblem, manageLevel, history, setCurrentProblem]);
 
   return (
     <>

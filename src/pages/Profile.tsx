@@ -6,6 +6,7 @@ import { useEffect } from "react";
 
 import Toolbar from "../components/Toolbar";
 import AccountAvatarAsync from "../components/AccountAvatarAsync";
+import ProblemHistory from "../components/ProblemHistory";
 import { appLoadedState } from "../state/app";
 import { selectedAccountState } from "../state/accounts";
 
@@ -32,6 +33,7 @@ function Profile() {
         <Typography variant="h2" paragraph>
           {account.name}
         </Typography>
+        <ProblemHistory accountId={account.id} />
       </Box>
     </>
   );
