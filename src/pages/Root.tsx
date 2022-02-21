@@ -3,8 +3,8 @@ import { Outlet } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import CssBaseline from "@mui/material/CssBaseline";
 
-import LeftDrawer from "./LeftDrawer";
-import Loading from "./Loading";
+import LeftDrawer from "../components/LeftDrawer";
+import Loading from "../components/Loading";
 
 
 function Root() {

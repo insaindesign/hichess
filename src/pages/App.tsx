@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { lazy } from "react";
 
-import Root from "../components/Root";
+import Root from "./Root";
 import Menu from "./Menu";
 import Home from "./Home";
 

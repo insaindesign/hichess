@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import "./LearnLevels";
 import Learn from "../components/Learn";
 import Toolbar from "../components/Toolbar";
+import { withRequireAccount } from "../components/RequireAccount";
 
 type Props = {};
 
@@ -16,4 +17,4 @@ function LearnPage(props: Props) {
   );
 }
 
-export default LearnPage;
+export default withRequireAccount(LearnPage);

@@ -1,30 +1,18 @@
-import { useRecoilValue } from "recoil";
-import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { useEffect } from "react";
 
 import Toolbar from "../components/Toolbar";
 import AccountAvatarAsync from "../components/AccountAvatarAsync";
 import ProblemHistory from "../components/ProblemHistory";
-import { appLoadedState } from "../state/app";
-import { selectedAccountState } from "../state/accounts";
 
-function Profile() {
-  const navigate = useNavigate();
-  const account = useRecoilValue(selectedAccountState);
-  const appLoaded = useRecoilValue(appLoadedState);
+import type { Account } from "../state/accounts";
+import { withRequireAccount } from "../components/RequireAccount";
 
-  useEffect(() => {
-    if (appLoaded && !account) {
-      navigate("/");
-    }
-  }, [appLoaded, account, navigate]);
+type Props = {
+  account: Account
+}
 
-  if (!account) {
-    return null;
-  }
-
+function Profile({ account }: Props) {
   return (
     <>
       <Toolbar />
@@ -39,4 +27,4 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default withRequireAccount(Profile);

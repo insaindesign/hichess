@@ -1,21 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
-import { useNavigate } from "react-router-dom";
 
 import getPuzzles from "../data/puzzles";
+import { withRequireAccount } from "../components/RequireAccount";
 import Problem from "../components/Problem";
-import { accountIdState } from "../state/accounts";
+import Loading from "../components/Loading";
 
 import type { Level } from "../data/util";
-import { appLoadedState } from "../state/app";
+import type { Account } from "../state/accounts";
 
-type Props = {};
+type Props = {
+  account: Account
+};
 
-function Puzzles(props: Props) {
-  const navigate = useNavigate();
+function Puzzles({ account }: Props) {
   const [puzzles, setPuzzles] = useState<Level[]>([]);
-  const appLoaded = useRecoilValue(appLoadedState);
-  const accountId = useRecoilValue(accountIdState);
   const [ii, setIndex] = useState(0);
 
   const nextPuzzle = useCallback(
@@ -30,24 +28,14 @@ function Puzzles(props: Props) {
     });
   }, []);
 
-  useEffect(() => {
-    if (!accountId && appLoaded) {
-      navigate('/');
-    }
-  }, [appLoaded, accountId, navigate])
-
   const puzzle = puzzles[ii];
-  if (!puzzle || !appLoaded) {
-    return <div>Loading</div>;
-  }
-
-  if (!accountId) {
-    return null;
+  if (!puzzle) {
+    return <Loading />;
   }
 
   return (
-    <Problem level={puzzle} nextLevel={nextPuzzle} accountId={accountId} />
+    <Problem level={puzzle} nextLevel={nextPuzzle} accountId={account.id} />
   );
 }
 
-export default Puzzles;
+export default withRequireAccount(Puzzles);

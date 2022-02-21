@@ -1,14 +1,16 @@
 import { useCallback, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useRecoilValue } from "recoil";
 
 import categories from "../data/learn";
 import Learn from "../components/Learn";
 import Problem from "../components/Problem";
-import { appLoadedState } from "../state/app";
-import { accountIdState } from "../state/accounts";
 
-type Props = {};
+import type { Account } from "../state/accounts";
+import {withRequireAccount} from "../components/RequireAccount";
+
+type Props = {
+  account: Account;
+};
 
 interface Params {
   category: string;
@@ -16,11 +18,9 @@ interface Params {
   index?: string;
 }
 
-function LearnLevels(props: Props) {
+function LearnLevels({ account }: Props) {
   const params = useParams() as unknown as Params;
   const navigate = useNavigate();
-  const appLoaded = useRecoilValue(appLoadedState);
-  const accountId = useRecoilValue(accountIdState);
 
   const cat = categories.find((c) => c.key === params.category);
   const stage = cat?.stages.find((s) => s.key === params.stage);
@@ -40,20 +40,14 @@ function LearnLevels(props: Props) {
     }
   }, [navigate, level]);
 
-  useEffect(() => {
-    if (appLoaded && !accountId) {
-      navigate("/");
-    }
-  }, [navigate, appLoaded, accountId]);
-
-  if (!level || !cat || !stage || !accountId) {
+  if (!level || !cat || !stage) {
     return null;
   }
 
   return (
     <>
       <Problem
-        accountId={accountId}
+        accountId={account.id}
         level={level}
         nextLevel={nextLevel}
         done={index + 1 === stage.levels.length}
@@ -63,4 +57,5 @@ function LearnLevels(props: Props) {
   );
 }
 
-export default LearnLevels;
+
+export default withRequireAccount(LearnLevels);
