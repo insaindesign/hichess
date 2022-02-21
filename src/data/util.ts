@@ -47,6 +47,7 @@ export interface PuzzleBase {
   fen: string;
   solution: string;
   themes: string;
+  rating: number;
 }
 
 interface LevelBase {
@@ -56,15 +57,16 @@ interface LevelBase {
   walls?: string;
   nbMoves?: number;
   scenario?: ScenarioLevel;
-  themes?: string[];
   shapes?: DrawShape[];
 }
 
 export interface LevelDefaults {
   id: string;
   color: Color;
+  rating: number;
   success(manager: LevelManager): boolean;
   failure(manager: LevelManager): boolean;
+  themes: string[];
 }
 
 export function learnToLevel(l: LevelPartial, id: string): Level {
@@ -73,8 +75,10 @@ export function learnToLevel(l: LevelPartial, id: string): Level {
     color: / w /.test(l.fen) ? "white" : "black",
     success: extinct("black"),
     failure: () => false,
+    rating: 600,
     id,
     ...l,
+    themes: l.themes ? l.themes.concat("learn") : ["learn"],
   };
 }
 
@@ -86,7 +90,7 @@ export function puzzleToLevel(l: PuzzleBase): Level {
     failure: not(followScenario),
     ...l,
     scenario: l.solution.split(" "),
-    themes: l.themes.split(" "),
+    themes: l.themes.split(" ").concat("puzzle"),
   };
 }
 

@@ -1,6 +1,6 @@
 import { PuzzleBase, Level, puzzleToLevel } from "../util";
 
-type PuzzleBody = string[];
+type PuzzleBody = (string | number)[];
 
 type PuzzlesJson = {
   head: (keyof PuzzleBase)[];
@@ -8,19 +8,20 @@ type PuzzlesJson = {
 };
 
 const fromPuzzleJson = (json: PuzzlesJson) => {
-  return json.body.reduce((out: Level[], item: any) => {
-    const puzzle = item.reduce((p: PuzzleBase, v: any, ii: number) => {
+  return json.body.reduce((out: Level[], item: PuzzleBody) => {
+    const puzzle = item.reduce((p: PuzzleBase, v: string | number, ii: number) => {
       const key = json.head[ii];
+      // @ts-ignore
       p[key] = v;
       return p;
-    }, {});
+    }, {} as PuzzleBase);
     out.push(puzzleToLevel(puzzle));
     return out;
   }, []);
 };
 
-const getPuzzles = (elo: string | number): Promise<Level[]> =>
-  fetch("/lib/puzzles/" + elo + ".json")
+const getPuzzles = (rating: string | number): Promise<Level[]> =>
+  fetch("/lib/puzzles/" + rating + ".json")
     .then((r) => r.json())
     .then(fromPuzzleJson);
 

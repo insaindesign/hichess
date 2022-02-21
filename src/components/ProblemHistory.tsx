@@ -15,10 +15,10 @@ function Problem({ accountId }: Props) {
   return (
     <div>
       <h2>Problems</h2>
-      {problems.map((p) => {
+      {problems.map((p, ii) => {
         return (
-          <div key={p.id}>
-            {p.id}, {new Date(p.date).toDateString()}, {t(p.result)}
+          <div key={ii}>
+            {p.id}, {new Date(p.date).toDateString()}, {t(p.result)}, {p.rating}
           </div>
         );
       })}

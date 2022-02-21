@@ -92,6 +92,19 @@ export class LevelManager {
     return shapes;
   }
 
+  get rating(): number {
+    const userMoves = this.userMoves.length;
+    const levelExpectedMoves = this.level.nbMoves || userMoves;
+    const delta = userMoves - levelExpectedMoves;
+    if (delta <= 0) return this.level.rating;
+    if (delta <= Math.max(1, levelExpectedMoves / 8)) return this.level.rating - 50;
+    return this.level.rating - 100;
+  }
+
+  get themes(): string[] {
+    return this.level.themes;
+  }
+
   public nextMove(): ShortMove | null {
     const scenario = this.level.scenario;
     const scene = scenario ? scenario[this.moves.length] : null;

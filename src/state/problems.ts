@@ -11,7 +11,8 @@ export type ProblemId = string;
 export type Problem = {
   id: string;
   date: number;
-  moves: Move[];
+  rating: number;
+  moves: Move['san'][];
   result: "incomplete" | "success" | "failure";
 };
 
