@@ -21,6 +21,9 @@ export default class Elo {
 
   public calculate(a: number, b: number, S: EloResult = 1): [number, number] {
     const [Ea, Eb] = this.probability(a, b);
-    return [a + this.kFactor * (S - Ea), b + this.kFactor * (1 - S - Eb)];
+    return [
+      Math.round(a + this.kFactor * (S - Ea)),
+      Math.round(b + this.kFactor * (1 - S - Eb)),
+    ];
   }
 }
