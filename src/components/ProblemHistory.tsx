@@ -1,27 +1,33 @@
 import { useTranslation } from "react-i18next";
 import { useRecoilValue } from "recoil";
+import Chip from "@mui/material/Chip";
+import Typography from "@mui/material/Typography";
 
-import { promblemStateForAccountId } from "../state/problems";
+import { eloStateForAccountId } from "../state/elo";
+import { problemStateForAccountId } from "../state/problems";
 
 type Props = {
   accountId: string;
+  type: "puzzle" | "learn";
 };
 
-function Problem({ accountId }: Props) {
+function Problem({ accountId, type }: Props) {
   const { t } = useTranslation();
-  const { problemsState } = promblemStateForAccountId(accountId);
-  const problems = useRecoilValue(problemsState);
+  const { problemsOfTypeState } = problemStateForAccountId(accountId);
+  const { eloState } = eloStateForAccountId(accountId);
+  const problems = useRecoilValue(problemsOfTypeState(type));
+  const elo = useRecoilValue(eloState(type));
 
   return (
     <div>
-      <h2>Problems</h2>
-      {problems.map((p, ii) => {
-        return (
-          <div key={ii}>
-            {p.id}, {new Date(p.date).toDateString()}, {t(p.result)}, {p.rating}
-          </div>
-        );
-      })}
+      <Typography variant="h4">
+        {t('history.'+type)} <Chip label={Math.round(elo)} />
+      </Typography>
+      {problems.map((p, ii) => (
+        <div key={ii}>
+          {p.id}, {new Date(p.date).toDateString()}, {t(p.result)}, {p.rating}
+        </div>
+      ))}
     </div>
   );
 }

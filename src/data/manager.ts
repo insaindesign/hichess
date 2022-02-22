@@ -5,6 +5,7 @@ import type { Move, ShortMove, Square } from "chess.js";
 import type { Color } from "chessground/types";
 import type { DrawShape } from "chessground/draw";
 import type { Config } from "chessground/config";
+import { ProblemType } from "../state/problems";
 
 export class LevelManager {
   public level: Level;
@@ -103,6 +104,10 @@ export class LevelManager {
 
   get themes(): string[] {
     return this.level.themes;
+  }
+
+  get type(): ProblemType {
+    return this.level.themes.includes('puzzle') ? 'puzzle' : 'learn';
   }
 
   public nextMove(): ShortMove | null {

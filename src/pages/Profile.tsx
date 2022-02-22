@@ -1,8 +1,10 @@
 import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
 import Typography from "@mui/material/Typography";
 
 import Toolbar from "../components/Toolbar";
 import AccountAvatarAsync from "../components/AccountAvatarAsync";
+import GameHistory from "../components/GameHistory";
 import ProblemHistory from "../components/ProblemHistory";
 
 import type { Account } from "../state/accounts";
@@ -23,10 +25,11 @@ function Profile({ account }: Props) {
       <Box sx={{ textAlign: "center", paddingTop: 12 }}>
         <AccountAvatarAsync icon={account.icon} sx={{ fontSize: 128 }} />
         <Typography variant="h2">
-          {account.name}
+          {account.name} <Chip label={overallElo} />
         </Typography>
-        <Typography>{overallElo}</Typography>
-        <ProblemHistory accountId={account.id} />
+        <GameHistory accountId={account.id} />
+        <ProblemHistory accountId={account.id} type="puzzle" />
+        <ProblemHistory accountId={account.id} type="learn" />
       </Box>
     </>
   );

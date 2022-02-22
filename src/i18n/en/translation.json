@@ -66,6 +66,11 @@
     "add": "New account",
     "name": "Add a nickname"
   },
+  "history": {
+    "games": "Games",
+    "puzzle": "Puzzles",
+    "learn": "Lessons"
+  },
   "tryAgain": "Try again",
   "done": "Done",
   "save": "Save",

@@ -14,6 +14,8 @@ import type {
   ShortMove,
 } from "chess.js";
 
+export type GameResult = Color | "draw" | undefined;
+
 export function readKeys(keys: string | Key[]): Key[] {
   return typeof keys === "string" ? (keys.split(" ") as Key[]) : keys;
 }
@@ -93,6 +95,14 @@ export class ChessCtrl {
     return this.chess.fen();
   }
 
+  get result(): GameResult {
+    return this.chess.in_draw()
+      ? "draw"
+      : this.chess.in_checkmate()
+      ? ChessCtrl.swapColor(this.color)
+      : undefined;
+  }
+
   get lastMove(): Key[] | undefined {
     const last = this.moves[this.moves.length - 1];
     return last ? [last.from, last.to] : undefined;
@@ -125,7 +135,7 @@ export class ChessCtrl {
     const m = this.chess.move(move);
     if (m) {
       this.moves = [...this.moves, m];
-      const obstacle = this.obstacles.findIndex(o => o === m.to);
+      const obstacle = this.obstacles.findIndex((o) => o === m.to);
       if (obstacle !== -1) {
         this.obstacles = removeAtIndex(this.obstacles, obstacle);
       }

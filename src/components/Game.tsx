@@ -24,10 +24,16 @@ import type { UserColor } from "./Board";
 import type { ShapeOptionType } from "./Board/brushes";
 import type { BestMove, Evaluations } from "../lib/uci";
 
+import { gameStateForAccountId } from "../state/games";
+
 import css from "./Game.module.css";
+
+import type { Account } from "../state/accounts";
+import { useRecoilState } from "recoil";
 
 type Props = {
   fen?: string;
+  account: Account;
 };
 
 const enforceOrientation = (
@@ -35,7 +41,7 @@ const enforceOrientation = (
   fallback: Color
 ): Color => (color === "white" || color === "black" ? color : fallback);
 
-function Game({ fen }: Props) {
+function Game({ fen, account }: Props) {
   const { t } = useTranslation();
   const [chess] = useState(() => new ChessCtrl(fen));
   const [showDefenders, setShowDefenders] = useState<ShapeOptionType>("none");
@@ -46,6 +52,8 @@ function Game({ fen }: Props) {
   const [stockfishLevel, setStockfishLevel] = useState(0);
   const [bestMove, setBestMove] = useState<BestMove | null>(null);
   const [evaluation, setEvaluation] = useState<Evaluations | null>(null);
+  const { currentGameState } = gameStateForAccountId(account.id);
+  const [currentGame, setCurrentGame] = useRecoilState(currentGameState);
 
   const userColor = config.movable?.color;
 
@@ -58,7 +66,10 @@ function Game({ fen }: Props) {
     [chess]
   );
 
-  const newGame = useCallback(() => chess.reset(), [chess]);
+  const newGame = useCallback(() => {
+    chess.reset();
+    setCurrentGame(null);
+  }, [chess, setCurrentGame]);
 
   const toggleShowThreats = useCallback(
     (e, value) => (value ? setShowThreats(value) : setShowThreats("none")),
@@ -108,6 +119,27 @@ function Game({ fen }: Props) {
       stockfish.evaluate(chess).then(setEvaluation);
     }
   }, [chess, stockfish, moves]);
+
+  useEffect(() => {
+    const m = moves.map((m) => m.san);
+    if (moves.length === 1 && !currentGame) {
+      setCurrentGame({
+        start: fen,
+        position: chess.fen,
+        date: Date.now(),
+        moves: m,
+        color: userColor,
+        result: chess.result
+      });
+    } else if (currentGame && currentGame.position !== chess.fen) {
+      setCurrentGame({
+        ...currentGame,
+        position: chess.fen,
+        moves: m,
+        result: chess.result
+      });
+    }
+  }, [currentGame, chess, userColor, fen, setCurrentGame, moves]);
 
   useEffect(() => {
     stockfish.setLevel(stockfishLevel);

@@ -20,7 +20,7 @@ import type { Level } from "../data/util";
 import type { ShapeOptionType } from "./Board/brushes";
 
 import css from "./Game.module.css";
-import { promblemStateForAccountId } from "../state/problems";
+import { problemStateForAccountId } from "../state/problems";
 import { eloStateForAccountId } from "../state/elo";
 
 type Props = {
@@ -32,7 +32,7 @@ type Props = {
 
 function Problem({ level, nextLevel, done, accountId }: Props) {
   const { t } = useTranslation();
-  const { currentProblemState } = promblemStateForAccountId(accountId);
+  const { currentProblemState } = problemStateForAccountId(accountId);
   const { eloCalculateState } = eloStateForAccountId(accountId);
   const [manageLevel, setManageLevel] = useState(() => new LevelManager(level));
   const [history, setHistory] = useState(manageLevel.moves);
@@ -96,6 +96,7 @@ function Problem({ level, nextLevel, done, accountId }: Props) {
         id: manageLevel.level.id,
         date: Date.now(),
         rating: manageLevel.rating,
+        type: manageLevel.type,
         moves,
         result: !manageLevel.isComplete
           ? "incomplete"

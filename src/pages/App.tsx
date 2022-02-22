@@ -8,7 +8,7 @@ import Home from "./Home";
 const About = lazy(() => import("./About" /* webpackChunkName: "About" */));
 const Profile = lazy(() => import("./Profile" /* webpackChunkName: "Profile" */));
 const Privacy = lazy(() => import("./Privacy" /* webpackChunkName: "Privacy" */));
-const GameFrom = lazy(() => import("./GameFrom" /* webpackChunkName: "GameFrom" */));
+const Game = lazy(() => import("./Game" /* webpackChunkName: "Game" */));
 const Learn = lazy(() => import("./Learn" /* webpackChunkName: "Learn" */));
 const LearnLevels = lazy(() => import("./LearnLevels" /* webpackChunkName: "LearnLevels" */));
 const Puzzles = lazy(() => import("./Puzzles" /* webpackChunkName: "Puzzles" */));
@@ -31,8 +31,8 @@ function App() {
             element={<LearnLevels />}
           />
           <Route path="puzzles" element={<Puzzles />} />
-          <Route path="play" element={<GameFrom />} />
-          <Route path="play/:fen" element={<GameFrom />} />
+          <Route path="play" element={<Game />} />
+          <Route path="play/:fen" element={<Game />} />
         </Route>
       </Routes>
     </BrowserRouter>
