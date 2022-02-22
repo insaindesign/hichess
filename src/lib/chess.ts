@@ -2,6 +2,7 @@ import Chess from "chess.js";
 import debounce from "lodash/debounce";
 
 import EventEmitter from "../lib/emitter";
+import { removeAtIndex } from "./arrays";
 
 import type { Color } from "chessground/types";
 import type {
@@ -124,6 +125,10 @@ export class ChessCtrl {
     const m = this.chess.move(move);
     if (m) {
       this.moves = [...this.moves, m];
+      const obstacle = this.obstacles.findIndex(o => o === m.to);
+      if (obstacle !== -1) {
+        this.obstacles = removeAtIndex(this.obstacles, obstacle);
+      }
       this.handleChange();
     }
     return m;
