@@ -50,18 +50,17 @@ export function register(config?: Config) {
 }
 
 function registerValidSW(swUrl: string, config?: Config) {
-  console.log("registerValidSW", "inited", Date.now());
   navigator.serviceWorker
     .register(swUrl)
     .then((registration) => {
-      console.log("registerValidSW", registration, Date.now());
+      if (config && config.onSuccess) {
+        config.onSuccess(registration);
+      }
       registration.onupdatefound = () => {
-        console.log("registerValidSW", "onupdatefound", Date.now());
         const installingWorker = registration.installing;
         if (installingWorker == null) {
           return;
         }
-        console.log("registerValidSW", "installing", Date.now());
         if (config && config.onUpdateFound) {
           config.onUpdateFound(registration);
         }

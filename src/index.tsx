@@ -9,14 +9,12 @@ ReactDOM.render(<App />, document.getElementById("root"));
 // service worker
 register({
   onError: (e) => console.error("show error state", e),
-  onUpdateFound: (r) => console.log("show loading state"),
+  onUpdateFound: (r) => console.log("show loading state", r),
   onUpdate: (r) => {
-    console.log("onUpdate show choice to upgrade");
     const sw = r.waiting;
     if (sw) {
-      console.log("skiped");
-      // r.waiting?.postMessage({ type: "SKIP_WAITING" });
-      // window.location.reload();
+      sw.postMessage({ type: "SKIP_WAITING" });
+      window.location.reload();
     }
   },
   onSuccess: (r) => console.log("onSuccess", r),
