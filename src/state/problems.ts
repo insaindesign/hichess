@@ -11,6 +11,7 @@ export type ProblemId = string;
 export type ProblemType = "puzzle" | "learn";
 export type Problem = {
   id: string;
+  path: string;
   type: ProblemType;
   date: number;
   rating: number;

@@ -24,6 +24,10 @@ export function setFenTurn(fen: string, turn: "b" | "w"): string {
   return fen.replace(/ (w|b) /, " " + turn + " ");
 }
 
+export function fenColor(fen: string): Color {
+  return / w /.test(fen) ? "white" : "black";
+}
+
 export class ChessCtrl {
   private events: EventEmitter<{ change: ChessMove[] }>;
   private chess: ChessInstance;

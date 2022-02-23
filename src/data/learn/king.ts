@@ -8,6 +8,7 @@ const Learn: RawStage = {
   levels: [
     {
       goal: "theKingIsSlow",
+      id: "Lu86dNiTiK",
       fen: "8/8/8/8/8/3K4/8/8 w - -",
       apples: "e6",
       nbMoves: 3,
@@ -15,12 +16,14 @@ const Learn: RawStage = {
     },
     {
       goal: "grabAllTheStars",
+      id: "zAS5ldqb79",
       fen: "8/8/8/8/4K3/8/8/8 w - -",
       apples: "c2 b2 e2 e3",
       nbMoves: 5,
     },
     {
       goal: "lastOne",
+      id: "SxKecH5_Ig",
       fen: "8/8/4K3/8/8/8/8/8 w - -",
       apples: "b5 c5 d6 e3 f3 g3",
       nbMoves: 8,

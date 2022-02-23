@@ -1,6 +1,8 @@
 import { PuzzleBase, Level, puzzleToLevel } from "../util";
 
-type PuzzleBody = (string | number)[];
+type Rating = string | number;
+
+type PuzzleBody = Rating[];
 
 type PuzzlesJson = {
   head: (keyof PuzzleBase)[];
@@ -9,7 +11,7 @@ type PuzzlesJson = {
 
 const fromPuzzleJson = (json: PuzzlesJson) => {
   return json.body.reduce((out: Level[], item: PuzzleBody) => {
-    const puzzle = item.reduce((p: PuzzleBase, v: string | number, ii: number) => {
+    const puzzle = item.reduce((p: PuzzleBase, v: Rating, ii: number) => {
       const key = json.head[ii];
       // @ts-ignore
       p[key] = v;
@@ -20,9 +22,21 @@ const fromPuzzleJson = (json: PuzzlesJson) => {
   }, []);
 };
 
-const getPuzzles = (rating: string | number): Promise<Level[]> =>
+const fetchPuzzles = (rating: Rating): Promise<Level[]> =>
   fetch("/lib/puzzles/" + rating + ".json")
     .then((r) => r.json())
     .then(fromPuzzleJson);
+
+const puzzles: Level[] = [];
+const loadedRatings: Record<Rating, Promise<any>> = {};
+
+const getPuzzles = (rating: Rating): Promise<Level[]> => {
+  if (!loadedRatings[rating]) {
+    loadedRatings[rating] = fetchPuzzles(rating).then((p) =>
+      p.forEach((p) => puzzles.push(p))
+    );
+  }
+  return loadedRatings[rating].then(() => puzzles);
+};
 
 export default getPuzzles;

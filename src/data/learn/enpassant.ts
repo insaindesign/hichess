@@ -7,6 +7,7 @@ const Learn: RawStage = {
   levels: [
     {
       goal: "blackJustMovedThePawnByTwoSquares",
+      id: "ODvpZqaLEi",
       fen: "rnbqkbnr/pppppppp/8/2P5/8/8/PP1PPPPP/RNBQKBNR b KQkq -",
       nbMoves: 1,
       scenario: [
@@ -19,6 +20,7 @@ const Learn: RawStage = {
     },
     {
       goal: "enPassantOnlyWorksImmediately",
+      id: "asT35StCQV",
       fen: "rnbqkbnr/ppp1pppp/8/2Pp3P/8/8/PP1PPPP1/RNBQKBNR b KQkq -",
       nbMoves: 1,
       scenario: [
@@ -31,6 +33,7 @@ const Learn: RawStage = {
     },
     {
       goal: "enPassantOnlyWorksOnFifthRank",
+      id: "bZHiYxyHOo",
       fen: "rnbqkbnr/pppppppp/P7/2P5/8/8/PP1PPPP1/RNBQKBNR b KQkq -",
       nbMoves: 1,
       scenario: [
@@ -43,6 +46,7 @@ const Learn: RawStage = {
     },
     {
       goal: "takeAllThePawnsEnPassant",
+      id: "s239OTU-ix",
       fen: "rnbqkbnr/pppppppp/8/2PPP2P/8/8/PP1P1PP1/RNBQKBNR b KQkq -",
       nbMoves: 4,
       scenario: [

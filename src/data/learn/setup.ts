@@ -7,6 +7,7 @@ const Learn: RawStage = {
   levels: [
     {
       goal: "firstPlaceTheRooks",
+      id: "m-cy33NG55",
       fen: "r6r/8/8/8/8/8/8/2RR4 w - -",
       apples: "a1 h1",
       nbMoves: 2,
@@ -15,6 +16,7 @@ const Learn: RawStage = {
     },
     {
       goal: "thenPlaceTheKnights",
+      id: "Yx6ebbfSqu",
       fen: "rn4nr/8/8/8/8/8/2NN4/R6R w - -",
       apples: "b1 g1",
       nbMoves: 4,
@@ -22,6 +24,7 @@ const Learn: RawStage = {
     },
     {
       goal: "placeTheBishops",
+      id: "2cpUsRA_fh",
       fen: "rnb2bnr/8/8/8/4BB2/8/8/RN4NR w - -",
       apples: "c1 f1",
       nbMoves: 4,
@@ -29,6 +32,7 @@ const Learn: RawStage = {
     },
     {
       goal: "placeTheQueen",
+      id: "QkKf4FSkDX",
       fen: "rnbq1bnr/8/8/8/5Q2/8/8/RNB2BNR w - -",
       apples: "d1",
       nbMoves: 2,
@@ -36,6 +40,7 @@ const Learn: RawStage = {
     },
     {
       goal: "placeTheKing",
+      id: "ljEzleIUo9",
       fen: "rnbqkbnr/8/8/8/5K2/8/8/RNBQ1BNR w - -",
       apples: "e1",
       nbMoves: 3,

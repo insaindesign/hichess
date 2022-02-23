@@ -6,7 +6,7 @@ import Learn from "../components/Learn";
 import Problem from "../components/Problem";
 
 import type { Account } from "../state/accounts";
-import {withRequireAccount} from "../components/RequireAccount";
+import { withRequireAccount } from "../components/RequireAccount";
 
 type Props = {
   account: Account;
@@ -24,15 +24,19 @@ function LearnLevels({ account }: Props) {
 
   const cat = categories.find((c) => c.key === params.category);
   const stage = cat?.stages.find((s) => s.key === params.stage);
-  const index = params.index ? parseInt(params.index, 10) : 0;
+  const id = params.index ? params.index : '';
+
+  const index = Math.max(
+    stage && id ? stage.levels.findIndex(l => l.id === id) : 0,
+    0
+  );
   const level = stage ? stage.levels[index] : null;
 
   const nextLevel = useCallback(() => {
     const next = index + 1;
-    next < (stage?.levels || []).length
-      ? navigate(`/learn/${params.category}/${params.stage}/${next}/`)
-      : navigate(`/learn`);
-  }, [params, stage, index, navigate]);
+    const levels = stage?.levels || [];
+    next < levels.length ? navigate(levels[next].path) : navigate(`/learn`);
+  }, [stage, index, navigate]);
 
   useEffect(() => {
     if (!level) {
@@ -56,6 +60,5 @@ function LearnLevels({ account }: Props) {
     </>
   );
 }
-
 
 export default withRequireAccount(LearnLevels);

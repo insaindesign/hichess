@@ -6,6 +6,7 @@ const Learn: RawStage = {
   category: "intermediate",
   levels: [
     {
+      id: "bYu_S8GRnG",
       fen: "k7/8/8/6B1/8/1R6/8/7K w - -",
       shapes: [arrow("g5e3")],
       scenario: [
@@ -22,6 +23,7 @@ const Learn: RawStage = {
       ],
     },
     {
+      id: "kOwF3yZ-Zo",
       fen: "8/7p/4N2k/8/8/3N4/8/1K6 w - -",
       scenario: [
         {
@@ -40,6 +42,7 @@ const Learn: RawStage = {
       ],
     },
     {
+      id: "3yTUA-R1zt",
       fen: "4k3/6p1/5p2/p4P2/PpB2N2/1K6/8/3R4 w - -",
       scenario: [
         {
@@ -59,6 +62,7 @@ const Learn: RawStage = {
       ],
     },
     {
+      id: "gSZMzj15Qt",
       fen: "8/6pk/6np/7K/8/3B4/8/1R6 w - -",
       scenario: [
         {
@@ -74,6 +78,7 @@ const Learn: RawStage = {
       ],
     },
     {
+      id: "-LP3kjcEPC",
       fen: "7R/pk6/p1pP4/K7/3BB2p/7p/1r5P/8 w - -",
       scenario: [
         {

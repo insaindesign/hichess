@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 
 import { eloStateForAccountId } from "../state/elo";
 import { problemStateForAccountId } from "../state/problems";
+import { Link } from "react-router-dom";
 
 type Props = {
   accountId: string;
@@ -21,11 +22,12 @@ function Problem({ accountId, type }: Props) {
   return (
     <div>
       <Typography variant="h4">
-        {t('history.'+type)} <Chip label={Math.round(elo)} />
+        {t("history." + type)} <Chip label={Math.round(elo)} />
       </Typography>
       {problems.map((p, ii) => (
         <div key={ii}>
-          {p.id}, {new Date(p.date).toDateString()}, {t(p.result)}, {p.rating}
+          <Link to={p.path}>{p.id}</Link>, {new Date(p.date).toDateString()},{" "}
+          {t(p.result)}, {p.rating}
         </div>
       ))}
     </div>

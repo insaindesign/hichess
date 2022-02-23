@@ -63,15 +63,13 @@ const Categs = [
   ...cat,
   stages: rawStages
     .filter((s) => s.category === cat.key)
-    .map((s) => {
-      const levels = s.levels.map((level, ii) =>
-        learnToLevel(level, [s.category, s.stage, ii].join("/"))
-      );
-      return {
-        key: s.stage,
-        levels,
-      } as Stage;
-    }),
+    .map(
+      (s) =>
+        ({
+          key: s.stage,
+          levels: s.levels.map((level) => learnToLevel(level, s)),
+        } as Stage)
+    ),
 })) as Category[];
 
 export default Categs;

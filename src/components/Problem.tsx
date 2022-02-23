@@ -97,6 +97,7 @@ function Problem({ level, nextLevel, done, accountId }: Props) {
         date: Date.now(),
         rating: manageLevel.rating,
         type: manageLevel.type,
+        path: manageLevel.level.path,
         moves,
         result: !manageLevel.isComplete
           ? "incomplete"

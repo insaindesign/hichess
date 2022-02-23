@@ -7,6 +7,7 @@ const Learn: RawStage = {
   levels: [
     {
       goal: 'pawnsMoveOneSquareOnly',
+      id: "RnKdR6E_4R",
       fen: '8/8/8/P7/8/8/8/8 w - -',
       apples: 'f3',
       nbMoves: 4,
@@ -14,12 +15,14 @@ const Learn: RawStage = {
     },
     {
       goal: 'mostOfTheTimePromotingToAQueenIsBest',
+      id: "TEgXCWLaYa",
       fen: '8/8/8/5P2/8/8/8/8 w - -',
       apples: 'b6 c4 d7 e5 a8',
       nbMoves: 8,
     },
     {
       goal: 'pawnsMoveForward',
+      id: "F-uMrDaOw0",
       fen: '8/8/8/8/8/4P3/8/8 w - -',
       apples: 'c6 d5 d7',
       nbMoves: 4,
@@ -28,12 +31,14 @@ const Learn: RawStage = {
     },
     {
       goal: 'captureThenPromote',
+      id: "UYwldtf49w",
       fen: '8/8/8/8/8/1P6/8/8 w - -',
       apples: 'b4 b6 c4 c6 c7 d6',
       nbMoves: 8,
     },
     {
       goal: 'captureThenPromote',
+      id: "NuuhCfq9Cr",
       fen: '8/8/8/8/8/3P4/8/8 w - -',
       apples: 'c4 b5 b6 d5 d7 e6 c8',
       failure: whitePawnOnAnyOf('b5 d4 d6 c7'),
@@ -41,12 +46,14 @@ const Learn: RawStage = {
     },
     {
       goal: 'useAllThePawns',
+      id: "QCA1ewhsaa",
       fen: '8/8/8/8/8/P1PP3P/8/8 w - -',
       apples: 'b5 c5 d4 e5 g4',
       nbMoves: 7,
     },
     {
       goal: 'aPawnOnTheSecondRank',
+      id: "XclOVJF0a0",
       fen: '8/8/8/8/8/8/4P3/8 w - -',
       apples: 'd6',
       nbMoves: 3,
@@ -55,6 +62,7 @@ const Learn: RawStage = {
     },
     {
       goal: 'grabAllTheStarsNoNeedToPromote',
+      id: "-_nwTziXwM",
       fen: '8/8/8/8/8/8/2PPPP2/8 w - -',
       apples: 'c5 d5 e5 f5 d3 e4',
       nbMoves: 9,

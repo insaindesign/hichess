@@ -1,7 +1,7 @@
-import type { Square as Key } from "chess.js";
 import { completedScenario, extinct, followScenario, not } from "./assert";
-import ChessCtrl from "../lib/chess";
+import ChessCtrl, { fenColor } from "../lib/chess";
 
+import type { Square as Key } from "chess.js";
 import type { DrawShape } from "chessground/draw";
 import type { Color } from "chessground/types";
 import type LevelManager from "./manager";
@@ -21,7 +21,7 @@ export interface Category {
 export interface RawStage {
   category: string;
   stage: string;
-  levels: LevelPartial[];
+  levels: LearnBase[];
 }
 
 export interface Stage {
@@ -29,8 +29,8 @@ export interface Stage {
   levels: Level[];
 }
 
-export type Level = LevelBase & LevelDefaults & { id: string };
-export type LevelPartial = LevelBase & Partial<LevelDefaults>;
+export type Level = LevelBase & LevelDefaults;
+export type LearnBase = LevelBase & Partial<LevelDefaults>;
 
 export type Uci = string; // represents a move e.g, e4
 
@@ -50,7 +50,8 @@ export interface PuzzleBase {
   rating: number;
 }
 
-interface LevelBase {
+export interface LevelBase {
+  id: string;
   goal: string;
   fen: string;
   apples?: string;
@@ -60,35 +61,36 @@ interface LevelBase {
   shapes?: DrawShape[];
 }
 
-export interface LevelDefaults {
-  id: string;
+interface LevelDefaults {
   color: Color;
   rating: number;
+  path: string;
   success(manager: LevelManager): boolean;
   failure(manager: LevelManager): boolean;
   themes: string[];
 }
 
-export function learnToLevel(l: LevelPartial, id: string): Level {
+export function learnToLevel(l: LearnBase, rawStage: RawStage): Level {
   if (l.fen.split(" ").length === 4) l.fen += " 0 1";
   return {
-    color: / w /.test(l.fen) ? "white" : "black",
+    color: fenColor(l.fen),
     success: extinct("black"),
     failure: () => false,
     rating: 600,
-    id,
     ...l,
-    themes: l.themes ? l.themes.concat("learn") : ["learn"],
+    path: "/"+["learn", rawStage.category, rawStage.stage, l.id].join('/'),
+    themes: ["learn", rawStage.stage, rawStage.category],
   };
 }
 
 export function puzzleToLevel(l: PuzzleBase): Level {
   return {
-    color: ChessCtrl.swapColor(/ w /.test(l.fen) ? "white" : "black"),
+    color: ChessCtrl.swapColor(fenColor(l.fen)),
     goal: "solvepuzzle",
     success: completedScenario,
     failure: not(followScenario),
     ...l,
+    path: "/puzzles/all/" + l.id,
     scenario: l.solution.split(" "),
     themes: l.themes.split(" ").concat("puzzle"),
   };
