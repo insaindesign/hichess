@@ -3,7 +3,7 @@ import memoize from "lodash/memoize";
 
 import { upsert } from "../lib/arrays";
 import { accountStore } from "../storage";
-import { persist } from "./";
+import { persist, accountKey } from "./";
 
 import type { Move } from "chess.js";
 
@@ -15,6 +15,7 @@ export type Problem = {
   type: ProblemType;
   date: number;
   rating: number;
+  ratingChange: number;
   moves: Move["san"][];
   result: "incomplete" | "success" | "failure";
 };
@@ -22,22 +23,23 @@ export type Problem = {
 const toProblemId = (p: Problem): ProblemId => [p.id, p.date].join("-");
 
 export const problemStateForAccountId = memoize((accountId: string) => {
-  const persisted = persist({ storage: accountStore, key: accountId });
+  const persisted = persist({ storage: accountStore(accountId), key: 'problems' });
+  const key = accountKey(accountId);
 
   const problemsState = atom<Problem[]>({
-    key: accountId + "-problems",
+    key: key("problems"),
     default: [],
     effects: [persisted],
   });
 
   const currentProblemIdState = atom<ProblemId | null>({
-    key: accountId + "-currentProblemId",
+    key: key("currentProblemId"),
     default: null,
     effects: [persisted],
   });
 
   const problemsOfTypeState = selectorFamily<Problem[], ProblemType>({
-    key: accountId + "-problemsOfType",
+    key: key("problemsOfType"),
     get:
       (type) =>
       ({ get }) => {
@@ -47,14 +49,18 @@ export const problemStateForAccountId = memoize((accountId: string) => {
   });
 
   const currentProblemState = selector<Problem | null>({
-    key: accountId + "-currentProblem",
+    key: key("currentProblem"),
     get: ({ get }) => {
       const id = get(currentProblemIdState);
       const problems = get(problemsState);
       return problems.find((p) => toProblemId(p) === id) || null;
     },
     set: ({ get, set }, problem) => {
-      if (!problem || problem instanceof DefaultValue) {
+      if (problem instanceof DefaultValue) {
+        return;
+      }
+      if (!problem) {
+        set(currentProblemIdState, null);
         return;
       }
       const problems = get(problemsState);
@@ -64,11 +70,7 @@ export const problemStateForAccountId = memoize((accountId: string) => {
         (p) => p.id === problem.id && p.date === problem.date
       );
       set(problemsState, problemsUpdate);
-      if (problem.result !== "incomplete") {
-        set(currentProblemIdState, null);
-      } else {
-        set(currentProblemIdState, toProblemId(problem));
-      }
+      set(currentProblemIdState, toProblemId(problem));
     },
   });
 

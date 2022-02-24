@@ -148,6 +148,19 @@ export class ChessCtrl {
     return m;
   };
 
+  temporaryMove = (move: ShortMove) => {
+    const m = this.chess.move(move);
+    if (m) {
+      this.moves = [...this.moves];
+      this.handleChange();
+      setTimeout(() => {
+        this.chess.undo();
+        this.moves = [...this.moves];
+        this.handleChange();
+      }, 500);
+    }
+  };
+
   pieces(): Partial<Record<Key, Piece>> {
     const map: Partial<Record<Key, Piece>> = {};
     this.chess.SQUARES.forEach((s) => {

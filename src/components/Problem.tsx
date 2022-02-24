@@ -6,7 +6,7 @@ import RestartIcon from "@mui/icons-material/RestartAlt";
 import NextIcon from "@mui/icons-material/SkipNext";
 import DoneIcon from "@mui/icons-material/Done";
 import { useTranslation } from "react-i18next";
-import { useRecoilCallback, useRecoilState } from "recoil";
+import { useRecoilCallback, useRecoilState, useRecoilValue } from "recoil";
 
 import LevelManager from "../data/manager";
 import ButtonGroup from "./ButtonGroup";
@@ -15,13 +15,15 @@ import Board from "./Board";
 import ShowDefenders from "./ShowDefenders";
 import ShowAttackers from "./ShowAttackers";
 import MoveBar from "./MoveBar";
+import { problemStateForAccountId } from "../state/problems";
+import { eloStateForAccountId } from "../state/elo";
 
 import type { Level } from "../data/util";
 import type { ShapeOptionType } from "./Board/brushes";
+import type { EloResult, EloValue } from "../lib/elo";
+import type { Problem as ProblemStateType } from "../state/problems";
 
 import css from "./Game.module.css";
-import { problemStateForAccountId } from "../state/problems";
-import { eloStateForAccountId } from "../state/elo";
 
 type Props = {
   done?: boolean;
@@ -33,21 +35,23 @@ type Props = {
 function Problem({ level, nextLevel, done, accountId }: Props) {
   const { t } = useTranslation();
   const { currentProblemState } = problemStateForAccountId(accountId);
-  const { eloCalculateState } = eloStateForAccountId(accountId);
+  const { eloState, eloCalculateState } = eloStateForAccountId(accountId);
   const [manageLevel, setManageLevel] = useState(() => new LevelManager(level));
   const [history, setHistory] = useState(manageLevel.moves);
   const [showThreats, setShowThreats] = useState<ShapeOptionType>("none");
   const [showDefenders, setShowDefenders] = useState<ShapeOptionType>("none");
   const [currentProblem, setCurrentProblem] =
     useRecoilState(currentProblemState);
+  const elo = useRecoilValue(eloState(manageLevel.type));
 
   const isComplete = manageLevel.isComplete;
 
-  const setElo = useRecoilCallback(
+  const setElos = useRecoilCallback(
     ({ set }) =>
-      (key: string, rating: number, result) => {
-        // @ts-ignore
-        set(eloCalculateState(key), [rating, result]);
+      (themes: string[], rating: EloValue, result: EloResult) => {
+        themes.forEach((key) =>
+          set(eloCalculateState(key), [rating, result] as [EloValue, EloResult])
+        );
       },
     []
   );
@@ -61,19 +65,9 @@ function Problem({ level, nextLevel, done, accountId }: Props) {
     []
   );
 
-  const resetLevel = useCallback(() => {
-    manageLevel.reset();
-  }, [manageLevel]);
+  const resetLevel = useCallback(() => manageLevel.reset(), [manageLevel]);
 
-  const hint = useCallback(() => {
-    let timeout: any;
-    const nextMove = manageLevel.nextMove();
-    if (nextMove && manageLevel.isUsersTurn) {
-      manageLevel.chess.move(nextMove);
-      timeout = setTimeout(() => manageLevel.chess.undo(), 1000);
-    }
-    return () => clearTimeout(timeout);
-  }, [manageLevel]);
+  const hint = useCallback(() => manageLevel.hint(), [manageLevel]);
 
   useEffect(() => manageLevel.chess.on("change", setHistory), [manageLevel]);
 
@@ -86,24 +80,28 @@ function Problem({ level, nextLevel, done, accountId }: Props) {
   useEffect(() => {
     const moves = manageLevel.userMoves.map((m) => m.san);
     if (!moves.length) {
+      if (currentProblem) {
+        setCurrentProblem(null);
+      }
       return;
     }
-    if (
-      moves.length === 1 &&
-      (!currentProblem || currentProblem.id !== manageLevel.level.id)
-    ) {
+    const update = {
+      ratingChange: manageLevel.ratingChange(elo),
+      moves,
+      result: !manageLevel.isComplete
+        ? "incomplete"
+        : manageLevel.isSuccessful
+        ? "success"
+        : ("failure" as ProblemStateType["result"]),
+    };
+    if (moves.length === 1 && !currentProblem) {
       setCurrentProblem({
         id: manageLevel.level.id,
         date: Date.now(),
         rating: manageLevel.rating,
         type: manageLevel.type,
         path: manageLevel.level.path,
-        moves,
-        result: !manageLevel.isComplete
-          ? "incomplete"
-          : manageLevel.isSuccessful
-          ? "success"
-          : "failure",
+        ...update,
       });
     } else if (
       currentProblem &&
@@ -111,24 +109,20 @@ function Problem({ level, nextLevel, done, accountId }: Props) {
     ) {
       setCurrentProblem({
         ...currentProblem,
-        rating: manageLevel.rating,
-        moves,
-        result: !manageLevel.isComplete
-          ? "incomplete"
-          : manageLevel.isSuccessful
-          ? "success"
-          : "failure",
+        ...update,
       });
     }
-  }, [currentProblem, manageLevel, history, setCurrentProblem]);
+  }, [currentProblem, elo, manageLevel, history, setCurrentProblem]);
 
   useEffect(() => {
-    if (manageLevel.isComplete) {
-      manageLevel.themes.forEach((theme) => {
-        setElo(theme, manageLevel.rating, manageLevel.isSuccessful ? 1 : 0);
-      });
+    if (isComplete) {
+      setElos(
+        manageLevel.themes,
+        manageLevel.rating,
+        manageLevel.isSuccessful ? 1 : 0
+      );
     }
-  }, [manageLevel, isComplete, setElo]);
+  }, [manageLevel, isComplete, setElos]);
 
   return (
     <>

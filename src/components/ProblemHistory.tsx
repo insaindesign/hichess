@@ -27,7 +27,7 @@ function Problem({ accountId, type }: Props) {
       {problems.map((p, ii) => (
         <div key={ii}>
           <Link to={p.path}>{p.id}</Link>, {new Date(p.date).toDateString()},{" "}
-          {t(p.result)}, {p.rating}
+          {t(p.result)}, {p.rating} ({p.ratingChange})
         </div>
       ))}
     </div>

@@ -7,4 +7,4 @@ export const createStore = (name: string) => {
 };
 
 export const appStore = createStore('app');
-export const accountStore = createStore('account');
+export const accountStore = (id: string) => createStore(id);

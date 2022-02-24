@@ -11,3 +11,5 @@ export const persist = (config: Partial<PersistConfiguration>) => {
 };
 
 export const globalPersist = persist({storage: appStore});
+
+export const accountKey = (id: string) => (key: string) => id + '-' + key;

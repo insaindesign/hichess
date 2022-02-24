@@ -5,11 +5,14 @@ import type { Move, ShortMove, Square } from "chess.js";
 import type { Color } from "chessground/types";
 import type { DrawShape } from "chessground/draw";
 import type { Config } from "chessground/config";
-import { ProblemType } from "../state/problems";
+import type { ProblemType } from "../state/problems";
+import type { EloValue } from "../lib/elo";
+import { elo } from "../state/elo";
 
 export class LevelManager {
   public level: Level;
   public chess: ChessCtrl;
+  private hasHinted: boolean = false;
 
   constructor(level: Level) {
     this.chess = new ChessCtrl();
@@ -28,6 +31,7 @@ export class LevelManager {
 
   reset(): void {
     this.chess.fen = this.level.fen;
+    this.hasHinted = false;
     if (this.level.apples) {
       this.chess.addObstacles(
         this.level.apples.split(" ") as Square[],
@@ -97,8 +101,9 @@ export class LevelManager {
     const userMoves = this.userMoves.length;
     const levelExpectedMoves = this.level.nbMoves || userMoves;
     const delta = userMoves - levelExpectedMoves;
-    if (delta <= 0) return this.level.rating;
-    if (delta <= Math.max(1, levelExpectedMoves / 8)) return this.level.rating - 50;
+    if (delta <= 0 && !this.hasHinted) return this.level.rating;
+    if (delta <= Math.max(1, levelExpectedMoves / 8) && !this.hasHinted)
+      return this.level.rating - 50;
     return this.level.rating - 100;
   }
 
@@ -107,7 +112,21 @@ export class LevelManager {
   }
 
   get type(): ProblemType {
-    return this.level.themes.includes('puzzle') ? 'puzzle' : 'learn';
+    return this.level.themes.includes("puzzle") ? "puzzle" : "learn";
+  }
+
+  public hint(): void {
+    const nextMove = this.nextMove();
+    if (nextMove && this.isUsersTurn) {
+      this.hasHinted = true;
+      this.chess.temporaryMove(nextMove);
+    }
+  }
+
+  public ratingChange(userRating: EloValue): number {
+    return this.isComplete
+      ? elo.change(userRating, this.rating, this.isSuccessful ? 1 : 0)[0]
+      : 0;
   }
 
   public nextMove(): ShortMove | null {
