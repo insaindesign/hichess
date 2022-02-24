@@ -219,14 +219,14 @@ function Game({ fen, account }: Props) {
             value={userColor}
           >
             <ToggleButton value={"white"}>
-              <Piece color="white" piece="p" style={{ fontSize: 32 }} />
+              <Piece color="white" piece="p" />
             </ToggleButton>
             <ToggleButton value={"both"}>
-              <Piece color="white" piece="p" style={{ fontSize: 32 }} />{" "}
-              <Piece color="black" piece="p" style={{ fontSize: 32 }} />
+              <Piece color="white" piece="p" />{" "}
+              <Piece color="black" piece="p" />
             </ToggleButton>
             <ToggleButton value={"black"}>
-              <Piece color="black" piece="p" style={{ fontSize: 32 }} />
+              <Piece color="black" piece="p" />
             </ToggleButton>
           </ToggleButtonGroup>
           {userColor !== "both" ? (
