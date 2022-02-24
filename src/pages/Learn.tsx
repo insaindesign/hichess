@@ -6,16 +6,20 @@ import Learn from "../components/Learn";
 import Toolbar from "../components/Toolbar";
 import { withRequireAccount } from "../components/RequireAccount";
 
-type Props = {};
+import type { Account } from "../state/accounts";
 
-function LearnPage(props: Props) {
+type Props = {
+  account: Account;
+};
+
+function LearnPage({ account }: Props) {
   const { t } = useTranslation();
-  const params = useParams<'category'>();
+  const params = useParams<"category">();
 
   return (
     <>
       <Toolbar>{t("learn.title")}</Toolbar>
-      <Learn category={params.category} />
+      <Learn category={params.category} account={account} />
     </>
   );
 }

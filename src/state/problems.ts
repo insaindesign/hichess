@@ -11,7 +11,7 @@ import { accountStore } from "../storage";
 import { persist, accountKey } from "./";
 
 import type { Move } from "chess.js";
-import { upsert } from "../lib/arrays";
+import { emptyThrows, upsert } from "../lib/arrays";
 
 export type ProblemId = string;
 export type ProblemType = "puzzle" | "learn";
@@ -19,46 +19,49 @@ export interface ProblemBase {
   id: string;
   path: string;
   type: ProblemType;
-  rating: number;
 }
 export interface ProblemAttempt {
+  rating: number;
   date: number;
   ratingChange: number;
   moves: Move["san"][];
   result: "incomplete" | "success" | "failure";
 }
 export interface ProblemAttempts extends ProblemBase {
+  success?: boolean;
   attempts: ProblemAttempt[];
 }
 export interface Problem extends ProblemBase, ProblemAttempt {}
 
+export type ProblemAttemptsOfIds = Record<string, ProblemAttempts | null>;
+
 const toProblemId = (p: Problem): ProblemId => [p.id, p.date].join("-");
 const fromProblemId = (p: ProblemId): [string, number] => {
   const parts = p.split("-");
-  return [parts[0], parseInt(parts[1])];
+  const date = emptyThrows(parts.pop());
+  return [parts.join("-"), parseInt(date, 10)];
 };
 
-const problemToAttempt = (p: Problem): ProblemAttempt => ({
+const toAttempt = (p: Problem): ProblemAttempt => ({
   date: p.date,
+  rating: p.rating,
   ratingChange: p.ratingChange,
   moves: p.moves,
   result: p.result,
 });
 
-const attemptToProblem = (p: ProblemAttempts, index: number): Problem => {
+const toProblem = (p: ProblemAttempts, attempt: ProblemAttempt): Problem => {
   return {
     id: p.id,
     path: p.path,
     type: p.type,
-    rating: p.rating,
-    ...p.attempts[index],
+    ...attempt,
   };
 };
-const attemptToProblemByDate = (p: ProblemAttempts, date: number): Problem =>
-  attemptToProblem(
-    p,
-    p.attempts.findIndex((a) => a.date === date)
-  );
+const toProblemByDate = (p: ProblemAttempts, date: number): Problem | null => {
+  const attempt = p.attempts.find((a) => a.date === date);
+  return attempt ? toProblem(p, attempt) : null;
+};
 
 export const problemStateForAccountId = memoize((accountId: string) => {
   const persisted = persist({
@@ -85,29 +88,36 @@ export const problemStateForAccountId = memoize((accountId: string) => {
     effects: [persisted],
   });
 
-  const problemsState = selector<Problem[]>({
-    key: key("problems"),
-    get: ({ get }) => {
-      const attempts: Problem[] = [];
-      get(problemIdsState)
-        .map((id) => get(problemAttemptsState(id)))
-        .forEach((at) =>
-          at?.attempts.forEach((a, ii) =>
-            attempts.push(attemptToProblem(at, ii))
-          )
-        );
-      return attempts;
-    },
-  });
-
   const problemsOfTypeState = selectorFamily<Problem[], ProblemType>({
     key: key("problemsOfType"),
     get:
       (type) =>
       ({ get }) => {
-        const problems = get(problemsState);
-        return problems.filter((p) => p.type === type);
+        const problems: Problem[] = [];
+        get(problemIdsState)
+          .map((id) => get(problemAttemptsState(id)))
+          .forEach((at) => {
+            if (!at || at.type !== type) {
+              return;
+            }
+            at.attempts.forEach((a) => problems.push(toProblem(at, a)));
+          });
+        return problems;
       },
+  });
+
+  const problemAttemptsOfIdsState = selectorFamily<
+    ProblemAttemptsOfIds,
+    string[]
+  >({
+    key: key("problemAttemptsOfIds"),
+    get:
+      (ids) =>
+      ({ get }) =>
+        ids.reduce((acc, id) => {
+          acc[id] = get(problemAttemptsState(id));
+          return acc;
+        }, {} as ProblemAttemptsOfIds),
   });
 
   const currentProblemState = selector<Problem | null>({
@@ -119,7 +129,7 @@ export const problemStateForAccountId = memoize((accountId: string) => {
       }
       const [id, date] = fromProblemId(pId);
       const attempt = get(problemAttemptsState(id));
-      return attempt ? attemptToProblemByDate(attempt, date) : null;
+      return attempt ? toProblemByDate(attempt, date) : null;
     },
     set: ({ get, set }, problem) => {
       if (problem instanceof DefaultValue) {
@@ -129,6 +139,7 @@ export const problemStateForAccountId = memoize((accountId: string) => {
         set(currentProblemIdState, null);
         return;
       }
+
       let problemAttempt = get(problemAttemptsState(problem.id));
       if (!problemAttempt) {
         const problemIds = get(problemIdsState);
@@ -137,27 +148,28 @@ export const problemStateForAccountId = memoize((accountId: string) => {
           id: problem.id,
           path: problem.path,
           type: problem.type,
-          rating: problem.rating,
           attempts: [],
         };
       }
-      set(currentProblemIdState, toProblemId(problem));
       const value = {
         ...problemAttempt,
+        success: problem.result === "success" ? true : problemAttempt.success,
         attempts: upsert(
           problemAttempt.attempts,
-          problemToAttempt(problem),
-          (i) => i.date === problem.date
+          toAttempt(problem),
+          (att) => att.date === problem.date
         ),
       };
       set(problemAttemptsState(problem.id), value);
+      set(currentProblemIdState, toProblemId(problem));
     },
   });
 
   return {
     currentProblemIdState,
     currentProblemState,
-    problemsState,
     problemsOfTypeState,
+    problemAttemptsState,
+    problemAttemptsOfIdsState,
   };
 });

@@ -2,6 +2,19 @@
  * @format
  */
 
+export function emptyThrows<TValue>(value: TValue | null | undefined): TValue {
+  if (!notEmpty(value)) {
+    throw new Error("Expected value");
+  }
+  return value;
+}
+
+export function notEmpty<TValue>(
+  value: TValue | null | undefined
+): value is TValue {
+  return value !== null && value !== undefined;
+}
+
 export function replaceAtIndex<T>(arr: T[], index: number, newValue: T): T[] {
   return [...arr.slice(0, index), newValue, ...arr.slice(index + 1)];
 }
