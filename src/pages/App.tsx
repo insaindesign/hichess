@@ -27,7 +27,7 @@ function App() {
           <Route path="learn" element={<Learn />} />
           <Route path="learn/:category/:stage" element={<LearnLevels />} />
           <Route
-            path="learn/:category/:stage/:index"
+            path="learn/:category/:stage/:id"
             element={<LearnLevels />}
           />
           <Route path="puzzles" element={<Puzzles />} />

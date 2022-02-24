@@ -15,7 +15,7 @@ type Props = {
 interface Params {
   category: string;
   stage: string;
-  index?: string;
+  id?: string;
 }
 
 function LearnLevels({ account }: Props) {
@@ -24,25 +24,22 @@ function LearnLevels({ account }: Props) {
 
   const cat = categories.find((c) => c.key === params.category);
   const stage = cat?.stages.find((s) => s.key === params.stage);
-  const id = params.index ? params.index : '';
-
-  const index = Math.max(
-    stage && id ? stage.levels.findIndex(l => l.id === id) : 0,
-    0
-  );
-  const level = stage ? stage.levels[index] : null;
+  const id = params.id ? params.id : "";
+  const level = stage && id ? stage.levels.find((l) => l.id === id) : null;
 
   const nextLevel = useCallback(() => {
-    const next = index + 1;
     const levels = stage?.levels || [];
-    next < levels.length ? navigate(levels[next].path) : navigate(`/learn`);
-  }, [stage, index, navigate]);
+    const next = levels.findIndex((l) => l.id === id) + 1;
+    levels[next] ? navigate(levels[next].path) : navigate(`/learn`);
+  }, [stage, id, navigate]);
 
   useEffect(() => {
-    if (!level) {
+    if (!id && stage) {
+      navigate(stage.levels[0].path);
+    } else if (!level) {
       navigate("/learn");
     }
-  }, [navigate, level]);
+  }, [navigate, level, id, stage]);
 
   if (!level || !cat || !stage) {
     return null;
@@ -54,7 +51,6 @@ function LearnLevels({ account }: Props) {
         accountId={account.id}
         level={level}
         nextLevel={nextLevel}
-        done={index + 1 === stage.levels.length}
       />
       <Learn category={cat.key} stage={stage.key} />
     </>
