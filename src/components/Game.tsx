@@ -30,6 +30,7 @@ import css from "./Game.module.css";
 
 import type { Account } from "../state/accounts";
 import { useRecoilState } from "recoil";
+import Piece from "./Board/Piece";
 
 type Props = {
   fen?: string;
@@ -46,7 +47,7 @@ function Game({ fen, account }: Props) {
   const [chess] = useState(() => new ChessCtrl(fen));
   const [showDefenders, setShowDefenders] = useState<ShapeOptionType>("none");
   const [showThreats, setShowThreats] = useState<ShapeOptionType>("none");
-  const [config] = useState<Config>({ movable: { color: "white" } });
+  const [config, setConfig] = useState<Config>({ movable: { color: "white" } });
   const [moves, setMoves] = useState<Move[]>([]);
   const [stockfish] = useState(() => new StockfishCtrl());
   const [stockfishLevel, setStockfishLevel] = useState(0);
@@ -85,6 +86,11 @@ function Game({ fen, account }: Props) {
         ? setStockfishLevel(value)
         : setStockfishLevel(stockfishLevel),
     [stockfishLevel]
+  );
+  const toggleUserColor = useCallback(
+    (e, color: UserColor | null) =>
+      color != null ? setConfig({ movable: { color } }) : null,
+    [setConfig]
   );
 
   useEffect(() => chess.on("change", setMoves), [chess]);
@@ -129,14 +135,14 @@ function Game({ fen, account }: Props) {
         date: Date.now(),
         moves: m,
         color: userColor,
-        result: chess.result
+        result: chess.result,
       });
     } else if (currentGame && currentGame.position !== chess.fen) {
       setCurrentGame({
         ...currentGame,
         position: chess.fen,
         moves: m,
-        result: chess.result
+        result: chess.result,
       });
     }
   }, [currentGame, chess, userColor, fen, setCurrentGame, moves]);
@@ -204,6 +210,25 @@ function Game({ fen, account }: Props) {
             value={showThreats}
             onChange={toggleShowThreats}
           />
+          <ToggleButtonGroup
+            className={css.panelButtons}
+            color="primary"
+            exclusive
+            fullWidth
+            onChange={toggleUserColor}
+            value={userColor}
+          >
+            <ToggleButton value={"white"}>
+              <Piece color="white" piece="p" style={{ fontSize: 32 }} />
+            </ToggleButton>
+            <ToggleButton value={"both"}>
+              <Piece color="white" piece="p" style={{ fontSize: 32 }} />{" "}
+              <Piece color="black" piece="p" style={{ fontSize: 32 }} />
+            </ToggleButton>
+            <ToggleButton value={"black"}>
+              <Piece color="black" piece="p" style={{ fontSize: 32 }} />
+            </ToggleButton>
+          </ToggleButtonGroup>
           {userColor !== "both" ? (
             <ToggleButtonGroup
               className={css.panelButtons}
