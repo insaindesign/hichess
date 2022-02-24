@@ -6,8 +6,8 @@ function Loading() {
       <img
         alt="HiChess"
         src="/icon-512.png"
-        width={256}
-        height={256}
+        width={128}
+        height={128}
         className={css.logo}
       />
     </div>

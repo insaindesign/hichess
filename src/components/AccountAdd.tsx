@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import ToggleButton from "@mui/material/ToggleButton";
 import TextField from "@mui/material/TextField";
@@ -23,11 +24,15 @@ function AccountAdd({ onAdd, onCancel }: Props) {
   const [name, setName] = useState("");
   const [icon, setIcon] = useState<IconName | null>(null);
 
-  const done = useCallback(() => {
-    if (name && icon) {
-      onAdd({ name, icon, id: String(Date.now()) });
-    }
-  }, [onAdd, name, icon]);
+  const done = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (name && icon) {
+        onAdd({ name, icon, id: String(Date.now()) });
+      }
+    },
+    [onAdd, name, icon]
+  );
 
   const textChange = useCallback(
     (setter: (text: string) => void) => (e: any) => setter(e.target.value),
@@ -37,43 +42,50 @@ function AccountAdd({ onAdd, onCancel }: Props) {
   return (
     <div className={css.root}>
       {!icon ? (
-        <div className={css.icons}>
-          {accountIcons.map((i) => (
-            <ToggleButton
-              value={i}
-              key={i}
-              onChange={() => setIcon(i)}
-              selected={i === icon}
-              title={i}
-              sx={{ borderRadius: "50%", border: 0 }}
-            >
-              <AccountAvatar icon={i} sx={{ fontSize: 64 }} />
-            </ToggleButton>
-          ))}
-        </div>
+        <>
+          <Typography variant="h3">{t("account.pickface")}</Typography>
+          <div className={css.icons}>
+            {accountIcons.map((i) => (
+              <ToggleButton
+                value={i}
+                key={i}
+                onChange={() => setIcon(i)}
+                selected={i === icon}
+                title={i}
+                sx={{ borderRadius: "50%", border: 0 }}
+              >
+                <AccountAvatar icon={i} sx={{ fontSize: 64 }} />
+              </ToggleButton>
+            ))}
+          </div>
+        </>
       ) : (
         <>
           <IconButton onClick={() => setIcon(null)}>
             <AccountAvatar icon={icon} sx={{ fontSize: 92 }} />
           </IconButton>
-          <TextField
-            placeholder={t("account.name")}
-            autoFocus
-            fullWidth
-            value={name}
-            onChange={textChange(setName)}
-            inputProps={{ sx: { textAlign: "center", fontSize: 32 } }}
-          />
-          {icon ? (
-            <Button
-              disabled={!Boolean(name)}
-              variant="contained"
-              size="large"
-              onClick={done}
-            >
-              {t("save")}
-            </Button>
-          ) : null}
+          <form onSubmit={done}>
+            <TextField
+              placeholder={t("account.name")}
+              autoFocus
+              fullWidth
+              value={name}
+              onChange={textChange(setName)}
+              inputProps={{ sx: { textAlign: "center", fontSize: 24 } }}
+            />
+            {icon ? (
+              <Button
+                type="submit"
+                fullWidth
+                disabled={!Boolean(name)}
+                variant="contained"
+                size="large"
+                sx={{ marginTop: 1, fontSize: 18 }}
+              >
+                {t("save")}
+              </Button>
+            ) : null}
+          </form>
         </>
       )}
       <IconButton onClick={onCancel}>

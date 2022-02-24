@@ -63,6 +63,7 @@
     "description1": "HiChess app will occasionally download updates, including new lessons and puzzles, but mostly, HiChess is built to run completely offline."
   },
   "account": {
+    "pickface": "Pick a face",
     "add": "New account",
     "name": "Add a nickname"
   },

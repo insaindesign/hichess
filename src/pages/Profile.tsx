@@ -22,7 +22,7 @@ function Profile({ account }: Props) {
   return (
     <>
       <Toolbar />
-      <Box sx={{ textAlign: "center", paddingTop: 12 }}>
+      <Box sx={{ textAlign: "center", paddingTop: 4 }}>
         <AccountAvatarAsync icon={account.icon} sx={{ fontSize: 128 }} />
         <Typography variant="h2">
           {account.name} <Chip label={overallElo} />
