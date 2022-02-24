@@ -12,14 +12,8 @@ type Props = {
   account: Account;
 };
 
-interface Params {
-  category: string;
-  stage: string;
-  id?: string;
-}
-
 function LearnLevels({ account }: Props) {
-  const params = useParams() as unknown as Params;
+  const params = useParams<"category" | "stage" | "id">();
   const navigate = useNavigate();
 
   const cat = categories.find((c) => c.key === params.category);
@@ -30,16 +24,18 @@ function LearnLevels({ account }: Props) {
   const nextLevel = useCallback(() => {
     const levels = stage?.levels || [];
     const next = levels.findIndex((l) => l.id === id) + 1;
-    levels[next] ? navigate(levels[next].path) : navigate(`/learn`);
-  }, [stage, id, navigate]);
+    levels[next]
+      ? navigate(levels[next].path)
+      : navigate(cat ? `/learn/` + cat.key : "/learn");
+  }, [cat, stage, id, navigate]);
 
   useEffect(() => {
     if (!id && stage) {
       navigate(stage.levels[0].path);
     } else if (!level) {
-      navigate("/learn");
+      navigate(cat ? `/learn/` + cat.key : "/learn");
     }
-  }, [navigate, level, id, stage]);
+  }, [navigate, level, id, cat, stage]);
 
   if (!level || !cat || !stage) {
     return null;
@@ -47,11 +43,7 @@ function LearnLevels({ account }: Props) {
 
   return (
     <>
-      <Problem
-        accountId={account.id}
-        level={level}
-        nextLevel={nextLevel}
-      />
+      <Problem accountId={account.id} level={level} nextLevel={nextLevel} />
       <Learn category={cat.key} stage={stage.key} />
     </>
   );

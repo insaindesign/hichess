@@ -25,6 +25,7 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="privacy" element={<Privacy />} />
           <Route path="learn" element={<Learn />} />
+          <Route path="learn/:category" element={<Learn />} />
           <Route path="learn/:category/:stage" element={<LearnLevels />} />
           <Route
             path="learn/:category/:stage/:id"
