@@ -22,7 +22,7 @@ const VerifyAdult = lazy(() => import("./VerifyAdult"));
 
 type MenuItem = ButtonProps<
   typeof Button,
-  { component?: any; to?: string; key: string }
+  { component?: any; to?: string; key: string; target?: string }
 >;
 
 function MainMenu() {
@@ -81,6 +81,19 @@ function MainMenu() {
       key: "play",
     });
   }
+  if (!account) {
+    menuItems.push({
+      key: "login",
+      children: t("mainmenu.login"),
+      onClick: logout,
+    });
+  } else {
+    menuItems.push({
+      children: t("mainmenu.logout"),
+      onClick: logout,
+      key: "logout",
+    });
+  }
   if (amAnAdult || !account) {
     menuItems.push({
       component: Link,
@@ -97,19 +110,6 @@ function MainMenu() {
       children: t("mainmenu.privacy"),
     });
   }
-  if (!account) {
-    menuItems.push({
-      key: "login",
-      children: t("mainmenu.login"),
-      onClick: logout,
-    });
-  } else {
-    menuItems.push({
-      children: t("mainmenu.logout"),
-      onClick: logout,
-      key: "logout",
-    });
-  }
   if (amAnAdult) {
     menuItems.push({
       onClick: verifyAdult,
@@ -118,9 +118,16 @@ function MainMenu() {
       key: "hidegrownups",
     });
     menuItems.push({
+      key: "feedback",
+      href: "https://forms.gle/MZs4uLAkhH9jkqBC8",
+      children: t("mainmenu.feedback"),
+      target: "__blank",
+    });
+    menuItems.push({
       key: "donate",
       href: "https://www.buymeacoffee.com/hichess",
       children: t("mainmenu.donate"),
+      target: "__blank",
     });
   }
 
