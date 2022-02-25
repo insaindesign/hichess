@@ -62,6 +62,9 @@ export class ChessCtrl {
       promotion,
     };
   }
+  public static fromMove(move: ShortMove): string {
+    return move.from + move.to + (move.promotion || '');
+  }
 
   public static toColor(color: ChessColor): Color {
     return color === "w" ? "white" : "black";

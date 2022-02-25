@@ -1,9 +1,8 @@
 import memo from "lodash/memoize";
-import { loadScript } from "../lib/scripts";
 import ChessCtrl from "./chess";
 import {
   isShortMove,
-  isMoveInfo,
+  linesToBestMove,
   parseUci,
   isFinalEvaluation,
   isEvaluation,
@@ -12,17 +11,11 @@ import EventEmitter from "./emitter";
 
 import type {
   BestMove,
-  MoveInfo,
   ParsedUci,
   Evaluation,
   Evaluations,
 } from "./uci";
-import { Color } from "chessground/types";
 
-type StockfishWorker = {
-  addMessageListener: (cb: (msg: string) => void) => void;
-  postMessage: (message: string) => void;
-};
 type Option = "Skill Level" | "MultiPV";
 
 const StockfishEvents = new EventEmitter<{ line: ParsedUci }>();
@@ -42,37 +35,44 @@ export const collectUntil = (
   });
 };
 
-const getStockfish: () => Promise<StockfishWorker> = memo(() =>
-  loadScript("/lib/stockfish/stockfish.js")
-    .then((w: any) => w.Stockfish() as StockfishWorker)
-    .then((sf) => {
-      sf.addMessageListener((line: string) =>
-        StockfishEvents.emit("line", parseUci(line))
-      );
-      sf.postMessage("uci");
-      return collectUntil((line) => line === "uciok").then(() => sf);
-    })
-);
+const getStockfishSingle: () => Promise<Worker> = memo(() => {
+  const sf = new Worker('/lib/stockfish-single/stockfish-single.worker.js');
+  sf.addEventListener('message', (e) => StockfishEvents.emit("line", parseUci(e.data)));
+  sf.postMessage("uci");
+  return collectUntil((line) => line === "uciok").then(() => sf);
+});
 
-const bestFor = (color: Color) => {
-  const order = color === "white" ? 1 : -1;
-  return (a: MoveInfo, b: MoveInfo) => (b.score.value - a.score.value) * order;
-};
+// import { loadScript } from "../lib/scripts";
+// interface StockfishWorker extends Worker {
+//   addMessageListener: (cb: (msg: string) => void) => void;
+// };
+// const getStockfish: () => Promise<StockfishWorker> = memo(() =>
+//   loadScript("/lib/stockfish/stockfish.js")
+//     .then((w: any) => w.Stockfish() as StockfishWorker)
+//     .then((sf) => {
+//       sf.addMessageListener((line: string) =>
+//         StockfishEvents.emit("line", parseUci(line))
+//       );
+//       sf.postMessage("uci");
+//       return collectUntil((line) => line === "uciok").then(() => sf);
+//     })
+// );
+
+const maxLevel = 20;
 
 export class StockfishCtrl {
-  private stockfish: Promise<StockfishWorker>;
+  private stockfish: Promise<Worker>;
   private level: number;
 
   constructor() {
-    this.stockfish = getStockfish();
+    this.stockfish = getStockfishSingle();
     this.level = -1;
-    this.setLevel(0);
   }
 
   setLevel(value: number) {
     if (value !== this.level) {
       this.setOption("Skill Level", value);
-      this.setOption("MultiPV", 500);
+      this.setOption("MultiPV", ((maxLevel -  value) / maxLevel) * 500);
       this.level = value;
     }
   }
@@ -87,22 +87,19 @@ export class StockfishCtrl {
     return collectUntil(isFinalEvaluation).then((lines) => {
       const evals = lines.filter(isEvaluation);
       return {
-        Final: evals.find((e) => e.type === "Final") as Evaluation,
-        Classical: evals.find((e) => e.type === "Classical"),
-        NNUE: evals.find((e) => e.type === "NNUE"),
+        Final: evals.find((e) => e.type === "Final") as Evaluation<"Final">,
+        Classical: evals.find((e) => e.type === "Classical") as Evaluation<"Classical">,
+        NNUE: evals.find((e) => e.type === "NNUE") as Evaluation<"NNUE">,
       };
     });
   }
 
   bestMove(chess: ChessCtrl): Promise<BestMove> {
     const moves = chess.moves.map((m) => m.to).join(" ");
+    const color = chess.color;
     return this.send([`stop`]).then(() => {
-      this.send([`position fen ${chess.fen} moves ${moves}`, "go multipv 500"]);
-      return collectUntil(isShortMove).then((lines: ParsedUci[]) => ({
-        move: lines.find(isShortMove) as BestMove["move"],
-        best: lines.filter(isMoveInfo).sort(bestFor(chess.color))[0],
-        info: lines.filter(isMoveInfo),
-      }));
+      this.send([`position fen ${chess.fen} moves ${moves}`, "go"]);
+      return collectUntil(isShortMove).then(l => linesToBestMove(l, color));
     });
   }
 

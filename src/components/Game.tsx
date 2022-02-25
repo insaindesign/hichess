@@ -22,7 +22,7 @@ import type { Config } from "chessground/config";
 import type { Color } from "chessground/types";
 import type { UserColor } from "./Board";
 import type { ShapeOptionType } from "./Board/brushes";
-import type { BestMove, Evaluations } from "../lib/uci";
+import type { BestMove } from "../lib/uci";
 
 import { gameStateForAccountId } from "../state/games";
 
@@ -52,7 +52,6 @@ function Game({ fen, account }: Props) {
   const [stockfish] = useState(() => new StockfishCtrl());
   const [stockfishLevel, setStockfishLevel] = useState(0);
   const [bestMove, setBestMove] = useState<BestMove | null>(null);
-  const [evaluation, setEvaluation] = useState<Evaluations | null>(null);
   const { currentGameState } = gameStateForAccountId(account.id);
   const [currentGame, setCurrentGame] = useRecoilState(currentGameState);
 
@@ -110,20 +109,11 @@ function Game({ fen, account }: Props) {
 
   useEffect(() => {
     let timeout: any;
-    if (
-      !chess.js.game_over() &&
-      ChessCtrl.swapColor(chess.color) === userColor
-    ) {
+    if (!chess.js.game_over()) {
       stockfish.bestMove(chess).then(setBestMove);
       timeout = setTimeout(stockfish.stop, 1500);
     }
     return () => clearTimeout(timeout);
-  }, [chess, stockfish, moves, userColor]);
-
-  useEffect(() => {
-    if (!chess.js.game_over()) {
-      stockfish.evaluate(chess).then(setEvaluation);
-    }
   }, [chess, stockfish, moves]);
 
   useEffect(() => {
@@ -180,7 +170,7 @@ function Game({ fen, account }: Props) {
           />
         </div>
         <div className={css.panel}>
-          <EvaluationBar min={-20} max={20} evaluation={evaluation} />
+          <EvaluationBar bestMove={bestMove} />
           <ButtonGroup
             variant="outlined"
             fullWidth
