@@ -1,5 +1,13 @@
 {
   "name": "server",
   "version": "0.1.0",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "ts-node": "^10.5.0"
+  },
+  "dependencies": {
+    "csv-parse": "^5.0.4",
+    "isomorphic-fetch": "^3.0.0",
+    "nanoid": "^3.3.1"
+  }
 }
