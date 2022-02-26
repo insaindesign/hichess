@@ -1,13 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import ToggleButton from "@mui/material/ToggleButton";
 import UndoIcon from "@mui/icons-material/Undo";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useTranslation } from "react-i18next";
+import { useSetRecoilState } from "recoil";
 
 import ChessCtrl from "../lib/chess";
 import StockfishCtrl from "../lib/stockfish";
+import { gameStateForAccountId } from "../state/games";
 import ButtonGroup from "./ButtonGroup";
 import ToggleButtonGroup from "./ToggleButtonGroup";
 import Board from "./Board";
@@ -16,24 +18,20 @@ import Toolbar from "./Toolbar";
 import ShowDefenders from "./ShowDefenders";
 import ShowAttackers from "./ShowAttackers";
 import MoveBar from "./MoveBar";
+import Piece from "./Board/Piece";
 
-import type { Move, ShortMove } from "chess.js";
+import css from "./Game.module.css";
+
 import type { Config } from "chessground/config";
 import type { Color } from "chessground/types";
 import type { UserColor } from "./Board";
 import type { ShapeOptionType } from "./Board/brushes";
 import type { BestMove } from "../lib/uci";
-
-import { gameStateForAccountId } from "../state/games";
-
-import css from "./Game.module.css";
-
 import type { Account } from "../state/accounts";
-import { useRecoilState } from "recoil";
-import Piece from "./Board/Piece";
+import type { Game as GameType } from "../state/games";
 
 type Props = {
-  fen?: string;
+  currentGame: GameType;
   account: Account;
 };
 
@@ -42,34 +40,24 @@ const enforceOrientation = (
   fallback: Color
 ): Color => (color === "white" || color === "black" ? color : fallback);
 
-function Game({ fen, account }: Props) {
+function Game({ currentGame, account }: Props) {
   const { t } = useTranslation();
-  const [chess] = useState(() => new ChessCtrl(fen));
+  const chess = useMemo(() => new ChessCtrl(), []);
+  const stockfish = useMemo(() => new StockfishCtrl(), []);
   const [showDefenders, setShowDefenders] = useState<ShapeOptionType>("none");
   const [showThreats, setShowThreats] = useState<ShapeOptionType>("none");
-  const [config, setConfig] = useState<Config>({ movable: { color: "white" } });
-  const [moves, setMoves] = useState<Move[]>([]);
-  const [stockfish] = useState(() => new StockfishCtrl());
+  const [config, setConfig] = useState<Config>({ movable: { color: currentGame.color } });
+  const [pgn, setPgn] = useState<string>("");
   const [stockfishLevel, setStockfishLevel] = useState(0);
   const [bestMove, setBestMove] = useState<BestMove | null>(null);
   const { currentGameState } = gameStateForAccountId(account.id);
-  const [currentGame, setCurrentGame] = useRecoilState(currentGameState);
+  const setCurrentGame = useSetRecoilState(currentGameState);
 
   const userColor = config.movable?.color;
 
-  const onMove = useCallback(
-    (move: ShortMove) => {
-      if (chess) {
-        chess.move(move);
-      }
-    },
-    [chess]
-  );
-
   const newGame = useCallback(() => {
-    chess.reset();
     setCurrentGame(null);
-  }, [chess, setCurrentGame]);
+  }, [setCurrentGame]);
 
   const toggleShowThreats = useCallback(
     (e, value) => (value ? setShowThreats(value) : setShowThreats("none")),
@@ -92,20 +80,20 @@ function Game({ fen, account }: Props) {
     [setConfig]
   );
 
-  useEffect(() => chess.on("change", setMoves), [chess]);
-
   const undo = useCallback(() => {
-    if (moves.length && chess.color === userColor) {
+    if (currentGame.pgn.length && chess.color === userColor) {
       chess.undo();
       chess.undo();
     }
-  }, [chess, moves, userColor]);
+  }, [chess, currentGame, userColor]);
+
+  useEffect(() => chess.on("change", () => setPgn(chess.js.pgn())), [chess]);
 
   useEffect(() => {
     if (bestMove && chess.color !== userColor && userColor !== "both") {
-      onMove(bestMove.move);
+      chess.move(bestMove.move);
     }
-  }, [bestMove, onMove, userColor, chess]);
+  }, [bestMove, chess, userColor]);
 
   useEffect(() => {
     let timeout: any;
@@ -114,28 +102,21 @@ function Game({ fen, account }: Props) {
       timeout = setTimeout(stockfish.stop, 1500);
     }
     return () => clearTimeout(timeout);
-  }, [chess, stockfish, moves]);
+  }, [chess, stockfish, pgn]);
 
   useEffect(() => {
-    const m = moves.map((m) => m.san);
-    if (moves.length === 1 && !currentGame) {
-      setCurrentGame({
-        start: fen,
-        position: chess.fen,
-        date: Date.now(),
-        moves: m,
-        color: userColor,
-        result: chess.result,
-      });
-    } else if (currentGame && currentGame.position !== chess.fen) {
+    // TODO: this shouldn't happen on undo of first move
+    if (!pgn && currentGame.pgn) {
+      chess.load(currentGame.pgn, currentGame.position);
+    } else if (pgn !== currentGame.pgn || chess.fen !== currentGame.position) {
       setCurrentGame({
         ...currentGame,
         position: chess.fen,
-        moves: m,
+        pgn,
         result: chess.result,
       });
     }
-  }, [currentGame, chess, userColor, fen, setCurrentGame, moves]);
+  }, [currentGame, setCurrentGame, chess, pgn]);
 
   useEffect(() => {
     stockfish.setLevel(stockfishLevel);
@@ -163,7 +144,7 @@ function Game({ fen, account }: Props) {
             config={config}
             chess={chess}
             complete={chess.js.game_over()}
-            onMove={onMove}
+            onMove={chess.move}
             orientation={enforceOrientation(userColor, "white")}
             showDefenders={showDefenders}
             showThreats={showThreats}
@@ -178,13 +159,12 @@ function Game({ fen, account }: Props) {
           >
             <Button
               onClick={undo}
-              disabled={!moves.length || chess.color !== userColor}
+              disabled={!currentGame.pgn || chess.color !== userColor}
             >
               <UndoIcon titleAccess={t("undo")} />
             </Button>
             <Button
               onClick={newGame}
-              disabled={!moves.length}
               variant={chess.js.game_over() ? "contained" : "outlined"}
             >
               <AddCircleIcon titleAccess={t("newGame")} />

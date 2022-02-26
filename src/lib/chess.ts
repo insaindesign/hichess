@@ -40,15 +40,16 @@ export class ChessCtrl {
     | "game_over"
     | "threats"
     | "defenders"
+    | "pgn"
   >;
-  public moves: ChessMove[];
+  private _moves: ChessMove[];
   private obstacles: Key[];
 
   constructor(fen?: string) {
     this.chess = Chess(fen);
     this.js = this.chess;
     this.events = new EventEmitter();
-    this.moves = [];
+    this._moves = [];
     this.obstacles = [];
   }
 
@@ -63,7 +64,7 @@ export class ChessCtrl {
     };
   }
   public static fromMove(move: ShortMove): string {
-    return move.from + move.to + (move.promotion || '');
+    return move.from + move.to + (move.promotion || "");
   }
 
   public static toColor(color: ChessColor): Color {
@@ -90,10 +91,26 @@ export class ChessCtrl {
     this.handleChange();
   }
 
+  set moves(moves: ChessMove[]) {
+    this._moves = moves;
+    this.handleChange();
+  }
+
+  public get moves() {
+    return this._moves;
+  }
+
+  public load(pgn: string, fen?: string) {
+    if (fen) {
+      this.chess.load(fen);
+    }
+    this.chess.load_pgn(pgn);
+    this.moves = this.chess.history({ verbose: true });
+  }
+
   set fen(fen: string) {
     const loaded = this.chess.load(fen);
     if (loaded) {
-      this.handleChange();
       this.moves = [];
     }
   }
@@ -141,12 +158,11 @@ export class ChessCtrl {
   move = (move: ShortMove) => {
     const m = this.chess.move(move);
     if (m) {
-      this.moves = [...this.moves, m];
       const obstacle = this.obstacles.findIndex((o) => o === m.to);
       if (obstacle !== -1) {
         this.obstacles = removeAtIndex(this.obstacles, obstacle);
       }
-      this.handleChange();
+      this.moves = [...this.moves, m];
     }
     return m;
   };
@@ -155,11 +171,9 @@ export class ChessCtrl {
     const m = this.chess.move(move);
     if (m) {
       this.moves = [...this.moves];
-      this.handleChange();
       setTimeout(() => {
         this.chess.undo();
         this.moves = [...this.moves];
-        this.handleChange();
       }, 500);
     }
   };
@@ -175,15 +189,13 @@ export class ChessCtrl {
 
   reset() {
     this.chess.reset();
-    this.moves = [];
     this.obstacles = [];
-    this.handleChange();
+    this.moves = [];
   }
 
   undo() {
     this.chess.undo();
     this.moves = this.moves.slice(0, -1);
-    this.handleChange();
   }
 
   private handleChange = debounce(
