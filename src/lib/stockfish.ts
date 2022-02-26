@@ -1,31 +1,25 @@
 import memo from "lodash/memoize";
+
 import ChessCtrl from "./chess";
-import {
-  isShortMove,
-  linesToBestMove,
-  parseUci,
-  isFinalEvaluation,
-  isEvaluation,
-} from "./uci";
+import { isShortMove, isMoveInfo, linesToBestMove, parseUci } from "./uci";
 import EventEmitter from "./emitter";
 
-import type {
-  BestMove,
-  ParsedUci,
-  Evaluation,
-  Evaluations,
-} from "./uci";
+import type { BestMove, ParsedUci } from "./uci";
 
 type Option = "Skill Level" | "MultiPV";
-
-const StockfishEvents = new EventEmitter<{ line: ParsedUci }>();
+type EngineEvents = { line: ParsedUci };
+interface Engine {
+  worker: Worker;
+  events: EventEmitter<EngineEvents>;
+}
 
 export const collectUntil = (
+  events: EventEmitter<EngineEvents>,
   condition: (line: ParsedUci) => boolean
 ): Promise<ParsedUci[]> => {
   return new Promise((resolve) => {
     const collcation: ParsedUci[] = [];
-    const removeListener = StockfishEvents.on("line", (line) => {
+    const removeListener = events.on("line", (line) => {
       collcation.push(line);
       if (condition(line)) {
         resolve(collcation);
@@ -35,78 +29,92 @@ export const collectUntil = (
   });
 };
 
-const getStockfishSingle: () => Promise<Worker> = memo(() => {
-  const sf = new Worker('/lib/stockfish-single/stockfish-single.worker.js');
-  sf.addEventListener('message', (e) => StockfishEvents.emit("line", parseUci(e.data)));
-  sf.postMessage("uci");
-  return collectUntil((line) => line === "uciok").then(() => sf);
+const getStockfishSingle: () => Promise<Engine> = memo(() => {
+  const worker = new Worker("/lib/stockfish-single/stockfish-single.worker.js");
+  const events = new EventEmitter<EngineEvents>();
+  worker.addEventListener("message", (e) =>
+    events.emit("line", parseUci(e.data))
+  );
+  worker.postMessage("uci");
+  return collectUntil(events, (line) => line === "uciok").then(() => ({
+    worker,
+    events,
+  }));
 });
 
 // import { loadScript } from "../lib/scripts";
 // interface StockfishWorker extends Worker {
 //   addMessageListener: (cb: (msg: string) => void) => void;
-// };
-// const getStockfish: () => Promise<StockfishWorker> = memo(() =>
+// }
+// const getStockfish: () => Promise<Engine> = memo(() =>
 //   loadScript("/lib/stockfish/stockfish.js")
 //     .then((w: any) => w.Stockfish() as StockfishWorker)
-//     .then((sf) => {
-//       sf.addMessageListener((line: string) =>
-//         StockfishEvents.emit("line", parseUci(line))
+//     .then((worker) => {
+//       const events = new EventEmitter<EngineEvents>();
+//       worker.addMessageListener((line: string) =>
+//         events.emit("line", parseUci(line))
 //       );
-//       sf.postMessage("uci");
-//       return collectUntil((line) => line === "uciok").then(() => sf);
+//       worker.postMessage("uci");
+//       return collectUntil(events, (line) => line === "uciok").then(() => ({
+//         worker,
+//         events,
+//       }));
 //     })
 // );
 
 const maxLevel = 20;
 
 export class StockfishCtrl {
-  private stockfish: Promise<Worker>;
+  private engine: Promise<Engine>;
   private level: number;
 
   constructor() {
-    this.stockfish = getStockfishSingle();
+    this.engine = getStockfishSingle();
     this.level = -1;
   }
 
-  setLevel(value: number) {
+  async setLevel(value: number) {
     if (value !== this.level) {
-      this.setOption("Skill Level", value);
-      this.setOption("MultiPV", ((maxLevel -  value) / maxLevel) * 500);
       this.level = value;
+      return this.setOptions([
+        ["Skill Level", value],
+        ["MultiPV", ((maxLevel - value) / maxLevel) * 500],
+      ]);
     }
+    return;
   }
 
-  setOption(name: Option, value: string | number) {
-    this.send([`setoption name ${name} value ${value}`]);
+  private setOptions(options: [Option, boolean | string | number][]) {
+    return this.send(
+      options.map(([name, value]) => `setoption name ${name} value ${value}`)
+    );
   }
 
-  evaluate(chess: ChessCtrl): Promise<Evaluations> {
-    const moves = chess.moves.map((m) => m.to).join(" ");
-    this.send([`position fen ${chess.fen} moves ${moves}`, "eval"]);
-    return collectUntil(isFinalEvaluation).then((lines) => {
-      const evals = lines.filter(isEvaluation);
-      return {
-        Final: evals.find((e) => e.type === "Final") as Evaluation<"Final">,
-        Classical: evals.find((e) => e.type === "Classical") as Evaluation<"Classical">,
-        NNUE: evals.find((e) => e.type === "NNUE") as Evaluation<"NNUE">,
-      };
-    });
+  private async collectUntil(
+    condition: (line: ParsedUci) => boolean
+  ): Promise<ParsedUci[]> {
+    const { events } = await this.engine;
+    return collectUntil(events, condition);
   }
 
-  bestMove(chess: ChessCtrl): Promise<BestMove> {
+  async bestMove(chess: ChessCtrl): Promise<BestMove | null> {
     const moves = chess.moves.map((m) => m.to).join(" ");
     const color = chess.color;
-    return this.send([`stop`]).then(() => {
-      this.send([`position fen ${chess.fen} moves ${moves}`, "go"]);
-      return collectUntil(isShortMove).then(l => linesToBestMove(l, color));
-    });
+    await this.send([`stop`]);
+    this.send([`position fen ${chess.fen} moves ${moves}`, "go"]);
+    let lines = await this.collectUntil(isShortMove);
+    if (!lines.filter(isMoveInfo).length) {
+      lines = await this.collectUntil(isShortMove);
+    }
+    if (!lines.filter(isMoveInfo).length) {
+      return null;
+    }
+    return linesToBestMove(lines, color);
   }
 
-  send = (messages: string[]) => {
-    return this.stockfish.then((sf) =>
-      messages.forEach((m) => sf.postMessage(m))
-    );
+  send = async (messages: string[]) => {
+    const engine = await this.engine;
+    messages.forEach((m) => engine.worker.postMessage(m));
   };
 
   stop = () => {
