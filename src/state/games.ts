@@ -64,6 +64,21 @@ export const gameStateForAccountId = memoize((accountId: string) => {
     },
   });
 
+  const updateCurrentGameState = selector<Partial<Game> | null>({
+    key: key("updateCurrentGame"),
+    get: ({ get }) => get(currentGameState),
+    set: ({ get, set }, update) => {
+      const game = get(currentGameState);
+      if (!game || update instanceof DefaultValue) {
+        return;
+      }
+      if (game.pgn === update?.pgn && game.position === update?.position) {
+        return;
+      }
+      set(currentGameState, { ...game, ...update });
+    },
+  });
+
   accountStore(accountId)
     .getItem("games")
     .then(() => setRecoil(isLoadedState, true));
@@ -72,5 +87,6 @@ export const gameStateForAccountId = memoize((accountId: string) => {
     isLoadedState,
     gamesState,
     currentGameState,
+    updateCurrentGameState,
   };
 });

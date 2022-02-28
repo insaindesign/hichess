@@ -10,7 +10,6 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import { useTranslation } from "react-i18next";
 import { useRecoilValue } from "recoil";
 
-import { notEmpty } from "../lib/arrays";
 import categories from "../data/learn";
 import {
   ProblemAttemptsOfIds,

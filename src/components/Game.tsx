@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useSetRecoilState } from "recoil";
 
 import ChessCtrl from "../lib/chess";
-import StockfishCtrl from "../lib/stockfish";
+import engine from "../lib/engine/stockfish";
 import { gameStateForAccountId } from "../state/games";
 import ButtonGroup from "./ButtonGroup";
 import ToggleButtonGroup from "./ToggleButtonGroup";
@@ -26,13 +26,16 @@ import type { Config } from "chessground/config";
 import type { Color } from "chessground/types";
 import type { UserColor } from "./Board";
 import type { ShapeOptionType } from "./Board/brushes";
-import type { BestMove } from "../lib/uci";
+import type { BestMove } from "../lib/engine/uci";
 import type { Account } from "../state/accounts";
 import type { Game as GameType } from "../state/games";
+import type { EngineLevel } from "../lib/engine/levels";
 
 type Props = {
   currentGame: GameType;
   account: Account;
+  engineLevel: EngineLevel;
+  newGame: () => void;
 };
 
 const enforceOrientation = (
@@ -40,44 +43,37 @@ const enforceOrientation = (
   fallback: Color
 ): Color => (color === "white" || color === "black" ? color : fallback);
 
-function Game({ currentGame, account }: Props) {
+function Game({ currentGame, account, engineLevel, newGame }: Props) {
   const { t } = useTranslation();
   const chess = useMemo(() => new ChessCtrl(), []);
-  const stockfish = useMemo(() => new StockfishCtrl(), []);
   const [showDefenders, setShowDefenders] = useState<ShapeOptionType>("none");
   const [showThreats, setShowThreats] = useState<ShapeOptionType>("none");
-  const [config, setConfig] = useState<Config>({ movable: { color: currentGame.color } });
-  const [pgn, setPgn] = useState<string>("");
-  const [stockfishLevel, setStockfishLevel] = useState(0);
+  const [config, setConfig] = useState<Config>({
+    movable: { color: currentGame.color },
+  });
   const [bestMove, setBestMove] = useState<BestMove | null>(null);
-  const { currentGameState } = gameStateForAccountId(account.id);
-  const setCurrentGame = useSetRecoilState(currentGameState);
+  const { updateCurrentGameState } = gameStateForAccountId(account.id);
+  const updateCurrentGame = useSetRecoilState(updateCurrentGameState);
 
   const userColor = config.movable?.color;
 
-  const newGame = useCallback(() => {
-    setCurrentGame(null);
-  }, [setCurrentGame]);
-
   const toggleShowThreats = useCallback(
-    (e, value) => (value ? setShowThreats(value) : setShowThreats("none")),
+    (e, value) => setShowThreats(value || "none"),
     []
   );
   const toggleShowDefenders = useCallback(
-    (e, value) => (value ? setShowDefenders(value) : setShowDefenders("none")),
+    (e, value) => setShowDefenders(value || "none"),
     []
   );
-  const toggleStockfishLevel = useCallback(
-    (e, value) =>
-      value != null
-        ? setStockfishLevel(value)
-        : setStockfishLevel(stockfishLevel),
-    [stockfishLevel]
-  );
+
   const toggleUserColor = useCallback(
-    (e, color: UserColor | null) =>
-      color != null ? setConfig({ movable: { color } }) : null,
-    [setConfig]
+    (e, color: UserColor | null) => {
+      if (color != null) {
+        setConfig({ movable: { color } });
+        updateCurrentGame({ color })
+      }
+    },
+    [setConfig, updateCurrentGame]
   );
 
   const undo = useCallback(() => {
@@ -87,7 +83,17 @@ function Game({ currentGame, account }: Props) {
     }
   }, [chess, currentGame, userColor]);
 
-  useEffect(() => chess.on("change", () => setPgn(chess.js.pgn())), [chess]);
+  useEffect(
+    () =>
+      chess.on("change", () =>
+        updateCurrentGame({
+          position: chess.fen,
+          pgn: chess.js.pgn(),
+          result: chess.result,
+        })
+      ),
+    [chess, updateCurrentGame]
+  );
 
   useEffect(() => {
     if (bestMove && chess.color !== userColor && userColor !== "both") {
@@ -96,31 +102,25 @@ function Game({ currentGame, account }: Props) {
   }, [bestMove, chess, userColor]);
 
   useEffect(() => {
+    if (!currentGame.pgn) {
+      engine.newGame();
+    }
+    chess.load(currentGame.pgn, currentGame.position);
+    setConfig({ movable: { color: currentGame.color }});
+  }, [currentGame, chess, setConfig]);
+
+  useEffect(() => {
+    engine.setLevel(engineLevel.id);
+  }, [engineLevel]);
+
+  useEffect(() => {
     let timeout: any;
     if (!chess.js.game_over()) {
-      stockfish.bestMove(chess).then(setBestMove);
-      timeout = setTimeout(stockfish.stop, 1500);
+      engine.bestMove(chess).then(setBestMove);
+      timeout = setTimeout(engine.stop, 1500);
     }
     return () => clearTimeout(timeout);
-  }, [chess, stockfish, pgn]);
-
-  useEffect(() => {
-    // TODO: this shouldn't happen on undo of first move
-    if (!pgn && currentGame.pgn) {
-      chess.load(currentGame.pgn, currentGame.position);
-    } else if (pgn !== currentGame.pgn || chess.fen !== currentGame.position) {
-      setCurrentGame({
-        ...currentGame,
-        position: chess.fen,
-        pgn,
-        result: chess.result,
-      });
-    }
-  }, [currentGame, setCurrentGame, chess, pgn]);
-
-  useEffect(() => {
-    stockfish.setLevel(stockfishLevel);
-  }, [stockfish, stockfishLevel]);
+  }, [chess, currentGame, engineLevel]);
 
   return (
     <>
@@ -199,26 +199,6 @@ function Game({ currentGame, account }: Props) {
               <Piece color="black" piece="p" />
             </ToggleButton>
           </ToggleButtonGroup>
-          {userColor !== "both" ? (
-            <ToggleButtonGroup
-              className={css.panelButtons}
-              color="primary"
-              exclusive
-              fullWidth
-              onChange={toggleStockfishLevel}
-              value={stockfishLevel}
-            >
-              <ToggleButton value={0}>1</ToggleButton>
-              <ToggleButton value={1}>2</ToggleButton>
-              <ToggleButton value={2}>3</ToggleButton>
-              <ToggleButton value={3}>4</ToggleButton>
-              <ToggleButton value={4}>5</ToggleButton>
-              <ToggleButton value={5}>6</ToggleButton>
-              <ToggleButton value={6}>7</ToggleButton>
-              <ToggleButton value={7}>8</ToggleButton>
-              <ToggleButton value={20}>20</ToggleButton>
-            </ToggleButtonGroup>
-          ) : null}
         </div>
       </div>
     </>

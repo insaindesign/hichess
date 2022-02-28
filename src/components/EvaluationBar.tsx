@@ -1,4 +1,4 @@
-import type { BestMove } from "../lib/uci";
+import type { BestMove } from "../lib/engine/uci";
 
 import css from "./EvaluationBar.module.css";
 
