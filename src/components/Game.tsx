@@ -171,26 +171,29 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
                 <Piece color="black" piece="p" />
               </ToggleButton>
             </ToggleButtonGroup>
-          ) : null}
-          <EvaluationBar bestMove={bestMove} />
-          <ButtonGroup
-            variant="outlined"
-            fullWidth
-            className={css.panelButtons}
-          >
-            <Button
-              onClick={undo}
-              disabled={!currentGame.pgn || chess.color !== userColor}
-            >
-              <UndoIcon titleAccess={t("undo")} />
-            </Button>
-            <Button
-              onClick={newGame}
-              variant={chess.js.game_over() ? "contained" : "outlined"}
-            >
-              <AddCircleIcon titleAccess={t("newGame")} />
-            </Button>
-          </ButtonGroup>
+          ) : (
+            <>
+              <EvaluationBar bestMove={bestMove} />
+              <ButtonGroup
+                variant="outlined"
+                fullWidth
+                className={css.panelButtons}
+              >
+                <Button
+                  onClick={undo}
+                  disabled={!currentGame.pgn || chess.color !== userColor}
+                >
+                  <UndoIcon titleAccess={t("undo")} />
+                </Button>
+                <Button
+                  onClick={newGame}
+                  variant={chess.js.game_over() ? "contained" : "outlined"}
+                >
+                  <AddCircleIcon titleAccess={t("newGame")} />
+                </Button>
+              </ButtonGroup>
+            </>
+          )}
           <ShowDefenders
             className={css.panelButtons}
             value={showDefenders}
