@@ -6,7 +6,7 @@ import Game from "../components/Game";
 import Loading from "../components/Loading";
 import { withRequireAccount } from "../components/RequireAccount";
 import { gameStateForAccountId } from "../state/games";
-import { eloStateForAccountId } from "../state/elo";
+import { eloStateForAccountId, elo } from "../state/elo";
 import { getLevelForRating } from "../lib/engine/levels";
 
 import type { Account } from "../state/accounts";
@@ -18,60 +18,70 @@ type Props = {
 
 function GamePage({ account }: Props) {
   const params = useParams<"fen" | "color">();
-  const fen = params.fen ? params.fen.replace(/_/g, "/") : undefined;
+  const position = params.fen ? params.fen.replace(/_/g, "/") : undefined;
   const color = params.color as GameType["color"];
 
   const { eloCalculateState } = eloStateForAccountId(account.id);
   const { currentGameState, isLoadedState } = gameStateForAccountId(account.id);
   const [currentGame, setCurrentGame] = useRecoilState(currentGameState);
-  const [elo, setElo] = useRecoilState(eloCalculateState("game"));
+  const [rating, setRating] = useRecoilState(eloCalculateState("game"));
   const isLoaded = useRecoilValue(isLoadedState);
 
-  const level = getLevelForRating(elo[0]);
-
-  useEffect(() => {
-    if (fen && isLoaded && currentGame?.position !== fen) {
-      setCurrentGame({
-        position: fen,
-        date: Date.now(),
-        pgn: "",
-        color,
-      });
-    } else if (isLoaded && !currentGame) {
-      setCurrentGame({
-        date: Date.now(),
-        pgn: "",
-        color: "white",
-      });
-    }
-  }, [currentGame, isLoaded, setCurrentGame, fen, color]);
-
-  useEffect(() => {
-    if (currentGame?.result && color !== "both") {
-      const result =
-        currentGame.result === "draw"
-          ? 0.5
-          : currentGame.result === color
-          ? 1
-          : 0;
-      setElo([level.rating, result]);
-    }
-  }, [currentGame, level, color, setElo]);
+  const level = getLevelForRating(rating[0]);
 
   const newGame = useCallback(() => {
     setCurrentGame({
       date: Date.now(),
       pgn: "",
       color: "white",
-    })
+    });
   }, [setCurrentGame]);
+
+  useEffect(() => {
+    if (position && isLoaded && currentGame?.position !== position) {
+      setCurrentGame({
+        position,
+        date: Date.now(),
+        pgn: "",
+        color,
+      });
+    } else if (isLoaded && !currentGame) {
+      newGame();
+    }
+  }, [newGame, setCurrentGame, currentGame, isLoaded, position, color]);
+
+  useEffect(() => {
+    if (
+      currentGame &&
+      currentGame.result &&
+      currentGame.color !== "both" &&
+      currentGame?.ratingChange === undefined
+    ) {
+      const result =
+        currentGame.result === "draw"
+          ? 0.5
+          : currentGame.result === currentGame.color
+          ? 1
+          : 0;
+      setCurrentGame({
+        ...currentGame,
+        ratingChange: elo.change(rating[0], level.rating, result)[0],
+      });
+      setRating([level.rating, result]);
+    }
+  }, [setCurrentGame, setRating, currentGame, rating, level]);
 
   if (!currentGame) {
     return <Loading />;
   }
 
   return (
-    <Game currentGame={currentGame} account={account} engineLevel={level} newGame={newGame} />
+    <Game
+      currentGame={currentGame}
+      account={account}
+      engineLevel={level}
+      newGame={newGame}
+    />
   );
 }
 

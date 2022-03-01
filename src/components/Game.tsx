@@ -70,7 +70,7 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
     (e, color: UserColor | null) => {
       if (color != null) {
         setConfig({ movable: { color } });
-        updateCurrentGame({ color })
+        updateCurrentGame({ color });
       }
     },
     [setConfig, updateCurrentGame]
@@ -106,7 +106,7 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
       engine.newGame();
     }
     chess.load(currentGame.pgn, currentGame.position);
-    setConfig({ movable: { color: currentGame.color }});
+    setConfig({ movable: { color: currentGame.color } });
   }, [currentGame, chess, setConfig]);
 
   useEffect(() => {
@@ -151,6 +151,27 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
           />
         </div>
         <div className={css.panel}>
+          {!currentGame.pgn ? (
+            <ToggleButtonGroup
+              className={css.panelButtons}
+              color="primary"
+              exclusive
+              fullWidth
+              onChange={toggleUserColor}
+              value={userColor}
+            >
+              <ToggleButton value={"white"}>
+                <Piece color="white" piece="p" />
+              </ToggleButton>
+              <ToggleButton value={"both"}>
+                <Piece color="white" piece="p" />{" "}
+                <Piece color="black" piece="p" />
+              </ToggleButton>
+              <ToggleButton value={"black"}>
+                <Piece color="black" piece="p" />
+              </ToggleButton>
+            </ToggleButtonGroup>
+          ) : null}
           <EvaluationBar bestMove={bestMove} />
           <ButtonGroup
             variant="outlined"
@@ -180,25 +201,6 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
             value={showThreats}
             onChange={toggleShowThreats}
           />
-          <ToggleButtonGroup
-            className={css.panelButtons}
-            color="primary"
-            exclusive
-            fullWidth
-            onChange={toggleUserColor}
-            value={userColor}
-          >
-            <ToggleButton value={"white"}>
-              <Piece color="white" piece="p" />
-            </ToggleButton>
-            <ToggleButton value={"both"}>
-              <Piece color="white" piece="p" />{" "}
-              <Piece color="black" piece="p" />
-            </ToggleButton>
-            <ToggleButton value={"black"}>
-              <Piece color="black" piece="p" />
-            </ToggleButton>
-          </ToggleButtonGroup>
         </div>
       </div>
     </>

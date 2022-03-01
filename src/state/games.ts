@@ -15,6 +15,7 @@ export type Game = {
   pgn: string;
   color: Color | "both";
   result?: GameResult;
+  ratingChange?: number;
 };
 
 export const gameStateForAccountId = memoize((accountId: string) => {

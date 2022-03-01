@@ -25,7 +25,7 @@ function GameHistory({ accountId }: Props) {
       {games.map((g, ii) => (
         <div key={ii}>
           {new Date(g.date).toDateString()}, {g.color},{" "}
-          {g.result || "incomplete"}
+          {g.result || "incomplete"}, {g.ratingChange}
         </div>
       ))}
     </div>

@@ -7,6 +7,7 @@ import type { Color } from "chessground/types";
 export type MoveInfoScore = {
   type: "cp" | "mate";
   value: number;
+  normalised: number;
 };
 export type MoveInfo = {
   depth: string;
@@ -24,18 +25,6 @@ export type BestMove = {
   to: Record<string, MoveInfoScore>;
 };
 
-export type EvaluationTypes = "Classical" | "NNUE" | "Final" | "cp" | "mate";
-export type Evaluation<T> = {
-  type: T;
-  score: number;
-};
-
-export type Evaluations = {
-  Classical?: Evaluation<"Classical">;
-  Final: Evaluation<"Final">;
-  NNUE?: Evaluation<"NNUE">;
-};
-
 type UciOptionType = "string" | "combo" | "button" | "spin";
 export interface UciOption {
   name: string;
@@ -49,7 +38,6 @@ export interface UciOption {
 export type ParsedUci =
   | ShortMove
   | MoveInfo
-  | Evaluation<EvaluationTypes>
   | UciOption
   | string;
 
@@ -116,27 +104,32 @@ export const parseOption = (line: string): UciOption => {
   };
 };
 
+const normaliseScore = (score: Pick<MoveInfoScore, 'value'|'type'>): MoveInfoScore => {
+  let normalised = score.value;
+  if (score.type === 'mate') {
+    normalised = 20000 / score.value;
+  }
+  return {
+    ...score,
+    normalised,
+  }
+}
+
 const parseMoveInfo = (line: string): MoveInfo | string => {
   try {
     const collected = collect(line, infoKeywords);
     return {
       depth: collected.depth[0],
-      score: {
-        type: collected.score[0],
+      score: normaliseScore({
+        type: collected.score[0] as MoveInfoScore['type'],
         value: parseInt(collected.score[1], 10),
-      },
+      }),
       pv: collected.pv,
       moves: collected.pv.map(ChessCtrl.toMove),
     } as MoveInfo;
   } catch (err) {
     return line;
   }
-};
-
-const compareScore = (a: MoveInfoScore, b: MoveInfoScore): boolean => {
-  const valA = a.type === "mate" ? 10000 * a.value : a.value;
-  const valB = b.type === "mate" ? 10000 * b.value : b.value;
-  return valA > valB;
 };
 
 export const linesToBestMove = (
@@ -159,9 +152,9 @@ export const linesToBestMove = (
   const engineMove = lines.find(isShortMove) as BestMove["move"];
   const engineMoveRating = to[ChessCtrl.fromMove(engineMove)];
   const useRandom =
-    randomMove &&
-    Math.random() <= (level.randomness || -1) &&
-    compareScore(engineMoveRating, randomMove.score);
+    randomMove && // has a random move
+    Math.random() <= (level.randomness || -1) && // should use the randomness
+    engineMoveRating.normalised > randomMove.score.normalised; // play the worse move
 
   return {
     color,
@@ -190,26 +183,6 @@ export const isOption = (line: ParsedUci): line is UciOption => {
   return typeof line !== "string" && "type" in line;
 };
 
-export const isEvaluation = (
-  line: ParsedUci
-): line is Evaluation<EvaluationTypes> => {
-  return typeof line !== "string" && "type" in line;
-};
-
-export const isFinalEvaluation = (
-  line: ParsedUci
-): line is Evaluation<"Final"> => {
-  return isEvaluation(line) && line.type === "Final";
-};
-
-const parseEvaluation = (line: string): Evaluation<EvaluationTypes> => {
-  const parts = line.split(/ +/);
-  return {
-    type: parts[0] as Evaluation<EvaluationTypes>["type"],
-    score: parseFloat(parts[2]),
-  };
-};
-
 export const parseUci = (line: string): ParsedUci => {
   if (line.startsWith("bestmove")) {
     return parseBestMove(line);
@@ -219,9 +192,6 @@ export const parseUci = (line: string): ParsedUci => {
   }
   if (line.startsWith("option")) {
     return parseOption(line);
-  }
-  if (line.match(/^(Final|NNUE|Classical evaluation)/)) {
-    return parseEvaluation(line);
   }
   return line;
 };

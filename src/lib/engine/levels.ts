@@ -11,7 +11,7 @@ export const getLevelForRating = (rating: number): EngineLevel => {
     Math.max(Math.round(rating / 100) * 100, levels[0].rating),
     levels[levels.length - 1].rating
   );
-  return levels.find((l) => rounded >= l.rating) as EngineLevel;
+  return levels.find((l) => rounded <= l.rating) as EngineLevel;
 };
 
 export const levels: EngineLevel[] = [
@@ -30,53 +30,53 @@ export const levels: EngineLevel[] = [
   {
     rating: 600,
     randomness: 0.68,
-    multipv: 90,
+    multipv: 80,
     skill: 0,
   },
   {
     rating: 700,
     randomness: 0.56,
-    multipv: 80,
+    multipv: 60,
     skill: 0,
   },
   {
     rating: 800,
     randomness: 0.45,
-    multipv: 70,
+    multipv: 40,
     skill: 0,
   },
   {
     rating: 900,
     randomness: 0.35,
-    multipv: 60,
+    multipv: 30,
     skill: 0,
   },
   {
     rating: 1000,
     randomness: 0.25,
-    multipv: 50,
+    multipv: 20,
     skill: 0,
   },
   {
     rating: 1100,
     randomness: 0.15,
-    multipv: 40,
+    multipv: 10,
     skill: 0,
   },
   {
     rating: 1200,
-    multipv: 30,
+    multipv: 10,
     skill: 1,
   },
   {
     rating: 1400,
-    multipv: 20,
+    multipv: 10,
     skill: 4,
   },
   {
     rating: 1600,
-    multipv: 14,
-    skill: 10,
+    multipv: 10,
+    skill: 6,
   },
   {
     rating: 1800,

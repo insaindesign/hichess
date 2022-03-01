@@ -13,11 +13,7 @@ const range = max - min;
 function EvaluationBar({ bestMove }: Props) {
   const evaluation = bestMove?.bestRating;
   const color = bestMove?.color === "black" ? -1 : 1;
-  const val = (evaluation?.value || 0) * color;
-  const value = Math.max(
-    Math.min(evaluation?.type === "mate" ? max * val : val, max),
-    min
-  );
+  const value = Math.max(Math.min(evaluation?.normalised || 0, max), min) * color;
   const percent = Math.round((Math.abs(value + min) / range) * 100);
   return (
     <div className={css.root}>
