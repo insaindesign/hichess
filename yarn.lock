@@ -1313,10 +1313,10 @@
   dependencies:
     tslib "^2.1.0"
 
-"@fontsource/roboto@^4.5.3":
-  version "4.5.3"
-  resolved "https://registry.yarnpkg.com/@fontsource/roboto/-/roboto-4.5.3.tgz#c729ac22c35ae1c224cde10042ce7ab356bc4dda"
-  integrity sha512-NUvBTj332dFRdiVkLlavXbDGoD2zyyeGYmMyrXOnctg/3e4pq95+rJgNfUP+k4v8UBk2L1aomGw9dDjbRdAmTg==
+"@fontsource/quicksand@^4.5.4":
+  version "4.5.4"
+  resolved "https://registry.yarnpkg.com/@fontsource/quicksand/-/quicksand-4.5.4.tgz#9d8c7665f87eb394ed7f4609258f1246ba84533b"
+  integrity sha512-BJEmlSF+HH0JJK3ug3jT/Ov6TrX8gEIyuAHkBUI/0KuW/iCbO2M+bu7RX3RstlcQPKzTkIqZQ0IOeLO5zP5oag==
 
 "@google-cloud/common@^3.8.1":
   version "3.9.0"
