@@ -13,14 +13,18 @@ type Props = {
 function GameHistory({ accountId }: Props) {
   const { t } = useTranslation();
   const { gamesState } = gameStateForAccountId(accountId);
-  const { eloState } = eloStateForAccountId(accountId);
+  const { eloState, eloLoadedState } = eloStateForAccountId(accountId);
   const games = useRecoilValue(gamesState);
+  const eloLoaded = useRecoilValue(eloLoadedState);
   const elo = useRecoilValue(eloState("game"));
 
   return (
     <div>
       <Typography variant="h4">
-        {t("history.games")} <Chip label={Math.round(elo)} />
+        {t("history.games")}{" "}
+        {eloLoaded ? (
+          <Chip label={Math.round(elo)} sx={{ fontWeight: 700 }} />
+        ) : null}
       </Typography>
       {games.map((g, ii) => (
         <div key={ii}>

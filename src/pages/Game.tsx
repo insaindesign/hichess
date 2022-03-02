@@ -22,10 +22,10 @@ function GamePage({ account }: Props) {
   const color = params.color as GameType["color"];
 
   const { eloCalculateState } = eloStateForAccountId(account.id);
-  const { currentGameState, isLoadedState } = gameStateForAccountId(account.id);
+  const { currentGameState, gameLoadedState } = gameStateForAccountId(account.id);
   const [currentGame, setCurrentGame] = useRecoilState(currentGameState);
   const [rating, setRating] = useRecoilState(eloCalculateState("game"));
-  const isLoaded = useRecoilValue(isLoadedState);
+  const isLoaded = useRecoilValue(gameLoadedState);
 
   const level = getLevelForRating(rating[0]);
 

@@ -1,10 +1,12 @@
 import memoize from "lodash/memoize";
 import {
+  atom,
   atomFamily,
   DefaultValue,
   selector,
   selectorFamily,
 } from "recoil";
+import {setRecoil} from "recoil-nexus";
 
 import Elo from "../lib/elo";
 import { accountStore } from "../storage";
@@ -12,20 +14,25 @@ import { persist, accountKey } from "./";
 
 import type { EloResult, EloValue } from "../lib/elo";
 
-type EloCategory = "puzzle" | "game" | "learn" | string;
+export type EloCategory = "puzzle" | "game" | "learn" | string;
 
 const cateogries: EloCategory[] = ["puzzle", "game", "learn"];
 
 export const elo = new Elo();
 
 export const eloStateForAccountId = memoize((accountId: string) => {
-  const persisted = persist({ storage: accountStore(accountId), key: 'elo' });
+  const persisted = persist({ storage: accountStore(accountId), key: "elo" });
   const key = accountKey(accountId);
 
   const eloState = atomFamily<EloValue, EloCategory>({
     key: key("elo"),
     default: 400,
     effects: [persisted],
+  });
+
+  const eloLoadedState = atom({
+    key: key("eloLoaded"),
+    default: false,
   });
 
   const eloCalculateState = selectorFamily<[EloValue, EloResult], EloCategory>({
@@ -49,17 +56,19 @@ export const eloStateForAccountId = memoize((accountId: string) => {
   const overallEloState = selector<EloValue>({
     key: key("overallElo"),
     get: ({ get }) => {
-      const total = cateogries.reduce(
-        (t, key) => t + get(eloState(key)),
-        0
-      );
+      const total = cateogries.reduce((t, key) => t + get(eloState(key)), 0);
       return Math.round(total / cateogries.length);
     },
   });
+
+  accountStore(accountId)
+    .getItem("elo")
+    .then(() => setRecoil(eloLoadedState, true));
 
   return {
     eloState,
     eloCalculateState,
     overallEloState,
+    eloLoadedState,
   };
 });

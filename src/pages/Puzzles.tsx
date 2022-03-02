@@ -28,8 +28,9 @@ function Puzzles({ account }: Props) {
   const id = params.id || null;
   const theme = params.theme || "all";
 
-  const { eloState } = eloStateForAccountId(account.id);
+  const { eloState, eloLoadedState } = eloStateForAccountId(account.id);
   const elo = useRecoilValue(eloState("puzzle"));
+  const eloLoaded = useRecoilValue(eloLoadedState);
   const rating = Math.min(Math.max(Math.round(elo / 100) * 100, 600), 900);
 
   const nextPuzzle = useCallback(() => {
@@ -40,6 +41,9 @@ function Puzzles({ account }: Props) {
   }, [id, theme, puzzles, navigate]);
 
   useEffect(() => {
+    if (!eloLoaded) {
+      return;
+    }
     getPuzzles(rating).then((p) => {
       const puzzles = p.filter(
         (c) =>
@@ -55,15 +59,15 @@ function Puzzles({ account }: Props) {
         navigate("/puzzles");
       }
     });
-  }, [rating, theme, id, navigate]);
+  }, [rating, eloLoaded, theme, id, navigate]);
 
   const puzzle = puzzles && id ? puzzles.find((pz) => pz.id === id) : null;
-  if (!puzzle) {
+  if (!puzzle || !eloLoaded) {
     return <Loading />;
   }
 
   return (
-    <Problem level={puzzle} nextLevel={nextPuzzle} accountId={account.id} />
+    <Problem level={puzzle} nextLevel={nextPuzzle} account={account} />
   );
 }
 

@@ -25,7 +25,7 @@ function Profile({ account }: Props) {
       <Box sx={{ textAlign: "center", paddingTop: 4 }}>
         <AccountAvatarAsync icon={account.icon} sx={{ fontSize: 128 }} />
         <Typography variant="h2">
-          {account.name} <Chip label={overallElo} />
+          {account.name} <Chip sx={{ fontWeight: 700 }} label={overallElo} />
         </Typography>
         <GameHistory accountId={account.id} />
         <ProblemHistory accountId={account.id} type="puzzle" />

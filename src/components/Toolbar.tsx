@@ -9,15 +9,16 @@ import { useSetRecoilState } from "recoil";
 import { menuOpenState } from "../state/app";
 
 type Props = {
+  title?: any;
   children?: any;
 };
 
-function Toolbar({ children }: Props) {
+function Toolbar({ title, children }: Props) {
   const setDrawerOpen = useSetRecoilState(menuOpenState);
   const openDrawer = useCallback(() => setDrawerOpen(true), [setDrawerOpen]);
   return (
     <AppBar position="static" color="transparent" elevation={0}>
-      <MuiToolbar>
+      <MuiToolbar sx={{ gap: 2 }}>
         <IconButton
           onClick={openDrawer}
           size="large"
@@ -26,7 +27,8 @@ function Toolbar({ children }: Props) {
         >
           <MenuIcon />
         </IconButton>
-        <Box sx={{ flexGrow: 1 }}>{children}</Box>
+        {title ? <Box sx={{ flexGrow: 1 }}>{title}</Box> : null}
+        {children}
       </MuiToolbar>
     </AppBar>
   );

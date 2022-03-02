@@ -10,7 +10,7 @@ function AboutPage(props: Props) {
   const { t } = useTranslation();
   return (
     <>
-      <Toolbar>{t("about.title")}</Toolbar>
+      <Toolbar title={t("about.title")} />
       <Container>
         <Typography variant="h3" paragraph>{t("about.description")}</Typography>
         <Typography variant="body1" paragraph>{t("about.description1")}</Typography>

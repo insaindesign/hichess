@@ -15,14 +15,18 @@ type Props = {
 function Problem({ accountId, type }: Props) {
   const { t } = useTranslation();
   const { problemsOfTypeState } = problemStateForAccountId(accountId);
-  const { eloState } = eloStateForAccountId(accountId);
+  const { eloState, eloLoadedState } = eloStateForAccountId(accountId);
   const problems = useRecoilValue(problemsOfTypeState(type));
   const elo = useRecoilValue(eloState(type));
+  const eloLoaded = useRecoilValue(eloLoadedState);
 
   return (
     <div>
       <Typography variant="h4">
-        {t("history." + type)} <Chip label={Math.round(elo)} />
+        {t("history." + type)}{" "}
+        {eloLoaded ? (
+          <Chip label={Math.round(elo)} sx={{ fontWeight: 700 }} />
+        ) : null}
       </Typography>
       {problems.map((p, ii) => (
         <div key={ii}>

@@ -17,11 +17,13 @@ import ShowAttackers from "./ShowAttackers";
 import MoveBar from "./MoveBar";
 import { problemStateForAccountId } from "../state/problems";
 import { eloStateForAccountId } from "../state/elo";
+import AccountRating from "./AccountRating";
 
 import type { Level } from "../data/util";
 import type { ShapeOptionType } from "./Board/brushes";
 import type { EloResult, EloValue } from "../lib/elo";
 import type { Problem as ProblemStateType } from "../state/problems";
+import type { Account } from "../state/accounts";
 
 import css from "./Game.module.css";
 
@@ -29,13 +31,13 @@ type Props = {
   done?: boolean;
   level: Level;
   nextLevel: () => void;
-  accountId: string;
+  account: Account;
 };
 
-function Problem({ level, nextLevel, done, accountId }: Props) {
+function Problem({ level, nextLevel, done, account }: Props) {
   const { t } = useTranslation();
-  const { currentProblemState } = problemStateForAccountId(accountId);
-  const { eloState, eloCalculateState } = eloStateForAccountId(accountId);
+  const { currentProblemState } = problemStateForAccountId(account.id);
+  const { eloState, eloCalculateState } = eloStateForAccountId(account.id);
   const [manageLevel, setManageLevel] = useState(() => new LevelManager(level));
   const [history, setHistory] = useState(manageLevel.moves);
   const [showThreats, setShowThreats] = useState<ShapeOptionType>("none");
@@ -126,19 +128,23 @@ function Problem({ level, nextLevel, done, accountId }: Props) {
 
   return (
     <>
-      <Toolbar>
-        {isComplete ? (
-          <Alert
-            severity={manageLevel.isSuccessful ? "success" : "error"}
-            variant="filled"
-          >
-            {manageLevel.isSuccessful
-              ? t("problem.success")
-              : t("problem.fail")}
-          </Alert>
-        ) : (
-          <MoveBar color={manageLevel.chess.color} />
-        )}
+      <Toolbar
+        title={
+          isComplete ? (
+            <Alert
+              severity={manageLevel.isSuccessful ? "success" : "error"}
+              variant="filled"
+            >
+              {manageLevel.isSuccessful
+                ? t("problem.success")
+                : t("problem.fail")}
+            </Alert>
+          ) : (
+            <MoveBar color={manageLevel.chess.color} />
+          )
+        }
+      >
+        <AccountRating account={account} type={manageLevel.type} />
       </Toolbar>
       <div className={css.root}>
         <div

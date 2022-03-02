@@ -1,0 +1,14 @@
+@keyframes flickerAnimation {
+  0%   { opacity:0; }
+  25%  { opacity:1; }
+  75%  { opacity:1; }
+  100% { opacity:0; }
+}
+
+.chip {
+  position: absolute;
+  top: 0;
+  right: 0;
+  opacity: 0;
+  animation: flickerAnimation 4s ease-in-out;
+}

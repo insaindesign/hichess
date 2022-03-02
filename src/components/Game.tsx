@@ -19,6 +19,7 @@ import ShowDefenders from "./ShowDefenders";
 import ShowAttackers from "./ShowAttackers";
 import MoveBar from "./MoveBar";
 import Piece from "./Board/Piece";
+import AccountRating from "./AccountRating";
 
 import css from "./Game.module.css";
 
@@ -124,19 +125,23 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
 
   return (
     <>
-      <Toolbar>
-        {chess.js.game_over() ? (
-          <Alert
-            severity={chess.js.in_draw() ? "warning" : "success"}
-            variant="filled"
-          >
-            {chess.js.in_draw()
-              ? t("result.draw")
-              : t("result.win." + ChessCtrl.swapColor(chess.color))}
-          </Alert>
-        ) : (
-          <MoveBar color={chess.color} />
-        )}
+      <Toolbar
+        title={
+          chess.js.game_over() ? (
+            <Alert
+              severity={chess.js.in_draw() ? "warning" : "success"}
+              variant="filled"
+            >
+              {chess.js.in_draw()
+                ? t("result.draw")
+                : t("result.win." + ChessCtrl.swapColor(chess.color))}
+            </Alert>
+          ) : (
+            <MoveBar color={chess.color} />
+          )
+        }
+      >
+        <AccountRating account={account} type="game" />
       </Toolbar>
       <div className={css.root}>
         <div className={css.board}>

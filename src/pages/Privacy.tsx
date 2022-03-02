@@ -10,10 +10,14 @@ function PrivacyPage(props: Props) {
   const { t } = useTranslation();
   return (
     <>
-      <Toolbar>{t("privacy.title")}</Toolbar>
+      <Toolbar title={t("privacy.title")} />
       <Container>
-        <Typography variant="h4" paragraph>{t("privacy.description")}</Typography>
-        <Typography variant="body1" paragraph>{t("privacy.description1")}</Typography>
+        <Typography variant="h4" paragraph>
+          {t("privacy.description")}
+        </Typography>
+        <Typography variant="body1" paragraph>
+          {t("privacy.description1")}
+        </Typography>
       </Container>
     </>
   );

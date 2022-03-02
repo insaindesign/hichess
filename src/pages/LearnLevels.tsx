@@ -68,7 +68,7 @@ function LearnLevels({ account }: Props) {
 
   return (
     <>
-      <Problem accountId={account.id} level={level} nextLevel={nextLevel} />
+      <Problem account={account} level={level} nextLevel={nextLevel} />
       <Learn category={cat.key} stage={stage.key} account={account} />
     </>
   );

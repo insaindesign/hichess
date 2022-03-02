@@ -18,7 +18,7 @@ function LearnPage({ account }: Props) {
 
   return (
     <>
-      <Toolbar>{t("learn.title")}</Toolbar>
+      <Toolbar title={t("learn.title")} />
       <Learn category={params.category} account={account} />
     </>
   );

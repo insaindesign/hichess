@@ -28,8 +28,8 @@ export const gameStateForAccountId = memoize((accountId: string) => {
     effects: [persisted],
   });
 
-  const isLoadedState = atom<boolean>({
-    key: key("gamesIsLoaded"),
+  const gameLoadedState = atom<boolean>({
+    key: key("gameLoaded"),
     default: false,
   });
 
@@ -82,10 +82,10 @@ export const gameStateForAccountId = memoize((accountId: string) => {
 
   accountStore(accountId)
     .getItem("games")
-    .then(() => setRecoil(isLoadedState, true));
+    .then(() => setRecoil(gameLoadedState, true));
 
   return {
-    isLoadedState,
+    gameLoadedState,
     gamesState,
     currentGameState,
     updateCurrentGameState,
