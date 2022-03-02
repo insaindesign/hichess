@@ -7,10 +7,11 @@ import theme from "../styles/theme";
 import css from "./EloChangeReaction.module.css";
 
 type Props = {
+  elo: number;
   change: number | null;
 };
 
-function EloChangeReaction({ change }: Props) {
+function EloChangeReaction({ elo, change }: Props) {
   const [show, setShow] = useState(false);
   const type = change ? (change > 0 ? "success" : "error") : null;
 
@@ -18,8 +19,10 @@ function EloChangeReaction({ change }: Props) {
     if (!type) {
       return;
     }
+    const t = setTimeout(() => setShow(false), 2000);
     setShow(true);
     confetti({
+      particleCount: 150,
       colors: [theme.palette[type].main],
       disableForReducedMotion: true,
       origin: { x: 0.5, y: 0 },
@@ -27,9 +30,8 @@ function EloChangeReaction({ change }: Props) {
       startVelocity: 15,
       zIndex: 1
     });
-    const t = setTimeout(setShow, 2000, false);
     return () => clearTimeout(t);
-  }, [type]);
+  }, [change, type, elo]);
 
   if (!change || !type || !show) {
     return null;

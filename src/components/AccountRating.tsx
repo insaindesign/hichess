@@ -42,7 +42,7 @@ function AccountRating({ account, type }: Props) {
         sx={{ fontWeight: 700 }}
         to="/profile"
       />
-      <EloChangeReaction change={eloChange} />
+      <EloChangeReaction elo={elo} change={eloChange} />
     </Box>
   );
 }
