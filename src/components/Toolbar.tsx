@@ -18,7 +18,7 @@ function Toolbar({ title, children }: Props) {
   const openDrawer = useCallback(() => setDrawerOpen(true), [setDrawerOpen]);
   return (
     <AppBar position="static" color="transparent" elevation={0}>
-      <MuiToolbar sx={{ gap: 2 }}>
+      <MuiToolbar>
         <IconButton
           onClick={openDrawer}
           size="large"
@@ -27,7 +27,7 @@ function Toolbar({ title, children }: Props) {
         >
           <MenuIcon />
         </IconButton>
-        {title ? <Box sx={{ flexGrow: 1 }}>{title}</Box> : null}
+        {title ? <Box sx={{ flexGrow: 1, marginRight: 1 }}>{title}</Box> : null}
         {children}
       </MuiToolbar>
     </AppBar>
