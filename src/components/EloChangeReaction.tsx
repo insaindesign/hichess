@@ -1,5 +1,8 @@
 import Chip from "@mui/material/Chip";
 import { useEffect, useState } from "react";
+import confetti from "canvas-confetti";
+
+import theme from "../styles/theme";
 
 import css from "./EloChangeReaction.module.css";
 
@@ -9,14 +12,26 @@ type Props = {
 
 function EloChangeReaction({ change }: Props) {
   const [show, setShow] = useState(false);
+  const type = change ? (change > 0 ? "success" : "error") : null;
 
   useEffect(() => {
+    if (!type) {
+      return;
+    }
     setShow(true);
-    const t = setTimeout(setShow, 4000, false);
+    confetti({
+      colors: [theme.palette[type].main],
+      disableForReducedMotion: true,
+      origin: { x: 0.5, y: 0 },
+      spread: 180,
+      startVelocity: 15,
+      zIndex: 1
+    });
+    const t = setTimeout(setShow, 2000, false);
     return () => clearTimeout(t);
-  }, [change]);
+  }, [type]);
 
-  if (!change || !show) {
+  if (!change || !type || !show) {
     return null;
   }
 
@@ -24,7 +39,7 @@ function EloChangeReaction({ change }: Props) {
     <Chip
       className={css.chip}
       sx={{ fontWeight: 700 }}
-      color={change > 0 ? "success" : "error"}
+      color={type}
       label={change > 0 ? `+${change}` : change}
     />
   );

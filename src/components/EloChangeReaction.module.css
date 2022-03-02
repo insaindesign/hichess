@@ -1,8 +1,20 @@
 @keyframes flickerAnimation {
-  0%   { opacity:0; }
-  25%  { opacity:1; }
-  75%  { opacity:1; }
-  100% { opacity:0; }
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(2);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
 }
 
 .chip {
@@ -10,5 +22,6 @@
   top: 0;
   right: 0;
   opacity: 0;
-  animation: flickerAnimation 4s ease-in-out;
+  animation: flickerAnimation 2s ease-in-out;
+  z-index: 2;
 }
