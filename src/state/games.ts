@@ -1,8 +1,8 @@
-import { atom, selector, DefaultValue } from "recoil";
+import { atom, selector, DefaultValue, atomFamily } from "recoil";
 import memoize from "lodash/memoize";
 import { setRecoil } from "recoil-nexus";
 
-import { upsert } from "../lib/arrays";
+import { notEmpty, upsert } from "../lib/arrays";
 import { accountStore } from "../storage";
 import { persist, accountKey } from "./";
 
@@ -17,13 +17,26 @@ export type Game = {
   result?: GameResult;
   ratingChange?: number;
 };
+export type GameId = number | string;
 
 export const gameStateForAccountId = memoize((accountId: string) => {
   const persisted = persist({ storage: accountStore(accountId), key: "games" });
   const key = accountKey(accountId);
 
-  const gamesState = atom<Game[]>({
+  const gamesState_DEPRECATED = atom<Game[]>({
     key: key("games"),
+    default: [],
+    effects: [persisted],
+  });
+
+  const gameState = atomFamily<Game | null, GameId>({
+    key: key("game"),
+    default: null,
+    effects: [persisted],
+  });
+
+  const gameIdsState = atom<GameId[]>({
+    key: key("gameIds"),
     default: [],
     effects: [persisted],
   });
@@ -33,35 +46,46 @@ export const gameStateForAccountId = memoize((accountId: string) => {
     default: false,
   });
 
-  const currentGameDateState = atom<number | null>({
+  const currentGameIdState = atom<GameId | null>({
     key: key("currentGameId"),
     default: null,
     effects: [persisted],
   });
 
+  const gamesState = selector<Game[]>({
+    key: key("allGames"),
+    get: ({ get }) =>
+      get(gameIdsState)
+        .map((id) => get(gameState(id)))
+        .filter(notEmpty),
+  });
+
   const currentGameState = selector<Game | null>({
     key: key("currentGame"),
     get: ({ get }) => {
-      const date = get(currentGameDateState);
-      return get(gamesState).find((g) => g.date === date) || null;
+      const date = get(currentGameIdState);
+      return date ? get(gameState(date)) : null;
     },
     set: ({ get, set }, game) => {
       if (game instanceof DefaultValue) {
         return;
       }
       if (!game) {
-        set(currentGameDateState, null);
+        set(currentGameIdState, null);
         return;
       }
-      const date = get(currentGameDateState);
+      const date = get(currentGameIdState);
       if (date !== game.date) {
-        set(currentGameDateState, game.date);
+        set(currentGameIdState, game.date);
       }
-      const games = get(gamesState);
-      set(
-        gamesState,
-        upsert(games, game, (g) => g.date === game.date)
-      );
+      if (!get(gameState(game.date))) {
+        const gameIds = get(gameIdsState);
+        set(
+          gameIdsState,
+          upsert(gameIds, game.date, (id) => id !== game.date)
+        );
+      }
+      set(gameState(game.date), game);
     },
   });
 
@@ -81,13 +105,32 @@ export const gameStateForAccountId = memoize((accountId: string) => {
   });
 
   accountStore(accountId)
-    .getItem("games")
-    .then(() => setRecoil(gameLoadedState, true));
+    .getItem<string>("games")
+    .then((db) => {
+      setRecoil(gameLoadedState, true);
+      if (db) {
+        const g = JSON.parse(db);
+        const games: Game[] = g[key("games")] || [];
+        const gameIds: GameId[] = g[key("gameIds")] || [];
+        if (games.length) {
+          games.forEach((game) => {
+            if (!gameIds.includes(game.date)) {
+              gameIds.push(game.date);
+            }
+            setRecoil(gameState(game.date), game);
+          });
+          setRecoil(gameIdsState, gameIds);
+          setRecoil(gamesState_DEPRECATED, []);
+        }
+      }
+    });
 
   return {
     gameLoadedState,
+    gameState,
     gamesState,
     currentGameState,
+    currentGameIdState,
     updateCurrentGameState,
   };
 });

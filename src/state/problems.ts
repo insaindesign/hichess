@@ -172,8 +172,27 @@ export const problemStateForAccountId = memoize((accountId: string) => {
   });
 
   accountStore(accountId)
-    .getItem("problems")
-    .then(() => setRecoil(problemLoadedState, true));
+    .getItem<string>("problems")
+    .then((p) => {
+      setRecoil(problemLoadedState, true);
+      if (p) {
+        const db = JSON.parse(p);
+        const attempts = key('problemAttempts');
+        const currentIds = db[key('problemIds')] || [];
+        const ids: string[] = [];
+        Object.keys(db).forEach(k => {
+          if (k.startsWith(attempts)) {
+            const id = k.replace(attempts+'__', '').replace(/"/g, '');
+            if (!currentIds.includes(id)) {
+              ids.push(id);
+            }
+          }
+        })
+        if (ids.length) {
+          setRecoil(problemIdsState, ids);
+        }
+      }
+    });
 
   return {
     currentProblemIdState,
