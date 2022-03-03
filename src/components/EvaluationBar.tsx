@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import type { BestMove } from "../lib/engine/uci";
 
 import css from "./EvaluationBar.module.css";
@@ -11,10 +12,21 @@ const min = -max;
 const range = max - min;
 
 function EvaluationBar({ bestMove }: Props) {
-  const evaluation = bestMove?.bestRating;
-  const color = bestMove?.color === "black" ? -1 : 1;
-  const value = Math.max(Math.min(evaluation?.normalised || 0, max), min) * color;
-  const percent = Math.round((Math.abs(value + min) / range) * 100);
+  const evaluation = useRef<number>(0);
+
+  useEffect(() => {
+    if (!bestMove?.bestRating) {
+      return;
+    }
+    const { normalised } = bestMove.bestRating;
+    const color = bestMove.color === "black" ? -1 : 1;
+    evaluation.current = Math.max(Math.min(normalised || 0, max), min) * color;
+  }, [evaluation, bestMove]);
+
+  const percent = Math.round(
+    (Math.abs(evaluation.current + min) / range) * 100
+  );
+
   return (
     <div className={css.root}>
       <div
