@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import Chip from "@mui/material/Chip";
 import Typography from "@mui/material/Typography";
@@ -28,8 +29,8 @@ function GameHistory({ accountId }: Props) {
       </Typography>
       {games.map((g, ii) => (
         <div key={ii}>
-          {new Date(g.date).toDateString()}, {g.color},{" "}
-          {g.result || "incomplete"}, {g.ratingChange}
+          <Link to={`/play/${g.date}`}>{new Date(g.date).toDateString()}</Link>,{" "}
+          {g.color}, {g.result || "incomplete"} ({g.ratingChange})
         </div>
       ))}
     </div>

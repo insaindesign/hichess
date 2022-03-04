@@ -75,7 +75,7 @@ function MainMenu() {
     });
     menuItems.push({
       component: Link,
-      to: "/play",
+      to: "/game",
       onClick,
       children: t("mainmenu.play"),
       key: "play",

@@ -9,6 +9,7 @@ const About = lazy(() => import("./About" /* webpackChunkName: "About" */));
 const Profile = lazy(() => import("./Profile" /* webpackChunkName: "Profile" */));
 const Privacy = lazy(() => import("./Privacy" /* webpackChunkName: "Privacy" */));
 const Game = lazy(() => import("./Game" /* webpackChunkName: "Game" */));
+const Play = lazy(() => import("./Play" /* webpackChunkName: "Play" */));
 const Learn = lazy(() => import("./Learn" /* webpackChunkName: "Learn" */));
 const LearnLevels = lazy(() => import("./LearnLevels" /* webpackChunkName: "LearnLevels" */));
 const Puzzles = lazy(() => import("./Puzzles" /* webpackChunkName: "Puzzles" */));
@@ -34,8 +35,9 @@ function App() {
           <Route path="puzzles" element={<Puzzles />} />
           <Route path="puzzles/:theme" element={<Puzzles />} />
           <Route path="puzzles/:theme/:id" element={<Puzzles />} />
-          <Route path="play" element={<Game />} />
-          <Route path="play/:fen" element={<Game />} />
+          <Route path="game" element={<Game />} />
+          <Route path="game/:fen" element={<Game />} />
+          <Route path="play/:id" element={<Play />} />
         </Route>
       </Routes>
     </BrowserRouter>

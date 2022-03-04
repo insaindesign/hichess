@@ -1,8 +1,9 @@
 import { atom, selector, DefaultValue, atomFamily } from "recoil";
 import memoize from "lodash/memoize";
 import { setRecoil } from "recoil-nexus";
+import { isMatch } from "lodash";
 
-import { notEmpty, upsert } from "../lib/arrays";
+import { notEmpty } from "../lib/arrays";
 import { accountStore } from "../storage";
 import { persist, accountKey } from "./";
 
@@ -67,25 +68,19 @@ export const gameStateForAccountId = memoize((accountId: string) => {
       return date ? get(gameState(date)) : null;
     },
     set: ({ get, set }, game) => {
-      if (game instanceof DefaultValue) {
+      if (!game || game instanceof DefaultValue) {
         return;
       }
-      if (!game) {
-        set(currentGameIdState, null);
-        return;
+      const id = game.date;
+      const currentId = get(currentGameIdState);
+      if (currentId !== id) {
+        set(currentGameIdState, id);
       }
-      const date = get(currentGameIdState);
-      if (date !== game.date) {
-        set(currentGameIdState, game.date);
+      const gameIds = get(gameIdsState);
+      if (!gameIds.includes(id)) {
+        set(gameIdsState, [...gameIds, id]);
       }
-      if (!get(gameState(game.date))) {
-        const gameIds = get(gameIdsState);
-        set(
-          gameIdsState,
-          upsert(gameIds, game.date, (id) => id !== game.date)
-        );
-      }
-      set(gameState(game.date), game);
+      set(gameState(id), game);
     },
   });
 
@@ -94,35 +89,43 @@ export const gameStateForAccountId = memoize((accountId: string) => {
     get: ({ get }) => get(currentGameState),
     set: ({ get, set }, update) => {
       const game = get(currentGameState);
-      if (!game || update instanceof DefaultValue) {
-        return;
+      if (game && update && !isMatch(game, update)) {
+        set(currentGameState, { ...game, ...update });
       }
-      if (game.pgn === update?.pgn && game.position === update?.position) {
-        return;
-      }
-      set(currentGameState, { ...game, ...update });
     },
   });
 
   accountStore(accountId)
     .getItem<string>("games")
     .then((db) => {
-      setRecoil(gameLoadedState, true);
       if (db) {
         const g = JSON.parse(db);
         const games: Game[] = g[key("games")] || [];
         const gameIds: GameId[] = g[key("gameIds")] || [];
+        const gameIdsUpdates: GameId[] = [];
+        const gameKey = key('game');
+        Object.keys(g).forEach(k => {
+          if (k.startsWith(gameKey)) {
+            const game = g[k] as Game;
+            if (!gameIds.includes(game.date)) {
+              gameIdsUpdates.push(game.date)
+            }
+          }
+        })
         if (games.length) {
           games.forEach((game) => {
             if (!gameIds.includes(game.date)) {
-              gameIds.push(game.date);
+              gameIdsUpdates.push(game.date);
             }
             setRecoil(gameState(game.date), game);
           });
-          setRecoil(gameIdsState, gameIds);
           setRecoil(gamesState_DEPRECATED, []);
         }
+        if (gameIdsUpdates.length) {
+          setRecoil(gameIdsState, [...gameIds, ...gameIdsUpdates]);
+        }
       }
+      setRecoil(gameLoadedState, true);
     });
 
   return {
