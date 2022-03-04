@@ -23,7 +23,7 @@ function Problem({ accountId, type }: Props) {
   return (
     <div>
       <Typography variant="h4">
-        {t("history." + type)}{" "}
+        <Link to={'/'+type}>{t("history." + type)}</Link>{" "}
         {eloLoaded ? (
           <Chip label={Math.round(elo)} sx={{ fontWeight: 700 }} />
         ) : null}

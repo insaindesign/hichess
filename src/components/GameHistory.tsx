@@ -22,7 +22,7 @@ function GameHistory({ accountId }: Props) {
   return (
     <div>
       <Typography variant="h4">
-        {t("history.games")}{" "}
+        <Link to="/game">{t("history.games")}</Link>{" "}
         {eloLoaded ? (
           <Chip label={Math.round(elo)} sx={{ fontWeight: 700 }} />
         ) : null}
