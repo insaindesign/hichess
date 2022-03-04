@@ -13,6 +13,9 @@ const StyledButtonGroup = styled(ButtonGroup)(({ theme }) => ({
     "&.Mui-disabled": {
       borderColor: "transparent",
     },
+    "&:not(:last-of-type):hover": {
+      borderRightColor: "transparent",
+    },
     "&:not(:first-of-type)": {
       borderRadius: theme.shape.borderRadius,
     },
