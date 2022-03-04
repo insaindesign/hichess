@@ -17,4 +17,13 @@ export default createTheme({
   typography: {
     fontFamily: '"Quicksand", "Helvetica", "Arial", sans-serif',
   },
+  components: {
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          padding: '1px 6px',
+        }
+      }
+    }
+  }
 });

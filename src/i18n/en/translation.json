@@ -32,8 +32,8 @@
   "result": {
     "draw": "It's a draw.",
     "win": {
-      "black": "Black wins. Well done black!",
-      "white": "White wins. Well done white!"
+      "black": "Well done black!",
+      "white": "Well done white!"
     }
   },
   "problem": {
