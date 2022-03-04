@@ -12,7 +12,7 @@ function PrivacyPage(props: Props) {
     <>
       <Toolbar title={t("privacy.title")} />
       <Container>
-        <Typography variant="h4" paragraph>
+        <Typography variant="h3" paragraph>
           {t("privacy.description")}
         </Typography>
         <Typography variant="body1" paragraph>

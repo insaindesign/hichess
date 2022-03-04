@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
-import Button from "@mui/material/Button";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import IconButton from "@mui/material/IconButton";
 import Add from "@mui/icons-material/Add";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import AccountAdd from "./AccountAdd";
 import AccountAvatar from "./AccountAvatarAsync";
-import { selectedAccountState, accountsState } from "../state/accounts";
-
-import type { Account } from "../state/accounts";
+import {
+  selectedAccountState,
+  accountsState,
+  addAccountState,
+} from "../state/accounts";
 
 import css from "./AccountPicker.module.css";
 
@@ -21,7 +22,8 @@ function AccountPicker(props: Props) {
   const { t } = useTranslation();
   const [showAddAccount, setShowAddAccount] = useState(false);
   const [account, setAccount] = useRecoilState(selectedAccountState);
-  const [accounts, setAccounts] = useRecoilState(accountsState);
+  const accounts = useRecoilValue(accountsState);
+  const addAccount = useSetRecoilState(addAccountState);
 
   useEffect(() => {
     if (account) {
@@ -29,13 +31,11 @@ function AccountPicker(props: Props) {
     }
   }, [account, navigate]);
 
-  const addAccount = useCallback(
-    (account: Account) => {
-      setAccounts([...accounts, account]);
+  useEffect(() => {
+    if (accounts.length) {
       setShowAddAccount(false);
-    },
-    [accounts, setAccounts]
-  );
+    }
+  }, [accounts]);
 
   const toggleAddAccount = useCallback(() => {
     setShowAddAccount(!showAddAccount);
@@ -48,14 +48,7 @@ function AccountPicker(props: Props) {
   const hasAccounts = accounts.length;
 
   return (
-    <div className={css.root}>
-      <img
-        alt="HiChess"
-        src="/icon-192.png"
-        width={64}
-        height={64}
-        className={css.logo}
-      />
+    <>
       {hasAccounts ? (
         <div className={css.icons}>
           {accounts.map((account) => (
@@ -78,10 +71,7 @@ function AccountPicker(props: Props) {
           titleAccess={t("account.add")}
         />
       </IconButton>
-      <Button component={Link} to="/privacy">
-        {t("mainmenu.privacy")}
-      </Button>
-    </div>
+    </>
   );
 }
 
