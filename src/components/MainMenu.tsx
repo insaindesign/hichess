@@ -8,6 +8,16 @@ import Toolbar from "@mui/material/Toolbar";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Cancel from "@mui/icons-material/Clear";
+import SchoolIcon from "@mui/icons-material/School";
+import ExtensionIcon from "@mui/icons-material/Extension";
+import LoginIcon from "@mui/icons-material/Login";
+import LogoutIcon from "@mui/icons-material/Logout";
+import InfoIcon from "@mui/icons-material/Info";
+import PolicyIcon from "@mui/icons-material/Policy";
+import FeedbackIcon from "@mui/icons-material/Feedback";
+import CoffeeIcon from "@mui/icons-material/Coffee";
+import ToysIcon from "@mui/icons-material/Toys";
+import GradientIcon from "@mui/icons-material/Gradient";
 import { useTranslation } from "react-i18next";
 
 import { selectedAccountState } from "../state/accounts";
@@ -60,6 +70,12 @@ function MainMenu() {
   const menuItems: MenuItem[] = [];
   if (account) {
     menuItems.push({
+      startIcon: (
+        <SchoolIcon
+          style={{ fontSize: 96 }}
+          titleAccess={t("mainmenu.learn")}
+        />
+      ),
       children: t("mainmenu.learn"),
       component: Link,
       to: "/learn",
@@ -70,6 +86,12 @@ function MainMenu() {
       component: Link,
       to: "/puzzles",
       onClick,
+      startIcon: (
+        <ExtensionIcon
+          style={{ fontSize: 96 }}
+          titleAccess={t("mainmenu.puzzles")}
+        />
+      ),
       children: t("mainmenu.puzzles"),
       key: "puzzles",
     });
@@ -77,6 +99,12 @@ function MainMenu() {
       component: Link,
       to: "/game",
       onClick,
+      startIcon: (
+        <GradientIcon
+          style={{ fontSize: 96 }}
+          titleAccess={t("mainmenu.play")}
+        />
+      ),
       children: t("mainmenu.play"),
       key: "play",
     });
@@ -84,11 +112,20 @@ function MainMenu() {
   if (!account) {
     menuItems.push({
       key: "login",
+      startIcon: (
+        <LoginIcon style={{ fontSize: 96 }} titleAccess={t("mainmenu.login")} />
+      ),
       children: t("mainmenu.login"),
       onClick: logout,
     });
   } else {
     menuItems.push({
+      startIcon: (
+        <LogoutIcon
+          style={{ fontSize: 96 }}
+          titleAccess={t("mainmenu.logout")}
+        />
+      ),
       children: t("mainmenu.logout"),
       onClick: logout,
       key: "logout",
@@ -100,6 +137,9 @@ function MainMenu() {
       key: "about",
       to: "/about",
       onClick,
+      startIcon: (
+        <InfoIcon style={{ fontSize: 96 }} titleAccess={t("mainmenu.about")} />
+      ),
       children: t("mainmenu.about"),
     });
     menuItems.push({
@@ -107,6 +147,12 @@ function MainMenu() {
       key: "privacy",
       to: "/privacy",
       onClick,
+      startIcon: (
+        <PolicyIcon
+          style={{ fontSize: 96 }}
+          titleAccess={t("mainmenu.privacy")}
+        />
+      ),
       children: t("mainmenu.privacy"),
     });
   }
@@ -114,18 +160,36 @@ function MainMenu() {
     menuItems.push({
       onClick: verifyAdult,
       variant: "contained",
+      startIcon: (
+        <ToysIcon
+          style={{ fontSize: 96 }}
+          titleAccess={t("mainmenu.hideGrownups")}
+        />
+      ),
       children: t("mainmenu.hideGrownups"),
       key: "hidegrownups",
     });
     menuItems.push({
       key: "feedback",
       href: "https://forms.gle/MZs4uLAkhH9jkqBC8",
+      startIcon: (
+        <FeedbackIcon
+          style={{ fontSize: 96 }}
+          titleAccess={t("mainmenu.feedback")}
+        />
+      ),
       children: t("mainmenu.feedback"),
       target: "__blank",
     });
     menuItems.push({
       key: "donate",
       href: "https://www.buymeacoffee.com/hichess",
+      startIcon: (
+        <CoffeeIcon
+          style={{ fontSize: 96 }}
+          titleAccess={t("mainmenu.donate")}
+        />
+      ),
       children: t("mainmenu.donate"),
       target: "__blank",
     });
@@ -175,7 +239,11 @@ function MainMenu() {
         {showVerify ? <VerifyAdult onChange={handleVerify} /> : null}
       </Suspense>
       {!amAnAdult ? (
-        <Button fullWidth onClick={verifyAdult} sx={{ marginTop: 2 }}>
+        <Button
+          fullWidth
+          onClick={verifyAdult}
+          sx={{ marginTop: 2, marginBottom: 4 }}
+        >
           {t("mainmenu.grownups")}
         </Button>
       ) : null}

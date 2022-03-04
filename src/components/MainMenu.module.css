@@ -1,15 +1,17 @@
 .link.link {
   padding: 20px;
-  font-size: 2em;
-  flex: 1 1 auto;
-  display: flex;
   height: 100%;
   justify-content: center;
   align-items: center;
   min-height: 240px;
+  flex-direction: column;
 }
 
-.grid {
+.link.link span {
+  margin: 0;
+}
+
+.grid.grid {
   margin-top: 8px;
 }
 
