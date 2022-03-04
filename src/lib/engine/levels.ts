@@ -6,14 +6,6 @@ export interface EngineLevel {
   id: number;
 }
 
-export const getLevelForRating = (rating: number): EngineLevel => {
-  const rounded = Math.min(
-    Math.max(Math.round(rating / 100) * 100, levels[0].rating),
-    levels[levels.length - 1].rating
-  );
-  return levels.find((l) => rounded <= l.rating) as EngineLevel;
-};
-
 export const levels: EngineLevel[] = [
   {
     rating: 400,
@@ -23,43 +15,43 @@ export const levels: EngineLevel[] = [
   },
   {
     rating: 500,
-    randomness: 0.8,
-    multipv: 100,
-    skill: 0,
-  },
-  {
-    rating: 600,
-    randomness: 0.68,
+    randomness: 0.7,
     multipv: 80,
     skill: 0,
   },
   {
+    rating: 600,
+    randomness: 0.6,
+    multipv: 70,
+    skill: 0,
+  },
+  {
     rating: 700,
-    randomness: 0.56,
+    randomness: 0.5,
     multipv: 60,
     skill: 0,
   },
   {
     rating: 800,
-    randomness: 0.45,
+    randomness: 0.4,
     multipv: 40,
     skill: 0,
   },
   {
     rating: 900,
-    randomness: 0.35,
+    randomness: 0.3,
     multipv: 30,
     skill: 0,
   },
   {
     rating: 1000,
-    randomness: 0.25,
+    randomness: 0.2,
     multipv: 20,
     skill: 0,
   },
   {
     rating: 1100,
-    randomness: 0.15,
+    randomness: 0.1,
     multipv: 10,
     skill: 0,
   },
@@ -114,3 +106,11 @@ export const levels: EngineLevel[] = [
     skill: 20,
   },
 ].map((l, id) => ({ ...l, id }));
+
+export const getLevelForRating = (rating: number): EngineLevel => {
+  const rounded = Math.min(
+    Math.max(Math.ceil(rating / 100) * 100, levels[0].rating),
+    levels[levels.length - 1].rating
+  );
+  return levels.find((l) => rounded <= l.rating) as EngineLevel;
+};
