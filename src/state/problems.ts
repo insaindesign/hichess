@@ -174,7 +174,6 @@ export const problemStateForAccountId = memoize((accountId: string) => {
   accountStore(accountId)
     .getItem<string>("problems")
     .then((p) => {
-      setRecoil(problemLoadedState, true);
       if (p) {
         const db = JSON.parse(p);
         const attempts = key('problemAttempts');
@@ -189,9 +188,10 @@ export const problemStateForAccountId = memoize((accountId: string) => {
           }
         })
         if (ids.length) {
-          setRecoil(problemIdsState, ids);
+          setRecoil(problemIdsState, [currentIds, ids]);
         }
       }
+      setRecoil(problemLoadedState, true);
     });
 
   return {
