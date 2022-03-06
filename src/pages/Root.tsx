@@ -8,6 +8,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from "../styles/theme";
 import LeftDrawer from "../components/LeftDrawer";
 import Loading from "../components/Loading";
+import ResetScroll from "../components/ResetScroll";
 
 function Root() {
   return (
@@ -16,6 +17,7 @@ function Root() {
         <RecoilNexus />
         <CssBaseline />
         <LeftDrawer />
+        <ResetScroll />
         <Suspense fallback={<Loading />}>
           <Outlet />
         </Suspense>
