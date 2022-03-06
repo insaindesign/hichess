@@ -20,7 +20,7 @@ const getNextLevel = (levels: Level[], id: string, attempts: ProblemAttemptsOfId
   for (let ii = 0; ii < levels.length; ii += 1) {
     const level = levels[ii + index % levels.length];
     const at = attempts[level.id];
-    if (!at || !at.success) {
+    if ((!at || !at.success) && level.id !== id) {
       return level;
     }
   }

@@ -188,7 +188,7 @@ export const problemStateForAccountId = memoize((accountId: string) => {
           }
         })
         if (ids.length) {
-          setRecoil(problemIdsState, [currentIds, ids]);
+          setRecoil(problemIdsState, [...currentIds, ...ids]);
         }
       }
       setRecoil(problemLoadedState, true);
