@@ -103,8 +103,8 @@ export class LevelManager {
     const delta = userMoves - levelExpectedMoves;
     if (delta <= 0 && !this.hasHinted) return this.level.rating;
     if (delta <= Math.max(1, levelExpectedMoves / 8) && !this.hasHinted)
-      return this.level.rating - 50;
-    return this.level.rating - 100;
+      return this.level.rating - 100;
+    return this.level.rating - 200;
   }
 
   get themes(): string[] {
