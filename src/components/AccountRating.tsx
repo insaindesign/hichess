@@ -9,7 +9,7 @@ import EloChangeReaction from "./EloChangeReaction";
 
 import type { Account } from "../state/accounts";
 import type { EloCategory } from "../state/elo";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 type Props = {
   account: Account;
@@ -34,7 +34,7 @@ function AccountRating({ account, type }: Props) {
   }, [elo, currentElo, eloLoaded]);
 
   return (
-    <Box sx={{ position: 'relative' }}>
+    <Box sx={{ position: "relative" }}>
       <Chip
         avatar={<AccountAvatarAsync icon={account.icon} />}
         component={Link}
@@ -47,4 +47,10 @@ function AccountRating({ account, type }: Props) {
   );
 }
 
-export default AccountRating;
+const AccountRatingSuspended = (props: Props) => (
+  <Suspense fallback={null}>
+    <AccountRating {...props} />
+  </Suspense>
+);
+
+export default AccountRatingSuspended;
