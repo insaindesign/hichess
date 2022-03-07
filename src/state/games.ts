@@ -1,4 +1,10 @@
-import { atom, selector, DefaultValue, atomFamily } from "recoil";
+import {
+  atom,
+  selector,
+  DefaultValue,
+  atomFamily,
+  selectorFamily,
+} from "recoil";
 import memoize from "lodash/memoize";
 import { setRecoil } from "recoil-nexus";
 import { isMatch } from "lodash";
@@ -21,14 +27,11 @@ export type Game = {
 export type GameId = number | string;
 
 export const gameStateForAccountId = memoize((accountId: string) => {
-  const persisted = persist({ storage: accountStore(accountId), key: "games" });
+  const storage = accountStore(accountId);
+  const persisted = persist({ storage, key: "games" });
   const key = accountKey(accountId);
 
-  const gamesState_DEPRECATED = atom<Game[]>({
-    key: key("games"),
-    default: [],
-    effects: [persisted],
-  });
+  const loadedKeys: Record<string, Promise<boolean>> = {};
 
   const gameState = atomFamily<Game | null, GameId>({
     key: key("game"),
@@ -42,9 +45,14 @@ export const gameStateForAccountId = memoize((accountId: string) => {
     effects: [persisted],
   });
 
-  const gameLoadedState = atom<boolean>({
+  const gameLoadedState = selectorFamily<boolean, string>({
     key: key("gameLoaded"),
-    default: false,
+    get: (k) => () => {
+      if (!loadedKeys[k]) {
+        loadedKeys[k] = storage.getItem("games").then(() => true);
+      }
+      return loadedKeys[k];
+    },
   });
 
   const currentGameIdState = atom<GameId | null>({
@@ -95,7 +103,7 @@ export const gameStateForAccountId = memoize((accountId: string) => {
     },
   });
 
-  accountStore(accountId)
+  storage
     .getItem<string>("games")
     .then((db) => {
       if (db) {
@@ -107,7 +115,7 @@ export const gameStateForAccountId = memoize((accountId: string) => {
         Object.keys(g).forEach(k => {
           if (k.startsWith(gameKey)) {
             const game = g[k] as Game;
-            if (!gameIds.includes(game.date)) {
+            if (game.date && !gameIds.includes(game.date)) {
               gameIdsUpdates.push(game.date)
             }
           }
@@ -117,15 +125,12 @@ export const gameStateForAccountId = memoize((accountId: string) => {
             if (!gameIds.includes(game.date)) {
               gameIdsUpdates.push(game.date);
             }
-            setRecoil(gameState(game.date), game);
           });
-          setRecoil(gamesState_DEPRECATED, []);
         }
         if (gameIdsUpdates.length) {
           setRecoil(gameIdsState, [...gameIds, ...gameIdsUpdates]);
         }
       }
-      setRecoil(gameLoadedState, true);
     });
 
   return {

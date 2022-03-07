@@ -16,7 +16,7 @@ function GameHistory({ accountId }: Props) {
   const { gamesState } = gameStateForAccountId(accountId);
   const { eloState, eloLoadedState } = eloStateForAccountId(accountId);
   const games = useRecoilValue(gamesState);
-  const eloLoaded = useRecoilValue(eloLoadedState);
+  const eloLoaded = useRecoilValue(eloLoadedState('game'));
   const elo = useRecoilValue(eloState("game"));
 
   return (

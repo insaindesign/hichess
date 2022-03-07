@@ -24,7 +24,7 @@ function GamePage({ account }: Props) {
     account.id
   );
   const [currentGame, setCurrentGame] = useRecoilState(currentGameState);
-  const gameLoaded = useRecoilValue(gameLoadedState);
+  const gameLoaded = useRecoilValue(gameLoadedState('currentGame'));
 
   useEffect(() => {
     if (position) {

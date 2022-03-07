@@ -19,7 +19,7 @@ type Props = {
 function AccountRating({ account, type }: Props) {
   const { eloState, eloLoadedState } = eloStateForAccountId(account.id);
   const elo = useRecoilValue(eloState(type));
-  const eloLoaded = useRecoilValue(eloLoadedState);
+  const eloLoaded = useRecoilValue(eloLoadedState(type));
 
   const [eloChange, setEloChange] = useState<number>(0);
   const [currentElo, setCurrentElo] = useState<number | null>(null);

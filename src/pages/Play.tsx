@@ -25,7 +25,7 @@ function PlayPage({ account }: Props) {
   const [currentGame, setCurrentGame] = useRecoilState(currentGameState);
   const [currentGameId, setCurrentGameId] = useRecoilState(currentGameIdState);
   const [ratingPair, setRating] = useRecoilState(eloCalculateState("game"));
-  const isLoaded = useRecoilValue(gameLoadedState);
+  const isLoaded = useRecoilValue(gameLoadedState("currentGame"));
 
   const rating = ratingPair[0];
   const level = getLevelForRating(rating);

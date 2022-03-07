@@ -5,7 +5,6 @@ import {
   selectorFamily,
   atomFamily,
 } from "recoil";
-import { setRecoil } from "recoil-nexus";
 import memoize from "lodash/memoize";
 
 import { accountStore } from "../storage";
@@ -70,11 +69,6 @@ export const problemStateForAccountId = memoize((accountId: string) => {
     key: "problems",
   });
   const key = accountKey(accountId);
-
-  const problemLoadedState = atom<boolean>({
-    key: key("problemLoaded"),
-    default: false,
-  });
 
   const problemIdsState = atom<string[]>({
     key: key("problemIds"),
@@ -171,35 +165,11 @@ export const problemStateForAccountId = memoize((accountId: string) => {
     },
   });
 
-  accountStore(accountId)
-    .getItem<string>("problems")
-    .then((p) => {
-      if (p) {
-        const db = JSON.parse(p);
-        const attempts = key('problemAttempts');
-        const currentIds = db[key('problemIds')] || [];
-        const ids: string[] = [];
-        Object.keys(db).forEach(k => {
-          if (k.startsWith(attempts)) {
-            const id = k.replace(attempts+'__', '').replace(/"/g, '');
-            if (!currentIds.includes(id)) {
-              ids.push(id);
-            }
-          }
-        })
-        if (ids.length) {
-          setRecoil(problemIdsState, [...currentIds, ...ids]);
-        }
-      }
-      setRecoil(problemLoadedState, true);
-    });
-
   return {
     currentProblemIdState,
     currentProblemState,
     problemsOfTypeState,
     problemAttemptsState,
     problemAttemptsOfIdsState,
-    problemLoadedState,
   };
 });

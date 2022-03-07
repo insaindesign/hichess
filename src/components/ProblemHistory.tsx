@@ -18,7 +18,7 @@ function Problem({ accountId, type }: Props) {
   const { eloState, eloLoadedState } = eloStateForAccountId(accountId);
   const problems = useRecoilValue(problemsOfTypeState(type));
   const elo = useRecoilValue(eloState(type));
-  const eloLoaded = useRecoilValue(eloLoadedState);
+  const eloLoaded = useRecoilValue(eloLoadedState(type));
 
   return (
     <div>

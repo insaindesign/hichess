@@ -30,7 +30,7 @@ function Puzzles({ account }: Props) {
 
   const { eloState, eloLoadedState } = eloStateForAccountId(account.id);
   const elo = useRecoilValue(eloState("puzzle"));
-  const eloLoaded = useRecoilValue(eloLoadedState);
+  const eloLoaded = useRecoilValue(eloLoadedState("puzzle"));
   const rating = Math.min(Math.max(Math.round(elo / 100) * 100, 600), 900);
 
   const nextPuzzle = useCallback(() => {

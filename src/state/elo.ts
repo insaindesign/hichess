@@ -1,12 +1,5 @@
 import memoize from "lodash/memoize";
-import {
-  atom,
-  atomFamily,
-  DefaultValue,
-  selector,
-  selectorFamily,
-} from "recoil";
-import {setRecoil} from "recoil-nexus";
+import { atomFamily, DefaultValue, selector, selectorFamily } from "recoil";
 
 import Elo from "../lib/elo";
 import { accountStore } from "../storage";
@@ -14,15 +7,17 @@ import { persist, accountKey } from "./";
 
 import type { EloResult, EloValue } from "../lib/elo";
 
-export type EloCategory = "puzzle" | "game" | "learn" | string;
-
-const cateogries: EloCategory[] = ["puzzle", "game", "learn"];
+const cateogries = ["puzzle", "game", "learn"] as const;
+export type EloCategory = typeof cateogries[number] | string;
 
 export const elo = new Elo();
 
 export const eloStateForAccountId = memoize((accountId: string) => {
-  const persisted = persist({ storage: accountStore(accountId), key: "elo" });
+  const storage = accountStore(accountId);
+  const persisted = persist({ storage, key: "elo" });
   const key = accountKey(accountId);
+
+  const loadedKeys: Record<string, Promise<boolean>> = {};
 
   const eloState = atomFamily<EloValue, EloCategory>({
     key: key("elo"),
@@ -30,9 +25,14 @@ export const eloStateForAccountId = memoize((accountId: string) => {
     effects: [persisted],
   });
 
-  const eloLoadedState = atom({
+  const eloLoadedState = selectorFamily<boolean, EloCategory>({
     key: key("eloLoaded"),
-    default: false,
+    get: (k) => () => {
+      if (!loadedKeys[k]) {
+        loadedKeys[k] = storage.getItem("elo").then(() => true);
+      }
+      return loadedKeys[k];
+    },
   });
 
   const eloCalculateState = selectorFamily<[EloValue, EloResult], EloCategory>({
@@ -60,10 +60,6 @@ export const eloStateForAccountId = memoize((accountId: string) => {
       return Math.round(total / cateogries.length);
     },
   });
-
-  accountStore(accountId)
-    .getItem("elo")
-    .then(() => setRecoil(eloLoadedState, true));
 
   return {
     eloState,
