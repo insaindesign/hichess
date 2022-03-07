@@ -24,7 +24,7 @@ export interface ProblemBase {
 export interface ProblemAttempt {
   rating: number;
   date: number;
-  ratingChange: number;
+  ratingChange?: number;
   moves: Move["san"][];
   result: "incomplete" | "success" | "failure";
 }

@@ -80,23 +80,26 @@ function Problem({ level, nextLevel, done, account }: Props) {
   }, [level, manageLevel]);
 
   useEffect(() => {
-    const moves = manageLevel.userMoves.map((m) => m.san);
-    if (!moves.length) {
+    if (!manageLevel.moves.length) {
       if (currentProblem) {
         setCurrentProblem(null);
       }
       return;
     }
-    const update = {
-      ratingChange: manageLevel.ratingChange(elo),
-      moves,
-      result: !manageLevel.isComplete
-        ? "incomplete"
-        : manageLevel.isSuccessful
-        ? "success"
-        : ("failure" as ProblemStateType["result"]),
-    };
-    if (moves.length === 1 && !currentProblem) {
+    const update: Pick<ProblemStateType, "ratingChange" | "moves" | "result"> =
+      {
+        ratingChange: undefined,
+        moves: manageLevel.userMoves.map((m) => m.san),
+        result: !manageLevel.isComplete
+          ? "incomplete"
+          : manageLevel.isSuccessful
+          ? "success"
+          : "failure",
+      };
+    if (update.result !== "incomplete") {
+      update.ratingChange = manageLevel.ratingChange(elo);
+    }
+    if (update.moves.length === 1 && !currentProblem) {
       setCurrentProblem({
         id: manageLevel.level.id,
         date: Date.now(),
@@ -107,12 +110,10 @@ function Problem({ level, nextLevel, done, account }: Props) {
       });
     } else if (
       currentProblem &&
-      moves.join(" ") !== currentProblem.moves.join(" ")
+      update.moves.length &&
+      update.moves.join(" ") !== currentProblem.moves.join(" ")
     ) {
-      setCurrentProblem({
-        ...currentProblem,
-        ...update,
-      });
+      setCurrentProblem({ ...currentProblem, ...update });
     }
   }, [currentProblem, elo, manageLevel, history, setCurrentProblem]);
 
