@@ -10,7 +10,7 @@ import type { ToggleButtonGroupProps } from "@mui/material/ToggleButtonGroup";
 
 function ShowAttackers(props: ToggleButtonGroupProps) {
   return (
-    <ToggleButtonGroup color="error" exclusive fullWidth {...props}>
+    <ToggleButtonGroup color="error" exclusive fullWidth size="small" {...props}>
       <ToggleButton value="none">
         <FlashOffIcon />
       </ToggleButton>

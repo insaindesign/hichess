@@ -158,7 +158,6 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
         <div className={css.panel}>
           {!currentGame.pgn ? (
             <ToggleButtonGroup
-              className={css.panelButtons}
               color="primary"
               exclusive
               fullWidth
@@ -179,11 +178,7 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
           ) : (
             <>
               <EvaluationBar bestMove={bestMove} />
-              <ButtonGroup
-                variant="outlined"
-                fullWidth
-                className={css.panelButtons}
-              >
+              <ButtonGroup variant="outlined" size="small" fullWidth>
                 <Button
                   onClick={undo}
                   disabled={!currentGame.pgn || chess.color !== userColor}
@@ -198,15 +193,10 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
                 </Button>
               </ButtonGroup>
               <ShowDefenders
-                className={css.panelButtons}
                 value={showDefenders}
                 onChange={toggleShowDefenders}
               />
-              <ShowAttackers
-                className={css.panelButtons}
-                value={showThreats}
-                onChange={toggleShowThreats}
-              />
+              <ShowAttackers value={showThreats} onChange={toggleShowThreats} />
             </>
           )}
         </div>

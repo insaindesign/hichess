@@ -10,8 +10,8 @@ import type { ToggleButtonGroupProps } from "@mui/material/ToggleButtonGroup";
 
 function ShowDefenders(props: ToggleButtonGroupProps) {
   return (
-    <ToggleButtonGroup color="success" exclusive fullWidth {...props}>
-      <ToggleButton value="none">
+    <ToggleButtonGroup color="success" exclusive fullWidth size="small" {...props}>
+      <ToggleButton value="none" size="small">
         <RemoveModeratorIcon />
       </ToggleButton>
       <ToggleButton value="counts">

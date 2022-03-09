@@ -12,17 +12,24 @@
 }
 
 .panel {
-  flex: 1 0 0;
+  display: flex;
+  flex: 1 0;
+  flex-direction: column;
+  gap: 12px;
   padding: 12px;
-  min-width: 160px;
 }
 
-.panelButtons {
-  margin: 8px 0;
-}
-
-@media (min-aspect-ratio: 5/4) {
+@media (orientation: landscape), (min-height: 800px) and (min-width: 980px) {
   .root {
     flex-direction: row;
+  }
+
+  .panel {
+    padding-top: 0;
+  }
+
+  .board {
+    width: min(calc(100vw - 320px), calc(100vh - 65px));
+    height: min(calc(100vw - 320px), calc(100vh - 65px));
   }
 }

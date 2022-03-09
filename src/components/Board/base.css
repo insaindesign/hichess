@@ -159,15 +159,23 @@ piece.fading {
   display: flex;
   pointer-events: none;
   font-family: sans-serif;
-  font-size: 10px;
-  line-height: 1;
+  font-size: 9px;
+  font-weight: 700;
+  text-align: center;
   justify-content: space-between;
 }
 
+.cg-wrap coords coord {
+  width: 9px;
+  height: 9px;
+  padding: 1px;
+  line-height: 1.2;
+}
+
 .cg-wrap coords.ranks {
-  left: 4px;
-  top: 4px;
-  height: 89.5%;
+  left: 2px;
+  top: 2px;
+  height: calc(87.5% + 11px);
   flex-flow: column-reverse;
 }
 
@@ -176,9 +184,9 @@ piece.fading {
 }
 
 .cg-wrap coords.files {
-  bottom: 2px;
-  right: 4px;
-  width: 89.5%;
+  bottom: 1px;
+  right: 2px;
+  width: calc(87.5% + 11px);
   flex-flow: row;
   text-transform: uppercase;
   text-align: center;

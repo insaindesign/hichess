@@ -165,11 +165,7 @@ function Problem({ level, nextLevel, done, account }: Props) {
           />
         </div>
         <div className={css.panel}>
-          <ButtonGroup
-            variant="outlined"
-            fullWidth
-            className={css.panelButtons}
-          >
+          <ButtonGroup size="small" variant="outlined" fullWidth>
             {manageLevel.hasHints ? (
               <Button disabled={!manageLevel.isUsersTurn} onClick={hint}>
                 <HintIcon titleAccess={t("hint")} />
@@ -193,16 +189,8 @@ function Problem({ level, nextLevel, done, account }: Props) {
               )}
             </Button>
           </ButtonGroup>
-          <ShowDefenders
-            className={css.panelButtons}
-            value={showDefenders}
-            onChange={toggleShowDefenders}
-          />
-          <ShowAttackers
-            className={css.panelButtons}
-            value={showThreats}
-            onChange={toggleShowThreats}
-          />
+          <ShowDefenders value={showDefenders} onChange={toggleShowDefenders} />
+          <ShowAttackers value={showThreats} onChange={toggleShowThreats} />
         </div>
       </div>
     </>
