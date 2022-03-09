@@ -197,18 +197,18 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
                   <AddCircleIcon titleAccess={t("newGame")} />
                 </Button>
               </ButtonGroup>
+              <ShowDefenders
+                className={css.panelButtons}
+                value={showDefenders}
+                onChange={toggleShowDefenders}
+              />
+              <ShowAttackers
+                className={css.panelButtons}
+                value={showThreats}
+                onChange={toggleShowThreats}
+              />
             </>
           )}
-          <ShowDefenders
-            className={css.panelButtons}
-            value={showDefenders}
-            onChange={toggleShowDefenders}
-          />
-          <ShowAttackers
-            className={css.panelButtons}
-            value={showThreats}
-            onChange={toggleShowThreats}
-          />
         </div>
       </div>
     </>

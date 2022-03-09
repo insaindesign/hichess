@@ -7,13 +7,13 @@
 .board {
   margin: 0 auto;
   flex: 0 0 auto;
-  height: calc(100vw - 40px);
-  width: calc(100vw - 40px);
+  width: min(100vw, calc(100vh - 65px));
+  height: min(100vw, calc(100vh - 65px));
 }
 
 .panel {
   flex: 1 0 0;
-  padding: 12px 20px;
+  padding: 12px;
   min-width: 160px;
 }
 
@@ -21,13 +21,8 @@
   margin: 8px 0;
 }
 
-@media (orientation: landscape) {
+@media (min-aspect-ratio: 5/4) {
   .root {
     flex-direction: row;
-  }
-
-  .board {
-    width: calc(100vh - 80px);
-    height: calc(100vh - 80px);
   }
 }
