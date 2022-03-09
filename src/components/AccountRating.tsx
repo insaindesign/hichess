@@ -16,40 +16,51 @@ type Props = {
   type: EloCategory;
 };
 
+type ChipProps = {
+  account: Account;
+  label: string | number;
+};
+
+function AccountChip({ account, label }: ChipProps) {
+  return (
+    <Chip
+      avatar={<AccountAvatarAsync icon={account.icon} />}
+      component={Link}
+      label={label}
+      sx={{ fontWeight: 700 }}
+      to="/profile"
+    />
+  );
+}
+
 function AccountRating({ account, type }: Props) {
   const { eloState, eloLoadedState } = eloStateForAccountId(account.id);
   const elo = useRecoilValue(eloState(type));
-  const eloLoaded = useRecoilValue(eloLoadedState(type));
+  useRecoilValue(eloLoadedState(type)); // suspends
 
   const [eloChange, setEloChange] = useState<number>(0);
   const [currentElo, setCurrentElo] = useState<number | null>(null);
 
   useEffect(() => {
-    if (eloLoaded && elo !== currentElo) {
+    if (elo !== currentElo) {
       if (currentElo !== null) {
         setEloChange(elo - currentElo);
       }
       setCurrentElo(elo);
     }
-  }, [elo, currentElo, eloLoaded]);
+  }, [elo, currentElo]);
 
   return (
     <Box sx={{ position: "relative" }}>
-      <Chip
-        avatar={<AccountAvatarAsync icon={account.icon} />}
-        component={Link}
-        label={elo}
-        sx={{ fontWeight: 700 }}
-        to="/profile"
-      />
+      <AccountChip account={account} label={elo} />
       <EloChangeReaction elo={elo} change={eloChange} />
     </Box>
   );
 }
 
-const AccountRatingSuspended = (props: Props) => (
-  <Suspense fallback={null}>
-    <AccountRating {...props} />
+const AccountRatingSuspended = ({ account, type }: Props) => (
+  <Suspense fallback={<AccountChip account={account} label="..." />}>
+    <AccountRating account={account} type={type} />
   </Suspense>
 );
 
