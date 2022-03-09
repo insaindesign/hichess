@@ -18,13 +18,8 @@ function Toolbar({ title, children }: Props) {
   const openDrawer = useCallback(() => setDrawerOpen(true), [setDrawerOpen]);
   return (
     <AppBar position="static" color="transparent" elevation={0}>
-      <MuiToolbar>
-        <IconButton
-          onClick={openDrawer}
-          size="large"
-          edge="start"
-          color="inherit"
-        >
+      <MuiToolbar disableGutters sx={{ marginRight: 1 }}>
+        <IconButton onClick={openDrawer} size="large" color="inherit">
           <MenuIcon />
         </IconButton>
         {title ? <Box sx={{ flexGrow: 1, marginRight: 1 }}>{title}</Box> : null}
