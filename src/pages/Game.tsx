@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 
 import Loading from "../components/Loading";
 import { withRequireAccount } from "../components/RequireAccount";
@@ -20,11 +20,16 @@ function GamePage({ account }: Props) {
   const color = (params.color as GameType["color"]) || "white";
   const position = fen && fen.includes("/") ? fen : undefined;
 
-  const { currentGameState, gameLoadedState } = gameStateForAccountId(
-    account.id
-  );
+  const {
+    currentGameState,
+    potentialGameState,
+    currentGameIdState,
+    gameLoadedState,
+  } = gameStateForAccountId(account.id);
   const [currentGame, setCurrentGame] = useRecoilState(currentGameState);
-  const gameLoaded = useRecoilValue(gameLoadedState('currentGame'));
+  const gameLoaded = useRecoilValue(gameLoadedState("currentGame"));
+  const potentialGame = useRecoilValue(potentialGameState);
+  const setCurrentGameId = useSetRecoilState(currentGameIdState);
 
   useEffect(() => {
     if (position) {
@@ -34,14 +39,26 @@ function GamePage({ account }: Props) {
         pgn: "",
         color,
       });
-    } else if (!currentGame && gameLoaded) {
-      setCurrentGame({
-        date: Date.now(),
-        pgn: "",
-        color,
-      });
+    } else if (gameLoaded && !currentGame) {
+      if (potentialGame) {
+        setCurrentGameId(potentialGame.date);
+      } else {
+        setCurrentGame({
+          date: Date.now(),
+          pgn: "",
+          color,
+        });
+      }
     }
-  }, [setCurrentGame, currentGame, gameLoaded, position, color]);
+  }, [
+    setCurrentGame,
+    setCurrentGameId,
+    potentialGame,
+    currentGame,
+    gameLoaded,
+    position,
+    color,
+  ]);
 
   useEffect(() => {
     if (currentGame) {

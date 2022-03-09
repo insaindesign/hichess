@@ -20,10 +20,11 @@ function PlayPage({ account }: Props) {
   const navigate = useNavigate();
 
   const { eloCalculateState } = eloStateForAccountId(account.id);
-  const { currentGameState, currentGameIdState, gameLoadedState } =
+  const { currentGameState, currentGameIdState, gameLoadedState, potentialGameState } =
     gameStateForAccountId(account.id);
   const [currentGame, setCurrentGame] = useRecoilState(currentGameState);
   const [currentGameId, setCurrentGameId] = useRecoilState(currentGameIdState);
+  const potentialGame = useRecoilValue(potentialGameState);
   const [ratingPair, setRating] = useRecoilState(eloCalculateState("game"));
   const isLoaded = useRecoilValue(gameLoadedState("currentGame"));
 
@@ -32,10 +33,15 @@ function PlayPage({ account }: Props) {
   const id = params.id ? parseInt(params.id, 10) : undefined;
 
   const newGame = useCallback(() => {
-    const date = Date.now();
-    setCurrentGame({ date, pgn: "", color: "white" });
+    let date = Date.now();
+    if (potentialGame) {
+      date = potentialGame.date;
+      setCurrentGameId(date);
+    } else {
+      setCurrentGame({ date, pgn: "", color: "white" });
+    }
     navigate("/play/" + date);
-  }, [setCurrentGame, navigate]);
+  }, [setCurrentGame, setCurrentGameId, potentialGame, navigate]);
 
   useEffect(() => {
     if (id && id !== currentGameId && isLoaded) {

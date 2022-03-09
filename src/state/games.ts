@@ -103,6 +103,14 @@ export const gameStateForAccountId = memoize((accountId: string) => {
     },
   });
 
+  const potentialGameState = selector<Game | null>({
+    key: key("potentialGame"),
+    get: ({ get }) => {
+      const games = get(gamesState);
+      return games.find(g => !g.pgn) || null;
+    },
+  });
+
   storage
     .getItem<string>("games")
     .then((db) => {
@@ -139,6 +147,7 @@ export const gameStateForAccountId = memoize((accountId: string) => {
     gamesState,
     currentGameState,
     currentGameIdState,
+    potentialGameState,
     updateCurrentGameState,
   };
 });
