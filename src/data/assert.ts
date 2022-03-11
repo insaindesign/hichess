@@ -170,9 +170,8 @@ export function followScenario(manager: LevelManager) {
   }
   const n = manager.moves.length - 1;
   const scene = scenario[n];
-  const lastMove = manager.moves[n];
   const sceneMove = typeof scene === "string" ? scene : scene?.move;
-  return sceneMove === lastMove.from + lastMove.to + (lastMove.promotion || "");
+  return sceneMove === ChessCtrl.fromMove(manager.moves[n]);
 }
 
 export function completedScenario(manager: LevelManager) {

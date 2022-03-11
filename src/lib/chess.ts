@@ -41,6 +41,7 @@ export class ChessCtrl {
     | "threats"
     | "defenders"
     | "pgn"
+    | "set_comment"
   >;
   private _moves: ChessMove[];
   private obstacles: Key[];
@@ -104,7 +105,9 @@ export class ChessCtrl {
     if (fen) {
       this.chess.load(fen);
     }
-    this.chess.load_pgn(pgn);
+    if (pgn || !fen) {
+      this.chess.load_pgn(pgn);
+    }
     this.moves = this.chess.history({ verbose: true });
   }
 
@@ -127,9 +130,13 @@ export class ChessCtrl {
       : undefined;
   }
 
-  get lastMove(): Key[] | undefined {
-    const last = this.moves[this.moves.length - 1];
+  get lastMoveKey(): Key[] | undefined {
+    const last = this.lastMove;
     return last ? [last.from, last.to] : undefined;
+  }
+
+  get lastMove(): ChessMove | undefined {
+    return this.moves[this.moves.length - 1];
   }
 
   addObstacles(obstacle: Key[], color: ChessColor) {

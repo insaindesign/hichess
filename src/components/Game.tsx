@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import ToggleButton from "@mui/material/ToggleButton";
@@ -47,6 +47,7 @@ const enforceOrientation = (
 function Game({ currentGame, account, engineLevel, newGame }: Props) {
   const { t } = useTranslation();
   const chess = useMemo(() => new ChessCtrl(), []);
+  const gameIdRef = useRef<number | null>(null);
   const [showDefenders, setShowDefenders] = useState<ShapeOptionType>("none");
   const [showThreats, setShowThreats] = useState<ShapeOptionType>("none");
   const [config, setConfig] = useState<Config>({
@@ -57,6 +58,7 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
   const updateCurrentGame = useSetRecoilState(updateCurrentGameState);
 
   const userColor = config.movable?.color;
+  const lastMove = chess.lastMove;
 
   const toggleShowThreats = useCallback(
     (e, value) => setShowThreats(value || "none"),
@@ -84,11 +86,42 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
     }
   }, [chess, currentGame, userColor]);
 
+  useEffect(() => {
+    if (bestMove && chess.color !== userColor && userColor !== "both") {
+      chess.move(bestMove.move);
+    }
+  }, [bestMove, chess, userColor]);
+
+  useEffect(() => {
+    if (bestMove && lastMove && bestMove.color[0] === lastMove.color) {
+      const rating = bestMove.to[ChessCtrl.fromMove(lastMove)];
+      if (rating) {
+        chess.js.set_comment(
+          `${rating.sentence}, ${bestMove.best
+            .map(ChessCtrl.fromMove)
+            .join(" ")} ${bestMove.bestRating.sentence}`
+        );
+      }
+    }
+  }, [lastMove, bestMove, chess]);
+
+  useEffect(() => {
+    engine.setLevel(engineLevel.id);
+  }, [engineLevel]);
+
+  useEffect(() => {
+    if (!chess.js.game_over()) {
+      engine.bestMove(chess).then(setBestMove);
+    }
+    return () => {
+      engine.stop();
+    };
+  }, [chess, currentGame, engineLevel]);
+
   useEffect(
     () =>
       chess.on("change", () =>
         updateCurrentGame({
-          position: chess.fen,
           pgn: chess.js.pgn(),
           result: chess.result,
         })
@@ -97,31 +130,14 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
   );
 
   useEffect(() => {
-    if (bestMove && chess.color !== userColor && userColor !== "both") {
-      chess.move(bestMove.move);
+    if (gameIdRef.current === currentGame.date) {
+      return;
     }
-  }, [bestMove, chess, userColor]);
-
-  useEffect(() => {
-    if (!currentGame.pgn) {
-      engine.newGame();
-    }
+    gameIdRef.current = currentGame.date;
+    engine.newGame();
     chess.load(currentGame.pgn, currentGame.position);
     setConfig({ movable: { color: currentGame.color } });
   }, [currentGame, chess, setConfig]);
-
-  useEffect(() => {
-    engine.setLevel(engineLevel.id);
-  }, [engineLevel]);
-
-  useEffect(() => {
-    let timeout: any;
-    if (!chess.js.game_over()) {
-      engine.bestMove(chess).then(setBestMove);
-      timeout = setTimeout(engine.stop, 1500);
-    }
-    return () => clearTimeout(timeout);
-  }, [chess, currentGame, engineLevel]);
 
   return (
     <>

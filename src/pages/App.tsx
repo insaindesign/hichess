@@ -38,6 +38,7 @@ function App() {
           <Route path="puzzles/:theme/:id" element={<Puzzles />} />
           <Route path="game" element={<Game />} />
           <Route path="game/:fen" element={<Game />} />
+          <Route path="game/:fen/:fen2/:fen3/:fen4/:fen5/:fen6/:fen7/:fen8" element={<Game />} />
           <Route path="play/:id" element={<Play />} />
         </Route>
       </Routes>

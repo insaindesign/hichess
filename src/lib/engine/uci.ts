@@ -1,4 +1,5 @@
 import ChessCtrl from "../chess";
+import { toDecimal } from "../numbers";
 import { levels } from "./levels";
 
 import type { ShortMove } from "chess.js";
@@ -8,6 +9,7 @@ export type MoveInfoScore = {
   type: "cp" | "mate";
   value: number;
   normalised: number;
+  sentence: string;
 };
 export type MoveInfo = {
   depth: string;
@@ -106,12 +108,15 @@ export const parseOption = (line: string): UciOption => {
 
 const normaliseScore = (score: Pick<MoveInfoScore, 'value'|'type'>): MoveInfoScore => {
   let normalised = score.value;
+  let sentence = `${normalised > 0 ? '+' : ''}${toDecimal(normalised / 100, 2)}`;
   if (score.type === 'mate') {
-    normalised = 20000 / score.value;
+    sentence = 'Mate in ' + normalised;
+    normalised = 20000 / normalised;
   }
   return {
     ...score,
     normalised,
+    sentence
   }
 }
 

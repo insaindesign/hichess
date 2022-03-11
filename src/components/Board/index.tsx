@@ -109,7 +109,7 @@ function Board({
       api.set({
         fen: chess.fen,
         check: Boolean(chess.js.in_check()),
-        lastMove: chess.lastMove,
+        lastMove: chess.lastMoveKey,
         turnColor: chess.color,
         movable: { dests: chess.dests() },
       });
