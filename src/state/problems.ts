@@ -12,6 +12,7 @@ import { persist, accountKey } from "./";
 
 import type { Move } from "chess.js";
 import { emptyThrows, upsert } from "../lib/arrays";
+import { setRecoil } from "recoil-nexus";
 
 export type ProblemId = string;
 export type ProblemType = "puzzle" | "learn";
@@ -164,6 +165,22 @@ export const problemStateForAccountId = memoize((accountId: string) => {
       set(currentProblemIdState, toProblemId(problem));
     },
   });
+
+  accountStore(accountId)
+    .getItem<string>("problems")
+    .then((o) => {
+      if (!o) {
+        return;
+      }
+      const data = JSON.parse(o);
+      const ids: string[] = [];
+      Object.keys(data).forEach(k => {
+        if (k.startsWith(key("problemAttempts"))) {
+          ids.push(data[k].id);
+        }
+      });
+      setRecoil(problemIdsState, ids);
+    });
 
   return {
     currentProblemIdState,
