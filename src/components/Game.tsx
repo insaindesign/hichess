@@ -60,6 +60,7 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
   const updateCurrentGame = useSetRecoilState(updateCurrentGameState);
 
   const userColor = config.movable?.color;
+  const moves = chess.moves.map(m => m.san).join(' ');
   const lastMove = chess.lastMove;
 
   const toggleShowThreats = useCallback(
@@ -120,10 +121,7 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
     if (!chess.js.game_over()) {
       engine.bestMove(chess).then(setBestMove);
     }
-    return () => {
-      engine.stop();
-    };
-  }, [chess, currentGame, engineLevel]);
+  }, [chess, moves]);
 
   useEffect(
     () =>
