@@ -41,7 +41,6 @@ export class ChessCtrl {
     | "threats"
     | "defenders"
     | "pgn"
-    | "set_comment"
   >;
   private _moves: ChessMove[];
   private obstacles: Key[];
@@ -144,6 +143,11 @@ export class ChessCtrl {
       this.chess.put({ type: "p", color }, key);
       this.obstacles.push(key);
     });
+    this.handleChange();
+  }
+
+  comment(comment: string) {
+    this.chess.set_comment(comment);
     this.handleChange();
   }
 

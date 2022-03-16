@@ -31,6 +31,7 @@ import type { BestMove } from "../lib/engine/uci";
 import type { Account } from "../state/accounts";
 import type { Game as GameType } from "../state/games";
 import type { EngineLevel } from "../lib/engine/levels";
+import Moves from "./Moves";
 
 type Props = {
   currentGame: GameType;
@@ -95,13 +96,11 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
   useEffect(() => {
     if (bestMove && lastMove && bestMove.color[0] === lastMove.color) {
       const rating = bestMove.to[ChessCtrl.fromMove(lastMove)];
-      if (rating) {
-        chess.js.set_comment(
-          `${rating.sentence}, ${bestMove.best
-            .map(ChessCtrl.fromMove)
-            .join(" ")} ${bestMove.bestRating.sentence}`
-        );
-      }
+      chess.comment(
+        `${rating?.sentence}, ${bestMove.best
+          .map(ChessCtrl.fromMove)
+          .join(" ")} ${bestMove.bestRating.sentence}`
+      );
     }
   }, [lastMove, bestMove, chess]);
 
@@ -213,6 +212,7 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
                 onChange={toggleShowDefenders}
               />
               <ShowAttackers value={showThreats} onChange={toggleShowThreats} />
+              <Moves pgn={currentGame.pgn} />
             </>
           )}
         </div>
