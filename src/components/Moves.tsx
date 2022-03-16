@@ -1,4 +1,3 @@
-import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { Fragment } from "react";
@@ -24,6 +23,12 @@ type PgnRow = {
 const commentRegex = / (\{[^}]*\})/g;
 const encodeComment = (comment: string) => comment.replace(/ /g, "__");
 const decodeComment = (comment: string) => comment.replace(/__/g, " ");
+
+const containerSx = {
+  marginTop: 0,
+  alignContent: 'flex-start',
+  flexFlow: 'wrap-reverse'
+};
 
 const toMove = (part?: string): PgnMove => {
   const parts = part ? part.replace("}", "").split(" {") : [""];
@@ -53,7 +58,7 @@ const parsePgn = (pgn: string): PgnRow[] => {
 function Moves({ pgn }: Props) {
   const m = parsePgn(pgn);
   return (
-    <Grid columns={11} container spacing={2} sx={{ overflowY: "auto", flex: '1 1 auto', marginTop: 1, minHeight: 200 }}>
+    <Grid columns={11} container spacing={2} sx={containerSx}>
       {m.map((row) => (
         <Fragment key={row.number}>
           <Grid item xs={1}>

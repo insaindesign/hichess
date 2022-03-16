@@ -32,6 +32,7 @@ import type { Account } from "../state/accounts";
 import type { Game as GameType } from "../state/games";
 import type { EngineLevel } from "../lib/engine/levels";
 import Moves from "./Moves";
+import { notEmpty } from "../lib/arrays";
 
 type Props = {
   currentGame: GameType;
@@ -94,12 +95,19 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
   }, [bestMove, chess, userColor]);
 
   useEffect(() => {
-    if (bestMove && lastMove && bestMove.color[0] === lastMove.color) {
+    if (bestMove && lastMove && bestMove.color === ChessCtrl.toColor(lastMove.color)) {
       const rating = bestMove.to[ChessCtrl.fromMove(lastMove)];
       chess.comment(
-        `${rating?.sentence}, ${bestMove.best
-          .map(ChessCtrl.fromMove)
-          .join(" ")} ${bestMove.bestRating.sentence}`
+        [
+          rating?.sentence,
+          bestMove.best
+            ? bestMove.best.map(ChessCtrl.fromMove).join(" ") +
+              " " +
+              bestMove.bestRating.sentence
+            : null,
+        ]
+          .filter(notEmpty)
+          .join(", ")
       );
     }
   }, [lastMove, bestMove, chess]);
