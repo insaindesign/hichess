@@ -28,7 +28,7 @@ import type { ButtonProps } from "@mui/material/Button";
 
 import css from "./MainMenu.module.css";
 
-const VerifyAdult = lazy(() => import("./VerifyAdult"));
+const VerifyAdult = lazy(() => import("./VerifyAdult" /* webpackChunkName: "VerifyAdult" */));
 
 type MenuItem = ButtonProps<
   typeof Button,

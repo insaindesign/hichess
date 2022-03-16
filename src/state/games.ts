@@ -6,8 +6,8 @@ import {
   selectorFamily,
 } from "recoil";
 import memoize from "lodash/memoize";
+import isMatch from "lodash/isMatch";
 import { setRecoil } from "recoil-nexus";
-import { isMatch } from "lodash";
 
 import { notEmpty } from "../lib/arrays";
 import { accountStore } from "../storage";
