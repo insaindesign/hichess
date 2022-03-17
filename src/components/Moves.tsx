@@ -1,6 +1,6 @@
+import { Fragment, useMemo } from "react";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import { Fragment } from "react";
 
 type Props = {
   pgn: string;
@@ -8,8 +8,8 @@ type Props = {
 
 type PgnMove = {
   move: string;
-  comment: string | null;
   rating?: string;
+  best?: string;
   bestMove?: string;
   bestRating?: string;
 };
@@ -21,21 +21,35 @@ type PgnRow = {
 };
 
 const commentRegex = / (\{[^}]*\})/g;
+const moveRatingRegex = /([a-h][1-8][a-h][1-8] )+/;
 const encodeComment = (comment: string) => comment.replace(/ /g, "__");
 const decodeComment = (comment: string) => comment.replace(/__/g, " ");
 
 const containerSx = {
   marginTop: 0,
-  alignContent: 'flex-start',
-  flexFlow: 'wrap-reverse'
+  alignContent: "flex-start",
+  flexFlow: "wrap-reverse",
 };
 
 const toMove = (part?: string): PgnMove => {
   const parts = part ? part.replace("}", "").split(" {") : [""];
-  return {
-    move: parts[0],
-    comment: parts[1] || null,
-  };
+  const data: PgnMove = { move: parts[0] };
+  if (parts[1]) {
+    const commentParts = parts[1].split(", ");
+    if (commentParts[0] && !commentParts[0].includes(",")) {
+      data.rating = commentParts.shift();
+    }
+    const best = commentParts.shift();
+    if (best) {
+      data.bestRating = best.replace(moveRatingRegex, '');
+      data.bestMove = best.replace(data.bestRating, '');
+    }
+    // only show best if it's unique
+    if (data.bestRating && data.bestRating !== data.rating) {
+      data.best = best;
+    }
+  }
+  return data;
 };
 
 const parsePgn = (pgn: string): PgnRow[] => {
@@ -56,7 +70,7 @@ const parsePgn = (pgn: string): PgnRow[] => {
 };
 
 function Moves({ pgn }: Props) {
-  const m = parsePgn(pgn);
+  const m = useMemo(() => parsePgn(pgn), [pgn]);
   return (
     <Grid columns={11} container spacing={2} sx={containerSx}>
       {m.map((row) => (
@@ -67,14 +81,16 @@ function Moves({ pgn }: Props) {
           <Grid item xs={5}>
             <Typography>
               {row.white.move}
-              <Typography variant="caption"> {row.white.comment}</Typography>
+              {row.white.rating ? <Typography variant="caption"> {row.white.rating}</Typography> : null}
             </Typography>
+            {row.white.best ? <Typography variant="caption">{row.white.best}</Typography> : null}
           </Grid>
           <Grid item xs={5}>
             <Typography>
               {row.black.move}
-              <Typography variant="caption"> {row.black.comment}</Typography>
+              {row.black.rating ? <Typography variant="caption"> {row.black.rating}</Typography> : null}
             </Typography>
+            {row.black.best ? <Typography variant="caption">{row.black.best}</Typography> : null}
           </Grid>
         </Fragment>
       ))}
