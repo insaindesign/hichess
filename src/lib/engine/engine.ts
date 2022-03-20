@@ -82,7 +82,7 @@ export class EngineCtrl {
       position += " moves " + m;
     }
     const lines = await this.collectUntil([position, "go movetime 1500"], isShortMove);
-    return linesToBestMove(lines, color, this.level);
+    return linesToBestMove(color, fen, lines, this.level);
   }
 
   bestMove = async (chess: ChessCtrl): Promise<BestMove | null> => {

@@ -60,7 +60,7 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
   const updateCurrentGame = useSetRecoilState(updateCurrentGameState);
 
   const userColor = config.movable?.color;
-  const moves = chess.moves.map(m => m.san).join(' ');
+  const moves = chess.moves.map((m) => m.san).join(" ");
   const lastMove = chess.lastMove;
 
   const toggleShowThreats = useCallback(
@@ -90,13 +90,22 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
   }, [chess, currentGame, userColor]);
 
   useEffect(() => {
-    if (bestMove && chess.color !== userColor && userColor !== "both") {
+    if (
+      bestMove &&
+      userColor !== "both" &&
+      chess.color !== userColor &&
+      chess.fen === bestMove.fen
+    ) {
       chess.move(bestMove.move);
     }
   }, [bestMove, chess, userColor]);
 
   useEffect(() => {
-    if (bestMove && lastMove && bestMove.color === ChessCtrl.toColor(lastMove.color)) {
+    if (
+      bestMove &&
+      lastMove &&
+      bestMove.color === ChessCtrl.toColor(lastMove.color)
+    ) {
       const rating = bestMove.to[ChessCtrl.fromMove(lastMove)];
       chess.comment(
         [

@@ -20,6 +20,7 @@ export type MoveInfo = {
 
 export type BestMove = {
   color: Color;
+  fen: string;
   best: ShortMove[];
   bestRating: MoveInfoScore;
   move: ShortMove;
@@ -106,7 +107,7 @@ export const parseOption = (line: string): UciOption => {
   };
 };
 
-const normaliseScore = (score: Pick<MoveInfoScore, 'value'|'type'>): MoveInfoScore => {
+export const normaliseScore = (score: Pick<MoveInfoScore, 'value'|'type'>): MoveInfoScore => {
   let normalised = score.value;
   let sentence = `${normalised > 0 ? '+' : ''}${toDecimal(normalised / 100, 2)}`;
   if (score.type === 'mate') {
@@ -138,8 +139,9 @@ const parseMoveInfo = (line: string): MoveInfo | string => {
 };
 
 export const linesToBestMove = (
-  lines: ParsedUci[],
   color: Color,
+  fen: string,
+  lines: ParsedUci[],
   levelIndex: number
 ): BestMove => {
   const info: MoveInfo[] = lines.filter(isMoveInfo);
@@ -163,6 +165,7 @@ export const linesToBestMove = (
 
   return {
     color,
+    fen,
     move: useRandom ? randomMove.moves[0] : engineMove,
     moveRating: useRandom ? randomMove.score : engineMoveRating,
     best: info[0]?.moves,

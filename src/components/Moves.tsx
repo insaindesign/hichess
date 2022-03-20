@@ -1,29 +1,16 @@
 import { Fragment, useMemo } from "react";
+import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
+
+import { parsePgn } from "../lib/engine/pgn";
+
+import type { PgnMove } from "../lib/engine/pgn";
 
 type Props = {
   pgn: string;
 };
-
-type PgnMove = {
-  move: string;
-  rating?: string;
-  best?: string;
-  bestMove?: string;
-  bestRating?: string;
-};
-
-type PgnRow = {
-  number: string;
-  black: PgnMove;
-  white: PgnMove;
-};
-
-const commentRegex = / (\{[^}]*\})/g;
-const moveRatingRegex = /([a-h][1-8][a-h][1-8] )+/;
-const encodeComment = (comment: string) => comment.replace(/ /g, "__");
-const decodeComment = (comment: string) => comment.replace(/__/g, " ");
 
 const containerSx = {
   marginTop: 0,
@@ -31,43 +18,37 @@ const containerSx = {
   flexFlow: "wrap-reverse",
 };
 
-const toMove = (part?: string): PgnMove => {
-  const parts = part ? part.replace("}", "").split(" {") : [""];
-  const data: PgnMove = { move: parts[0] };
-  if (parts[1]) {
-    const commentParts = parts[1].split(", ");
-    if (commentParts[0] && !commentParts[0].includes(",")) {
-      data.rating = commentParts.shift();
-    }
-    const best = commentParts.shift();
-    if (best) {
-      data.bestRating = best.replace(moveRatingRegex, '');
-      data.bestMove = best.replace(data.bestRating, '');
-    }
-    // only show best if it's unique
-    if (data.bestRating && data.bestRating !== data.rating) {
-      data.best = best;
-    }
-  }
-  return data;
-};
-
-const parsePgn = (pgn: string): PgnRow[] => {
-  const parts = pgn
-    .replace(commentRegex, encodeComment)
-    .split(" ")
-    .map(decodeComment);
-  const out: PgnRow[] = [];
-  for (let ii = 0; ii < Math.round(parts.length / 3); ii++) {
-    const index = ii * 3;
-    out.push({
-      number: parts[index],
-      black: toMove(parts[index + 2]),
-      white: toMove(parts[index + 1]),
-    });
-  }
-  return out;
-};
+function MovesCell({ cell }: { cell: PgnMove }) {
+  return (
+    <>
+    <Box sx={{ display: 'flex', justifyContent: 'space-between'}}>
+      <Typography sx={{ display: "inline" }}>{cell.move} </Typography>
+      {cell.rating ? (
+        <Chip
+          variant={
+            cell.bestRating &&
+            cell.bestRating.normalised > cell.rating.normalised + 100
+              ? "filled"
+              : "outlined"
+          }
+          size="small"
+          color={
+            !cell.bestRating
+              ? "default"
+              : cell.rating.normalised < cell.bestRating.normalised
+              ? "error"
+              : "success"
+          }
+          label={cell.rating.sentence}
+        />
+      ) : null}
+      </Box>
+      {cell.best ? (
+        <Typography variant="caption">{cell.best}</Typography>
+      ) : null}
+    </>
+  );
+}
 
 function Moves({ pgn }: Props) {
   const m = useMemo(() => parsePgn(pgn), [pgn]);
@@ -79,18 +60,10 @@ function Moves({ pgn }: Props) {
             {row.number}
           </Grid>
           <Grid item xs={5}>
-            <Typography>
-              {row.white.move}
-              {row.white.rating ? <Typography variant="caption"> {row.white.rating}</Typography> : null}
-            </Typography>
-            {row.white.best ? <Typography variant="caption">{row.white.best}</Typography> : null}
+            <MovesCell cell={row.white} />
           </Grid>
           <Grid item xs={5}>
-            <Typography>
-              {row.black.move}
-              {row.black.rating ? <Typography variant="caption"> {row.black.rating}</Typography> : null}
-            </Typography>
-            {row.black.best ? <Typography variant="caption">{row.black.best}</Typography> : null}
+            <MovesCell cell={row.black} />
           </Grid>
         </Fragment>
       ))}
