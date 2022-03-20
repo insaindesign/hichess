@@ -4,6 +4,8 @@ import {levels} from "./levels";
 
 import type { BestMove, ParsedUci, UciOption } from "./uci";
 import type EventEmitter from "../emitter";
+import { Color } from "chessground/types";
+import { Move } from "chess.js";
 
 export type EngineEvents = { line: ParsedUci };
 export type UciSettings = {
@@ -35,10 +37,12 @@ export const collectUntil = (
 export class EngineCtrl {
   private engine: Promise<Engine>;
   private level: number;
+  private moveQueue: Promise<BestMove | null>;
 
   constructor(engine: Promise<Engine>) {
     this.engine = engine;
     this.level = -1;
+    this.moveQueue = Promise.resolve(null);
   }
 
   async setLevel(value: number) {
@@ -69,17 +73,22 @@ export class EngineCtrl {
     return collectUntil(events, condition);
   }
 
-  async bestMove(chess: ChessCtrl): Promise<BestMove | null> {
+  private async _bestMove(color: Color, fen: string, moves: Move[]): Promise<BestMove | null> {
     const { settings } = await this.engine;
-    await this.send(['stop']);
     await this.collectUntil(["isready"], (line) => line === "readyok");
-    let position = `position fen ${chess.fen}`;
+    let position = `position fen ${fen}`;
     if (settings.sendMoves) {
-      const m = chess.moves.map((m) => m.to).join(" ");
+      const m = moves.map((m) => m.to).join(" ");
       position += " moves " + m;
     }
     const lines = await this.collectUntil([position, "go movetime 1500"], isShortMove);
-    return linesToBestMove(lines, chess.color, this.level);
+    return linesToBestMove(lines, color, this.level);
+  }
+
+  bestMove = async (chess: ChessCtrl): Promise<BestMove | null> => {
+    const {color, fen, moves} = chess;
+    this.moveQueue = this.moveQueue.then(() => this._bestMove(color, fen, moves));
+    return await this.moveQueue;
   }
 
   newGame() {
@@ -89,10 +98,6 @@ export class EngineCtrl {
   send = async (messages: string[]) => {
     const engine = await this.engine;
     messages.forEach((m) => engine.worker.postMessage(m));
-  };
-
-  stop = () => {
-    return this.send(["stop"]);
   };
 }
 
