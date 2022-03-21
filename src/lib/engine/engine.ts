@@ -52,7 +52,7 @@ export class EngineCtrl {
       return this.setOptions([
         ["Skill", level.skill],
         ["Skill Level", level.skill],
-        ["MultiPV", level.multipv],
+        ["MultiPV", 50],
       ]);
     }
     return;
