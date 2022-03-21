@@ -37,7 +37,7 @@ const toMove = (part?: string): PgnMove => {
   const data: PgnMove = { move: parts[0] };
   if (parts[1]) {
     const commentParts = parts[1].split(", ");
-    if (commentParts[0] && parts[1].includes(",")) {
+    if (commentParts[0] && !commentParts[0].includes(" ")) {
       data.rating = toRating(commentParts.shift() as string);
     }
     const best = commentParts.shift();
