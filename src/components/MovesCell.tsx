@@ -45,20 +45,21 @@ function MovesRatingIcon({ best, actual }: RatingProps) {
 
 function MovesCell({ cell }: Props) {
   return (
-    <>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Typography sx={{ display: "inline" }}>{cell.move} </Typography>
-        {cell.rating ? (
-          <Box sx={{ display: "flex", alignItems: "center", gap: '4px' }}>
-            <Typography variant="caption">{cell.rating.sentence}</Typography>
-            <MovesRatingIcon best={cell.bestRating} actual={cell.rating} />
-          </Box>
-        ) : null}
-      </Box>
-      {cell.best ? (
-        <Typography variant="caption">{cell.best}</Typography>
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
+      <Typography sx={{ display: "inline" }}>{cell.move}</Typography>
+      {cell.rating ? (
+        <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
+          <Typography variant="caption">{cell.rating.sentence}</Typography>
+          <MovesRatingIcon best={cell.bestRating} actual={cell.rating} />
+        </Box>
       ) : null}
-    </>
+    </Box>
   );
 }
 
