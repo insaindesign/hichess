@@ -30,14 +30,12 @@ import type { ShapeOptionType } from "./Board/brushes";
 import type { BestMove } from "../lib/engine/uci";
 import type { Account } from "../state/accounts";
 import type { Game as GameType } from "../state/games";
-import type { EngineLevel } from "../lib/engine/levels";
 import Moves from "./Moves";
 import { notEmpty } from "../lib/arrays";
 
 type Props = {
   currentGame: GameType;
   account: Account;
-  engineLevel: EngineLevel;
   newGame: () => void;
 };
 
@@ -46,7 +44,7 @@ const enforceOrientation = (
   fallback: Color
 ): Color => (color === "white" || color === "black" ? color : fallback);
 
-function Game({ currentGame, account, engineLevel, newGame }: Props) {
+function Game({ currentGame, account, newGame }: Props) {
   const { t } = useTranslation();
   const chess = useMemo(() => new ChessCtrl(), []);
   const gameIdRef = useRef<number | null>(null);
@@ -62,6 +60,7 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
   const userColor = config.movable?.color;
   const moves = chess.moves.map((m) => m.san).join(" ");
   const lastMove = chess.lastMove;
+  const opponent = currentGame.opponent;
 
   const toggleShowThreats = useCallback(
     (e, value) => setShowThreats(value || "none"),
@@ -123,8 +122,10 @@ function Game({ currentGame, account, engineLevel, newGame }: Props) {
   }, [lastMove, bestMove, chess]);
 
   useEffect(() => {
-    engine.setLevel(engineLevel.id);
-  }, [engineLevel]);
+    if (opponent) {
+      engine.setRating(opponent);
+    }
+  }, [opponent]);
 
   useEffect(() => {
     if (!chess.js.game_over()) {

@@ -45,11 +45,18 @@ export class EngineCtrl {
     this.moveQueue = Promise.resolve(null);
   }
 
+  setRating(rating: number) {
+    const level = levels.find(l => l.rating  === rating);
+    if (level) {
+      this.setLevel(level.id);
+    }
+  }
+
   async setLevel(value: number) {
     if (value !== this.level) {
       this.level = value;
       const level = levels[value];
-      return this.setOptions([
+      this.setOptions([
         ["Skill", level.skill],
         ["Skill Level", level.skill],
         ["MultiPV", 50],

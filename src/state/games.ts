@@ -15,12 +15,14 @@ import { persist, accountKey } from "./";
 
 import type { Color } from "chessground/types";
 import type { GameResult } from "../lib/chess";
+import type { EngineLevel } from "../lib/engine/levels";
 
 export type Game = {
   date: number;
   position?: string;
   pgn: string;
   color: Color | "both";
+  opponent?: EngineLevel['rating'];
   result?: GameResult;
   ratingChange?: number;
 };

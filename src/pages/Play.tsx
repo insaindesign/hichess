@@ -19,17 +19,22 @@ function PlayPage({ account }: Props) {
   const params = useParams<"id">();
   const navigate = useNavigate();
 
-  const { eloCalculateState } = eloStateForAccountId(account.id);
-  const { currentGameState, currentGameIdState, gameLoadedState, potentialGameState } =
-    gameStateForAccountId(account.id);
+  const { eloCalculateState, eloLoadedState } = eloStateForAccountId(account.id);
+  const {
+    currentGameState,
+    currentGameIdState,
+    gameLoadedState,
+    potentialGameState,
+  } = gameStateForAccountId(account.id);
   const [currentGame, setCurrentGame] = useRecoilState(currentGameState);
   const [currentGameId, setCurrentGameId] = useRecoilState(currentGameIdState);
   const potentialGame = useRecoilValue(potentialGameState);
   const [ratingPair, setRating] = useRecoilState(eloCalculateState("game"));
-  const isLoaded = useRecoilValue(gameLoadedState("currentGame"));
+
+  useRecoilValue(gameLoadedState("currentGame"));
+  useRecoilValue(eloLoadedState("game"));
 
   const rating = ratingPair[0];
-  const level = getLevelForRating(rating);
   const id = params.id ? parseInt(params.id, 10) : undefined;
 
   const newGame = useCallback(() => {
@@ -38,45 +43,54 @@ function PlayPage({ account }: Props) {
       date = potentialGame.date;
       setCurrentGameId(date);
     } else {
-      setCurrentGame({ date, pgn: "", color: "white" });
+      setCurrentGame({
+        date,
+        pgn: "",
+        color: "white",
+        opponent: getLevelForRating(rating).rating,
+      });
     }
     navigate("/play/" + date);
-  }, [setCurrentGame, setCurrentGameId, potentialGame, navigate]);
+  }, [setCurrentGame, setCurrentGameId, navigate, potentialGame, rating]);
 
   useEffect(() => {
-    if (id && id !== currentGameId && isLoaded) {
+    if (id && id !== currentGameId) {
       setCurrentGameId(id);
     }
-  }, [id, setCurrentGameId, currentGameId, isLoaded]);
+  }, [id, setCurrentGameId, currentGameId]);
+
+  useEffect(() => {
+    if (currentGame && !currentGame.opponent) {
+      setCurrentGame({
+        ...currentGame,
+        opponent: getLevelForRating(rating).rating,
+      });
+    }
+  }, [currentGame, rating, setCurrentGame]);
 
   useEffect(() => {
     const res = currentGame?.result;
+    const opponent = currentGame?.opponent;
     if (
       res &&
+      opponent &&
       currentGame.color !== "both" &&
       currentGame?.ratingChange === undefined
     ) {
       const r = res === "draw" ? 0.5 : res === currentGame.color ? 1 : 0;
       setCurrentGame({
         ...currentGame,
-        ratingChange: elo.change(rating, level.rating, r)[0],
+        ratingChange: elo.change(rating, opponent, r)[0],
       });
-      setRating([level.rating, r]);
+      setRating([opponent, r]);
     }
-  }, [setCurrentGame, setRating, currentGame, rating, level]);
+  }, [setCurrentGame, setRating, currentGame, rating]);
 
   if (!currentGame) {
     return <Loading />;
   }
 
-  return (
-    <Game
-      currentGame={currentGame}
-      account={account}
-      engineLevel={level}
-      newGame={newGame}
-    />
-  );
+  return <Game currentGame={currentGame} account={account} newGame={newGame} />;
 }
 
 export default withRequireAccount(PlayPage);
