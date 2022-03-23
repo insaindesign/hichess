@@ -26,6 +26,8 @@
 
   .panel {
     padding-top: 0;
+    overflow-y: auto;
+    height: calc(100vh - 65px);
   }
 
   .board {

@@ -9,7 +9,8 @@ type Props = {
 };
 
 const containerSx = {
-  marginTop: 0,
+  margin: 0,
+  width: '100%',
   alignContent: "flex-start",
   flexFlow: "wrap-reverse",
 };
@@ -20,7 +21,7 @@ function Moves({ pgn }: Props) {
     <Grid columns={11} container spacing={2} sx={containerSx}>
       {m.map((row) => (
         <Fragment key={row.number}>
-          <Grid item xs={1}>
+          <Grid item xs={1} style={{ paddingLeft: 2 }}>
             {row.number}
           </Grid>
           <Grid item xs={5}>

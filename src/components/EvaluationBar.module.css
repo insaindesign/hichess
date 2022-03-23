@@ -1,10 +1,11 @@
 .root {
-  background: "#fff";
+  background: #fff;
   position: relative;
   border-radius: 4px;
   border: 1px solid #000;
   padding: 2px;
   overflow: hidden;
+  flex: 0 0 auto;
 }
 
 .root::after {
