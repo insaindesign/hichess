@@ -111,7 +111,7 @@ export const normaliseScore = (score: Pick<MoveInfoScore, 'value'|'type'>): Move
   let normalised = score.value;
   let sentence = `${normalised > 0 ? '+' : ''}${toDecimal(normalised / 100, 2)}`;
   if (score.type === 'mate') {
-    sentence = 'Mate in ' + normalised;
+    sentence = (normalised < 0 ? '-M' : 'M') + Math.abs(normalised);
     normalised = 20000 / normalised;
   }
   return {
