@@ -5,7 +5,6 @@ import type { MoveInfoScore } from "./uci";
 export type PgnMove = {
   move: string;
   rating?: MoveInfoScore;
-  best?: string;
   bestMove?: string;
   bestRating?: MoveInfoScore;
 };
@@ -37,22 +36,15 @@ const toMove = (part?: string): PgnMove => {
   const data: PgnMove = { move: parts[0] };
   if (parts[1]) {
     const commentParts = parts[1].split(", ");
-    if (commentParts[0] && !commentParts[0].includes(" ")) {
-      data.rating = toRating(commentParts.shift() as string);
+    let next = commentParts.shift();
+    if (next && next.match(/^[+-M]/)) {
+      data.rating = toRating(next);
+      next = commentParts.shift();
     }
-    const best = commentParts.shift();
-    if (best) {
-      const bestRating = best.replace(moveRatingRegex, "");
-      data.bestMove = best.replace(bestRating, "");
+    if (next) {
+      const bestRating = next.replace(moveRatingRegex, "");
+      data.bestMove = next.replace(bestRating, "");
       data.bestRating = toRating(bestRating);
-    }
-    // only show best if it's unique
-    if (
-      data.bestRating &&
-      data.rating &&
-      data.bestRating.normalised !== data.rating.normalised
-    ) {
-      data.best = best;
     }
   }
   return data;
