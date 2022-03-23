@@ -30,7 +30,7 @@ function GameHistory({ accountId }: Props) {
       {games.map((g, ii) => (
         <div key={ii}>
           <Link to={`/play/${g.date}`}>{new Date(g.date).toDateString()}</Link>,{" "}
-          {g.color}, {g.result || "incomplete"} ({g.ratingChange})
+          {!g.result ? "incomplete" : g.color !== 'both' ? `${g.color} ${g.result === g.color ? 'win' : 'loss'} ${g.opponent ? `vs ${g.opponent}` : ''} (${g.ratingChange})` : g.result}
         </div>
       ))}
     </div>
