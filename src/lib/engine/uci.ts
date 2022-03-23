@@ -121,6 +121,17 @@ export const normaliseScore = (score: Pick<MoveInfoScore, 'value'|'type'>): Move
   }
 }
 
+export const toMoveInfoScore = (sentence: string): MoveInfoScore => {
+  const type = sentence.includes("M") ? "mate" : "cp";
+  return normaliseScore({
+    value:
+      type === "mate"
+        ? parseFloat(sentence.replace("Mate in ", "").replace("M", ""))
+        : parseFloat(sentence) * 100,
+    type,
+  });
+};
+
 const parseMoveInfo = (line: string): MoveInfo | string => {
   try {
     const collected = collect(line, infoKeywords);

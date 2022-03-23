@@ -1,4 +1,4 @@
-import { normaliseScore } from "./uci";
+import { toMoveInfoScore } from "./uci";
 
 import type { MoveInfoScore } from "./uci";
 
@@ -20,17 +20,6 @@ const moveRatingRegex = /([a-h][1-8][a-h][1-8] )+/;
 const encodeComment = (comment: string) => comment.replace(/ /g, "__");
 const decodeComment = (comment: string) => comment.replace(/__/g, " ");
 
-const toRating = (rating: string): MoveInfoScore => {
-  const type = rating.includes("Mate in ") ? "mate" : "cp";
-  return normaliseScore({
-    value:
-      type === "mate"
-        ? parseFloat(rating.replace("Mate in ", ""))
-        : parseFloat(rating) * 100,
-    type,
-  });
-};
-
 const toMove = (part?: string): PgnMove => {
   const parts = part ? part.replace("}", "").split(" {") : [""];
   const data: PgnMove = { move: parts[0] };
@@ -38,13 +27,13 @@ const toMove = (part?: string): PgnMove => {
     const commentParts = parts[1].split(", ");
     let next = commentParts.shift();
     if (next && next.match(/^[+-M]/)) {
-      data.rating = toRating(next);
+      data.rating = toMoveInfoScore(next);
       next = commentParts.shift();
     }
     if (next) {
       const bestRating = next.replace(moveRatingRegex, "");
       data.bestMove = next.replace(bestRating, "");
-      data.bestRating = toRating(bestRating);
+      data.bestRating = toMoveInfoScore(bestRating);
     }
   }
   return data;
