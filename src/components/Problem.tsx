@@ -71,7 +71,10 @@ function Problem({ level, nextLevel, done, account }: Props) {
 
   const hint = useCallback(() => manageLevel.hint(), [manageLevel]);
 
-  useEffect(() => manageLevel.chess.on("change", setHistory), [manageLevel]);
+  useEffect(
+    () => manageLevel.chess.on("change", ({ moves }) => setHistory(moves)),
+    [manageLevel]
+  );
 
   useEffect(() => {
     if (manageLevel.level !== level) {

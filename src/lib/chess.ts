@@ -28,8 +28,13 @@ export function fenColor(fen: string): Color {
   return / w /.test(fen) ? "white" : "black";
 }
 
+export interface onChangeEvent {
+  moves: ChessMove[];
+  reason: "move" | "color" | "obstacle" | "comment";
+}
+
 export class ChessCtrl {
-  private events: EventEmitter<{ change: ChessMove[] }>;
+  private events: EventEmitter<{ change: onChangeEvent }>;
   private chess: ChessInstance;
   // Use typescript to ensure mutations are handled in ChessCtrl
   public js: Pick<
@@ -88,12 +93,12 @@ export class ChessCtrl {
         fen.replace(/ (w|b) ([kKqQ-]{1,4}) \w\d /, " " + turn + " $2 - ")
       );
     }
-    this.handleChange();
+    this.handleChange("color");
   }
 
   set moves(moves: ChessMove[]) {
     this._moves = moves;
-    this.handleChange();
+    this.handleChange("move");
   }
 
   public get moves() {
@@ -143,15 +148,15 @@ export class ChessCtrl {
       this.chess.put({ type: "p", color }, key);
       this.obstacles.push(key);
     });
-    this.handleChange();
+    this.handleChange("obstacle");
   }
 
   comment(comment: string) {
     this.chess.set_comment(comment);
-    this.handleChange();
+    this.handleChange("comment");
   }
 
-  on(event: "change", callback: (moves: ChessMove[]) => void) {
+  on(event: "change", callback: (moves: onChangeEvent) => void) {
     return this.events.on(event, callback);
   }
 
@@ -209,10 +214,9 @@ export class ChessCtrl {
     this.moves = this.moves.slice(0, -1);
   }
 
-  private handleChange = debounce(
-    () => this.events.emit("change", this.moves),
-    1
-  );
+  private handleChange = debounce((reason: onChangeEvent['reason']) => {
+    this.events.emit("change", { moves: this.moves, reason });
+  }, 1);
 }
 
 export default ChessCtrl;

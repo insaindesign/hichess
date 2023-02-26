@@ -75,7 +75,10 @@ function Board({
     [api, onMove]
   );
 
-  useEffect(() => chess.on("change", setHistory), [chess]);
+  useEffect(
+    () => chess.on("change", ({ moves }) => setHistory(moves)),
+    [chess]
+  );
 
   useEffect(() => {
     if (!api && ref.current) {

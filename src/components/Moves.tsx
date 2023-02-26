@@ -17,6 +17,7 @@ const containerSx = {
 
 function Moves({ pgn }: Props) {
   const m = useMemo(() => parsePgn(pgn), [pgn]);
+  console.log(m)
   return (
     <Grid columns={11} container spacing={2} sx={containerSx}>
       {m.map((row) => (

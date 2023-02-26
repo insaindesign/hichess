@@ -9,7 +9,7 @@ import { useSetRecoilState } from "recoil";
 
 import ChessCtrl from "../lib/chess";
 import engine from "../lib/engine/stockfish";
-import { gameStateForAccountId } from "../state/games";
+import { Game, gameStateForAccountId } from "../state/games";
 import ButtonGroup from "./ButtonGroup";
 import ToggleButtonGroup from "./ToggleButtonGroup";
 import Board from "./Board";
@@ -37,6 +37,7 @@ type Props = {
   currentGame: GameType;
   account: Account;
   newGame: () => void;
+  onResult: (game: Game) => void;
 };
 
 const enforceOrientation = (
@@ -44,7 +45,7 @@ const enforceOrientation = (
   fallback: Color
 ): Color => (color === "white" || color === "black" ? color : fallback);
 
-function Game({ currentGame, account, newGame }: Props) {
+function GameBoard({ currentGame, account, newGame, onResult }: Props) {
   const { t } = useTranslation();
   const chess = useMemo(() => new ChessCtrl(), []);
   const gameIdRef = useRef<number | null>(null);
@@ -58,7 +59,6 @@ function Game({ currentGame, account, newGame }: Props) {
   const updateCurrentGame = useSetRecoilState(updateCurrentGameState);
 
   const userColor = config.movable?.color;
-  const moves = chess.moves.map((m) => m.san).join(" ");
   const lastMove = chess.lastMove;
   const opponent = currentGame.opponent;
 
@@ -82,8 +82,13 @@ function Game({ currentGame, account, newGame }: Props) {
   );
 
   const undo = useCallback(() => {
-    if (currentGame.pgn.length && chess.color === userColor) {
+    if (!currentGame.pgn.length) {
+      return;
+    }
+    if (chess.color === userColor) {
       chess.undo();
+      chess.undo();
+    } else if (userColor === "both") {
       chess.undo();
     }
   }, [chess, currentGame, userColor]);
@@ -127,21 +132,28 @@ function Game({ currentGame, account, newGame }: Props) {
     }
   }, [opponent]);
 
-  useEffect(() => {
-    if (!chess.js.game_over()) {
-      engine.bestMove(chess).then(setBestMove);
-    }
-  }, [chess, moves]);
-
   useEffect(
     () =>
-      chess.on("change", () =>
+      chess.on("change", ({ reason }) => {
         updateCurrentGame({
           pgn: chess.js.pgn(),
           result: chess.result,
-        })
-      ),
+        });
+        if (!chess.js.game_over() && reason === "move") {
+          engine.bestMove(chess).then(setBestMove);
+        }
+      }),
     [chess, updateCurrentGame]
+  );
+
+  useEffect(
+    () =>
+      chess.on("change", ({ reason }) => {
+        if (chess.result && reason === "move") {
+          onResult(currentGame)
+        }
+      }),
+    [chess, currentGame, onResult]
   );
 
   useEffect(() => {
@@ -237,4 +249,4 @@ function Game({ currentGame, account, newGame }: Props) {
   );
 }
 
-export default Game;
+export default GameBoard;

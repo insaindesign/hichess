@@ -15,11 +15,15 @@ type Props = {
   account: Account;
 };
 
+// remove all useEffects unless they are state based changes
+
 function PlayPage({ account }: Props) {
   const params = useParams<"id">();
   const navigate = useNavigate();
 
-  const { eloCalculateState, eloLoadedState } = eloStateForAccountId(account.id);
+  const { eloCalculateState, eloLoadedState } = eloStateForAccountId(
+    account.id
+  );
   const {
     currentGameState,
     currentGameIdState,
@@ -37,7 +41,7 @@ function PlayPage({ account }: Props) {
   const rating = ratingPair[0];
   const id = params.id ? parseInt(params.id, 10) : undefined;
 
-  const newGame = useCallback(() => {
+  const createNewGame = useCallback(() => {
     let date = Date.now();
     if (potentialGame) {
       date = potentialGame.date;
@@ -68,29 +72,35 @@ function PlayPage({ account }: Props) {
     }
   }, [currentGame, rating, setCurrentGame]);
 
-  useEffect(() => {
-    const res = currentGame?.result;
-    const opponent = currentGame?.opponent;
-    if (
-      res &&
-      opponent &&
-      currentGame.color !== "both" &&
-      currentGame?.ratingChange === undefined
-    ) {
-      const r = res === "draw" ? 0.5 : res === currentGame.color ? 1 : 0;
-      setCurrentGame({
-        ...currentGame,
-        ratingChange: elo.change(rating, opponent, r)[0],
-      });
-      setRating([opponent, r]);
-    }
-  }, [setCurrentGame, setRating, currentGame, rating]);
+  const handleResult = useCallback(
+    (game) => {
+      const res = game.result;
+      const opponent = game.opponent;
+      if (opponent && game.color !== "both" && !game.ratingChange) {
+        const r = res === "draw" ? 0.5 : res === game.color ? 1 : 0;
+        setCurrentGame({
+          ...game,
+          ratingChange: elo.change(rating, opponent, r)[0],
+        });
+        setRating([opponent, r]);
+      }
+    },
+    [setCurrentGame, setRating, rating]
+  );
 
   if (!currentGame) {
     return <Loading />;
   }
 
-  return <Game currentGame={currentGame} account={account} newGame={newGame} />;
+  return (
+    <Game
+      key={currentGame.date}
+      currentGame={currentGame}
+      account={account}
+      newGame={createNewGame}
+      onResult={handleResult}
+    />
+  );
 }
 
 export default withRequireAccount(PlayPage);
