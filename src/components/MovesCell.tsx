@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import StarIcon from "@mui/icons-material/Star";
@@ -5,6 +6,7 @@ import StarBorderIcon from "@mui/icons-material/StarBorder";
 import DoneIcon from "@mui/icons-material/Done";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import ErrorIcon from "@mui/icons-material/Error";
+import CloseIcon from "@mui/icons-material/Close";
 
 import type { PgnMove } from "../lib/engine/pgn";
 
@@ -44,22 +46,52 @@ function MovesRatingIcon({ best, actual }: RatingProps) {
 }
 
 function MovesCell({ cell }: Props) {
+  const [showBest, setShowBest] = useState(false);
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}
-    >
-      <Typography sx={{ display: "inline" }}>{cell.move}</Typography>
-      {cell.rating ? (
-        <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
-          <Typography variant="caption">{cell.rating.sentence}</Typography>
-          <MovesRatingIcon best={cell.bestRating} actual={cell.rating} />
+    <div>
+      <Box
+        onClick={() => setShowBest(true)}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: "4px",
+        }}
+      >
+        <Typography sx={{ display: "inline", flex: 1 }}>
+          {cell.move}
+        </Typography>
+        {cell.rating ? (
+          <>
+            <Typography variant="caption">
+              {cell.rating.sentence}
+            </Typography>
+            <MovesRatingIcon best={cell.bestRating} actual={cell.rating} />
+          </>
+        ) : null}
+      </Box>
+      {showBest && cell.bestMove ? (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "4px",
+          }}
+          onClick={() => setShowBest(false)}
+        >
+          <Typography variant="caption" sx={{ flex: 1 }}>
+            {cell.bestMove}
+          </Typography>
+          {cell.bestRating && (
+            <Typography variant="caption">
+              {cell.bestRating.sentence}
+            </Typography>
+          )}
+          <CloseIcon fontSize="small" />
         </Box>
       ) : null}
-    </Box>
+    </div>
   );
 }
 
